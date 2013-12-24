@@ -36,7 +36,7 @@ public class MenuScreen implements Screen
         	spriteBatch.end();
 
         	if(Gdx.input.justTouched())
-        		myGame.setScreen(new GameScreen());
+        		myGame.setScreen(new GameScreen(this.myGame));
         }
         
         @Override

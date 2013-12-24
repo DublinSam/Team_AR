@@ -56,7 +56,7 @@ public class Eater {
 	}
 	
 	public boolean isColliding(Vector2 center, float radius){
-		return position.dst(center) < (SIZE + radius);
+		return position.dst(center) < (SIZE/2 + radius/2);
 	}
 	
 	public void increaseScore(){

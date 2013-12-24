@@ -33,11 +33,12 @@ public class WorldRenderer {
 		batch = new SpriteBatch();
 		this.cam = new OrthographicCamera(7, 10);
 		this.cam.position.set(3.5f, 5, 0);
+		
 		this.cam.update();
 		
-		cameraGUI = new OrthographicCamera(480, 800);
-		cameraGUI.position.set(0, 0, 0);
-		cameraGUI.setToOrtho(true); // flip y-axis
+		cameraGUI = new OrthographicCamera(7, 10);
+		cameraGUI.position.set(3.5f, 5f, 0);
+		cameraGUI.setToOrtho(false); // flip y-axis
 		cameraGUI.update();
 	}
 	
@@ -71,24 +72,14 @@ public class WorldRenderer {
 		}
 		debugRenderer.end();
 		
-		renderGui(batch);
+		
 	}
 	
-	private void renderGui (SpriteBatch batch) {
-		batch.setProjectionMatrix(cameraGUI.combined);
-		batch.begin();
-		// draw collected gold coins icon + text
-		// (anchored to top left edge)
-		drawScore(batch);
-		batch.end();
-	}
+
 	
-	public void drawScore(SpriteBatch batch){
-		Eater eater = world.getEater();
-		float x = 3.5f;
-		float y = 0;
-		Assets.instance.fonts.defaultBig.draw(batch, "Score " + eater.getScore(), x, y);
-	}
+
+
+	
 	
 	public void drawEater(){
 		//will be used to load specific texture associated with eater

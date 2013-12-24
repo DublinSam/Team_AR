@@ -12,9 +12,9 @@ public class Collision {
 	private World world;
 	
 	public Collision(World game){
-		world = game;
-		eater = world.getEater();
-		food = world.getFood();
+		this.world = game;
+		this.eater = world.getEater();
+		this.food = world.getFood();
 	}
 	
 	public void update(float delta){
