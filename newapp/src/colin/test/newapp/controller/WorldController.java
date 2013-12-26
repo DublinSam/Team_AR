@@ -17,7 +17,8 @@ public class WorldController {
 	enum Keys {
 		LEFT, RIGHT
 	}
-	
+	int height=10;
+	int width=7;
 	private float gameTime=0;
 	private World world;
 	private Eater eater;
@@ -56,13 +57,21 @@ public class WorldController {
 	
 	public void update(float delta) {
 		if(timeSince>spawnInterval){
-			world.spawnFood(generateX(), 10);
+			world.spawnFood(generateX(), 11);
 			timeSince=0;
 			}
 		timeSince=timeSince+delta;
 		processInput();
 		
 		foodList = world.getFood();
+		if(eater.getVelocity().cpy().scl(delta).x+eater.getPosition().x-(eater.getBounds().width/2)<0){
+			eater.getPosition().x=eater.getBounds().width/2;
+			eater.getVelocity().x=0;
+		}
+		if(eater.getVelocity().cpy().scl(delta).x+eater.getPosition().x+(eater.getBounds().width/2)>width){
+			eater.getPosition().x=width-eater.getBounds().width/2;
+			eater.getVelocity().x=0;
+		}
 		eater.update(delta);
 		if(!(foodList == null)){
 			Iterator<Food> it=foodList.iterator();
