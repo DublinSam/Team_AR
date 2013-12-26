@@ -14,6 +14,7 @@ public class Score extends Actor {
 	float width;
 	float posX;
 	float posY;
+	/**eater passed to constructor in order to give reference to score**/
 	Score(Eater eater,float height,float width, float posX,float posY){
 		this.eater=eater;
 		this.height=height;

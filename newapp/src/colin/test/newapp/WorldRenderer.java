@@ -21,7 +21,7 @@ public class WorldRenderer {
 	private World world;
 	private OrthographicCamera cam;
 	private OrthographicCamera cameraGUI;
-	private SpriteBatch batch;
+	
 
 	/** for debug rendering **/
 	ShapeRenderer debugRenderer = new ShapeRenderer();
@@ -30,7 +30,6 @@ public class WorldRenderer {
 		// Load assets
 		Assets.instance.init(new AssetManager());
 		this.world = world;
-		batch = new SpriteBatch();
 		this.cam = new OrthographicCamera(7, 10);
 		this.cam.position.set(3.5f, 5, 0);
 		
@@ -54,20 +53,22 @@ public class WorldRenderer {
 		// render Eater
 		Eater eater = world.getEater();
 
-		Rectangle rect = eater.getBounds();
-		float x1 = eater.getPosition().x + rect.x;
-		float y1 = eater.getPosition().y + rect.y;
+		Rectangle eaterBounds = eater.getBounds();
+		float eaterBottomLeftX = eater.getPosition().x - eaterBounds.width/2;
+		float eaterBottomLeftY = eater.getPosition().y - eaterBounds.height/2;
 		debugRenderer.setColor(new Color(0, 1, 0, 1));
-		debugRenderer.rect(x1, y1, rect.width, rect.height);
+		debugRenderer.rect(eaterBottomLeftX, eaterBottomLeftY, eaterBounds.width, eaterBounds.height);
 		ArrayList<Food> foodList= world.getFood();
+		Rectangle foodBounds;
 		if(!(foodList==null)){
 			Iterator<Food> it=foodList.iterator();
 			while(it.hasNext()){
-				Food food = it.next();
-				float x2 = food.getPosition().x + rect.x;
-				float y2 = food.getPosition().y + rect.y;
+				Food foodItem = it.next();
+				foodBounds=foodItem.getBounds();
+				float foodBottomLeftX = foodItem.getPosition().x - foodBounds.width/2;
+				float foodBottomLeftY = foodItem.getPosition().y - foodBounds.height/2;
 				debugRenderer.setColor(new Color(0, 1, 0, 1));
-				debugRenderer.rect(x2, y2, rect.width, rect.height);
+				debugRenderer.rect(foodBottomLeftX, foodBottomLeftY, foodBounds.width, foodBounds.height);
 			}
 		}
 		debugRenderer.end();

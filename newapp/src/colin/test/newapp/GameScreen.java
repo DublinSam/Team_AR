@@ -31,9 +31,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**Game Screen, repsonsible for displaying all game events, and also catching relevant input commands**/
 public class GameScreen implements Screen, InputProcessor {
-
-    
- 
 	private World world;
 	private WorldRenderer renderer;
 	private WorldController controller;
@@ -58,12 +55,10 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public void render(float delta) {
 		//Background color blue
-		      
-		
 		Gdx.gl.glClearColor(0f, 0f, 1f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
-		//Controller updates objects positions, render draws them to screen
+		//Controller updates objects positions, render draws them to screen, positions should not change if paused
 		if(!(gamePaused)){
 		controller.update(delta);
 		}
@@ -89,6 +84,7 @@ public class GameScreen implements Screen, InputProcessor {
 		renderer=new WorldRenderer(world);
 		controller = new WorldController(world);
 		pauseTable = new Table();
+		//sets pause table to fill screen, will want to change this in future
         pauseTable.setFillParent(true);
         //stage.addActor(table);
         createPauseButton();
@@ -139,6 +135,7 @@ public void createPauseTable(){
 });
 	pauseTable.add(button2);
 }
+/**renders the GUI, pause screen, pause button and score**/
 	private void renderGui (SpriteBatch batch) {
 		batch.setProjectionMatrix(cam.combined);
 		
@@ -170,18 +167,15 @@ public void createPauseButton(){
 });
 	stage.addActor(pb);
 }
-public void createScore(){
+public void createScore(){ 
 	Score score = new Score(world.getEater(),25,75,5f,475);
 	stage.addActor(score);
 }
 public void pauseGame() {
 	       gamePaused=true;
 	       stage.addActor(pauseTable);
-	       
 	    }
 
-	    // this is called by android 
-	
 	@Override
 	public void pause() {
 		pauseGame();
