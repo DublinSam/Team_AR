@@ -102,12 +102,13 @@ public class WorldController {
 			eater.getVelocity().x = 0;
 		}
 	}
-	public int generateX(){
+	/**generate random X value for food spawning**/
+	public float generateX(){
 		   Random randomGenerator = new Random();
 		    
-		      int randomInt = randomGenerator.nextInt(7);
+		      float randomInt = randomGenerator.nextInt(7);
 		      
-		      return randomInt;
+		      return (float) (randomInt+0.5);
 		      
 		      
 		      
