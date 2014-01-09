@@ -1,6 +1,9 @@
 package colin.test.newapp;
 
 import colin.test.newapp.controller.WorldController;
+import colin.test.newapp.model.World;
+import colin.test.newapp.ui.PauseButton;
+import colin.test.newapp.ui.Score;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -16,6 +19,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -34,19 +39,17 @@ public class GameScreen implements Screen, InputProcessor {
 	private World world;
 	private WorldRenderer renderer;
 	private WorldController controller;
-	private OrthographicCamera cam;
 	private int width, height;
 	private Game myGame;
 	Table pauseTable;
 	private final float CAMERA_WIDTH = 7f;
 	private final float CAMERA_HEIGHT=10f;
 	boolean gamePaused=false;
-	Stage stage;
+	boolean gameOver=false;
+	Stage ui;
 	
 	
 	public GameScreen(Game game){
-		this.cam = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
-		this.cam.position.set(CAMERA_WIDTH / 2f, CAMERA_HEIGHT / 2f, 0);
 		world = new World();
 		this.myGame=game;
 	}
@@ -60,12 +63,14 @@ public class GameScreen implements Screen, InputProcessor {
 		
 		//Controller updates objects positions, render draws them to screen, positions should not change if paused
 		if(!(gamePaused)){
-		controller.update(delta);
+		gameOver=controller.update(delta);
 		}
 		
 		renderer.render();
-		renderGui(stage.getSpriteBatch());
-		
+		renderGui(ui.getSpriteBatch());
+		if(gameOver){
+			myGame.setScreen(new GameOver(this.myGame,world.getEater()));
+		}
 		
 	}
 
@@ -77,8 +82,8 @@ public class GameScreen implements Screen, InputProcessor {
 
 	@Override
 	public void show() {
-		stage = new Stage();
-	//stage.setCamera(cam);
+		ui = new Stage();
+		//stage.setCamera(cam);
 		
 		world = new World();
 		renderer=new WorldRenderer(world);
@@ -93,7 +98,7 @@ public class GameScreen implements Screen, InputProcessor {
         
 	    //stage.addActor(table);
 		InputMultiplexer multiplexer = new InputMultiplexer();
-		multiplexer.addProcessor(stage);
+		multiplexer.addProcessor(ui);
 		multiplexer.addProcessor(this);
 		
 		
@@ -101,8 +106,8 @@ public class GameScreen implements Screen, InputProcessor {
 	}
 public void createPauseTable(){
 	BitmapFont buttonFont = new BitmapFont();
-	Texture grey = new Texture(Gdx.files.internal("data/greyskin.png"));
-	Texture black = new Texture(Gdx.files.internal("data/blackSkin.png"));
+	Texture grey = new Texture(Gdx.files.internal("images/newgreybutton.png"));
+	Texture black = new Texture(Gdx.files.internal("images/newblackbutton.png"));
 	TextureRegion greyRegion = new TextureRegion(grey);
 	TextureRegion blackRegion = new TextureRegion(black);
 	TextureRegion upRegion =greyRegion;
@@ -112,6 +117,7 @@ public void createPauseTable(){
 	style.up = new TextureRegionDrawable(upRegion);
 	style.down = new TextureRegionDrawable(downRegion);
 	style.font = buttonFont;
+	
 	TextButton button1 = new TextButton("Resume", style);
 	button1.addListener(new ClickListener() {
 		@Override
@@ -121,7 +127,7 @@ public void createPauseTable(){
 				}
 		
 });
-	pauseTable.add(button1);
+	pauseTable.add(button1).padBottom(10);
 	pauseTable.row();
 	TextButton button2 = new TextButton("Restart", style);
 	button2.addListener(new ClickListener() {
@@ -137,11 +143,7 @@ public void createPauseTable(){
 }
 /**renders the GUI, pause screen, pause button and score**/
 	private void renderGui (SpriteBatch batch) {
-		batch.setProjectionMatrix(cam.combined);
-		
-		stage.draw();
-		
-		
+		ui.draw();
 	}
 
 	@Override
@@ -150,7 +152,7 @@ public void createPauseTable(){
 		
 	}
 public void createPauseButton(){
-	PauseButton pb = new PauseButton(25,75,5,0);
+	PauseButton pb = new PauseButton(50,20,1,1);
 
 	pb.addListener(new ClickListener() {
 		@Override
@@ -165,15 +167,15 @@ public void createPauseButton(){
 		}
 		
 });
-	stage.addActor(pb);
+	ui.addActor(pb);
 }
 public void createScore(){ 
-	Score score = new Score(world.getEater(),25,75,5f,475);
-	stage.addActor(score);
+	Score score = new Score(world.getEater(),75,25,5,475);
+	ui.addActor(score);
 }
 public void pauseGame() {
 	       gamePaused=true;
-	       stage.addActor(pauseTable);
+	       ui.addActor(pauseTable);
 	    }
 
 	@Override
@@ -221,29 +223,25 @@ public void pauseGame() {
 	
 	@Override
     public boolean touchDown(int x, int y, int pointer, int button) {
-		if (!Gdx.app.getType().equals(ApplicationType.Android))
-			return false;
 		if (x > width / 2 && y > height / 2) {
 			controller.rightPressed();
 		}
 		if (x < width / 2 && y > height / 2) {
 			controller.leftPressed();
 		}
-		System.out.println(x+" "+y+" "+width/2);
+
 		return true;
 	}
  
     @Override
     public boolean touchUp(int x, int y, int pointer, int button) {
-    	if (!Gdx.app.getType().equals(ApplicationType.Android))
-    		    return false;
-
         if (x < width / 2 && y > height / 2) {
             controller.leftReleased();
         }
         if (x > width / 2 && y > height / 2) {
             controller.rightReleased();
         }
+      
         return true;
     }
     
