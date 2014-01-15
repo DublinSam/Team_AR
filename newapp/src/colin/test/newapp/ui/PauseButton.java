@@ -1,22 +1,25 @@
-package colin.test.newapp;
+package colin.test.newapp.ui;
 
+import colin.test.newapp.util.Assets;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 
-public class Score extends Actor {
-	Eater eater;
-	int score=0;
+public class PauseButton extends Button {
 	float height;
 	float width;
 	float posX;
 	float posY;
-	/**eater passed to constructor in order to give reference to score**/
-	Score(Eater eater,float height,float width, float posX,float posY){
-		this.eater=eater;
+	public PauseButton(float width,float height, float posX,float posY){
 		this.height=height;
 		this.width=width;
 		this.posX=posX;
@@ -24,18 +27,14 @@ public class Score extends Actor {
 		setSize(width, height);
 		setPosition(posX, posY);
 	}
-
+	
 @Override
 public void draw(SpriteBatch batch, float parentAlpha) {
-	
 	batch.end();
-
 	batch.begin();
-	
-	float x = 5f;
-	float y = 475;
-	Assets.instance.fonts.defaultBig.draw(batch, "Score " + eater.getScore(), x, y);
+	Assets.instance.fonts.defaultNormal.draw(batch, "Pause ", this.getOriginX(), this.getOriginY()+height);
 	batch.end();
 	batch.begin();
 }
+
 }

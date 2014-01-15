@@ -58,7 +58,7 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public void render(float delta) {
 		//Background color blue
-		Gdx.gl.glClearColor(0f, 0f, 1f, 1);
+		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
 		//Controller updates objects positions, render draws them to screen, positions should not change if paused
@@ -83,11 +83,12 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public void show() {
 		ui = new Stage();
-		//stage.setCamera(cam);
+		
 		
 		world = new World();
 		renderer=new WorldRenderer(world);
 		controller = new WorldController(world);
+		world.getEater().addChangeListener(renderer);
 		pauseTable = new Table();
 		//sets pause table to fill screen, will want to change this in future
         pauseTable.setFillParent(true);

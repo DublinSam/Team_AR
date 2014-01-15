@@ -1,4 +1,4 @@
-package colin.test.newapp;
+package colin.test.newapp.util;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
