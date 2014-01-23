@@ -33,9 +33,7 @@ public void draw(SpriteBatch batch, float parentAlpha) {
 	batch.end();
 
 	batch.begin();
-	
-	float x = 5f;
-	float y = 475;
+
 	Assets.instance.fonts.defaultNormal.draw(batch, "Score " + eater.getScore(), posX, posY);
 	batch.end();
 	batch.begin();

@@ -32,14 +32,14 @@ public class Food {
 	FoodType foodType;
 	float stateTime = 0;
 	boolean exists = true;
-
+	public Food(){}
 	public Food(Vector2 position) {
-		this.foodType=generateFoodType();
+		generateFoodType();
 		this.timeAlive=0;
 		this.position = position;
+		this.bounds.setPosition(this.position);
 		this.bounds.height = this.foodType.height;
 		this.bounds.width = this.foodType.width;
-		this.bounds.setCenter(position);
 		this.velocity=new Vector2(0,SPEED);
 		
 	}
@@ -57,13 +57,15 @@ public class Food {
 	}
 
 	public void update(float delta) {
+	
 		timeAlive+=delta;
 		
-		if(timeAlive>3){
+		if(timeAlive>0){
 			this.release();
 		}
 		if(this.isReleased()){
 		position.add(velocity.cpy().scl(delta));
+		this.bounds.setPosition(position);
 		}
 	}
 	
@@ -90,13 +92,20 @@ public class Food {
 	public void setFoodType(FoodType foodType){
 		this.foodType=foodType;
 	}
-	public FoodType generateFoodType(){
+	public void generateFoodType(){
 		   Random randomGenerator = new Random();
 		   
 		      int randomInt = randomGenerator.nextInt(8);
+		      this.foodType= FoodType.values()[randomInt];    
+		      this.bounds.height=foodType.height;
+		      this.bounds.width=foodType.width;
+		      this.velocity.y=-2;
 		      
-		      return  FoodType.values()[randomInt];    
-		      
+	}
+	public void setPosition(float posX, float posY) {
+		this.position.x=posX;
+		this.position.y=posY;
+		
 	}
 }
 

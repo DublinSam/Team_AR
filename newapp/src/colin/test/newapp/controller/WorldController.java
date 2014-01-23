@@ -1,35 +1,65 @@
 package colin.test.newapp.controller;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-
+import colin.test.newapp.GameScreen.GameStatus;
 import colin.test.newapp.model.Eater;
+import colin.test.newapp.model.Eater.State;
 import colin.test.newapp.model.Food;
 import colin.test.newapp.model.Food.FoodType;
 import colin.test.newapp.model.World;
-import colin.test.newapp.model.Eater.State;
 import colin.test.newapp.util.PreferencesHelper;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 /**class responsible for updating velocity and positions based on input given at that point in time
  * (the final position is calculated in food/eater update method)**/
 public class WorldController {
 	public enum Keys {
-		LEFT, RIGHT
+		LEFT, RIGHT, JUMP
 	}
+
+    private Pool<Tile> tilePool = new Pool<Tile>() {
+        @Override
+        protected Tile newObject () {
+                return new Tile();
+        }
+};
+public class Tile extends Rectangle{
+	int id;
+	Tile(){
+		super();
+	}
+	Tile(int id,Rectangle rect){
+		super(rect);
+		this.id=id;
+	}
+	public void setId(int id){
+		this.id=id;
+	}
+	public int getId() {
+		return this.id;
+	}
+	
+}
+private Array<Tile> tiles = new Array<Tile>();
 	OrthographicCamera cam;
 	int height=10;
-	int CAMERA_WIDTH=7;
-	int CAMERA_HEIGHT=10;
+	int CAMERA_WIDTH=10;
+	int CAMERA_HEIGHT=7;
 	private World world;
 	private Eater eater;
 	private List<Food> foodList;
@@ -53,6 +83,7 @@ public class WorldController {
 	static {
 		keys.put(Keys.LEFT, false);
 		keys.put(Keys.RIGHT, false);
+		keys.put(Keys.JUMP, false);
 	};
 	
 	public void leftPressed() {
@@ -70,19 +101,93 @@ public class WorldController {
 	public void rightReleased() {
 		keys.get(keys.put(Keys.RIGHT, false));
 	}
+	public void jumpPressed(){
+		keys.get(keys.put(Keys.JUMP, true));
+	}
+	public void jumpReleased(){
+		keys.get(keys.put(Keys.JUMP, false));
+	}
 	
-	public boolean update(float delta) {
+	public GameStatus update(float delta) {
+		
 		processInput();
 		setEaterState();
 		foodList = world.getFood();
-		sideCollisionCheck(delta);
+		eater.getVelocity().add(new Vector2(0,eater.getAcceleration().y*delta));
+        checkTileCollisions(delta);
+    
 		eater.update(delta);
 		runFoodGenerator();
 		updateFoodPosition();
 		updateFoodCollision(delta);
-		return checkGameOver();
+		return checkGameStatus();
 	}
 	
+	private void checkTileCollisions(float delta) {
+	
+	
+		checkXAxisCollision(delta);
+		checkYAxisCollision(delta);
+	
+	}
+
+	private void checkYAxisCollision(float delta) {
+		Rectangle eaterRect = eater.getBounds();
+		int startX, startY, endX, endY;
+        if(eater.getVelocity().y > 0) {
+        startY = endY = (int)(eater.getPosition().y + eater.getBounds().height + eater.getVelocity().y*delta);
+        } else {
+        startY = endY = (int)(eater.getPosition().y + eater.getVelocity().y*delta);
+        }
+        startX = (int)(eater.getPosition().x);
+        endX = (int)(eater.getPosition().x + eater.getBounds().width);
+        getTiles(startX, startY, endX, endY, tiles);
+        eaterRect.y += eater.getVelocity().y*delta;
+        for(Tile tile: tiles) {
+        	if(eaterRect.overlaps(tile)) {
+                if(eater.getVelocity().y > 0) {
+                        eater.getPosition().y = tile.y - eater.getBounds().height;
+                        TiledMapTileLayer layer = (TiledMapTileLayer)world.getMap().getLayers().get(0);
+                        layer.setCell((int)tile.x, (int)tile.y, null);
+                } else {
+                		if(tile.getId()==2){
+                			eater.isDead=true;
+                		}
+                        eater.getPosition().y = tile.y + tile.height;
+                        eater.grounded = true;
+                }
+                eater.getVelocity().y = 0;
+                break;
+        	}
+        }
+		
+	}
+
+	private void checkXAxisCollision(float delta) {
+		Rectangle eaterRect = eater.getBounds();
+		int startX, startY, endX, endY;
+        if(eater.getVelocity().x > 0) {
+            startX = endX = (int)(eater.getPosition().x + eater.getBounds().width + eater.getVelocity().x*delta);
+        } else {
+            startX = endX = (int)(eater.getPosition().x + eater.getPosition().x);
+        }
+        startY = (int)(eater.getPosition().y);
+        endY = (int)(eater.getPosition().y + eater.getBounds().height);
+        getTiles(startX, startY, endX, endY, tiles);
+        eaterRect.x += eater.getVelocity().x*delta;
+        for(Tile tile: tiles) {
+        	
+        	if(eaterRect.overlaps(tile)) {
+        			if(tile.getId()==2){
+        				eater.isDead=true;
+        			}
+                    eater.getVelocity().x = 0;
+                    break;
+            }
+    }
+		
+	}
+
 	private void processInput() {
 		if (keys.get(Keys.LEFT)) {
 			// left is pressed
@@ -104,7 +209,12 @@ public class WorldController {
 			// acceleration is 0 on the x
 			eater.getAcceleration().x = 0;
 			// horizontal speed is 0
-			eater.getVelocity().x = 0;
+			//eater.getVelocity().x = 0;
+		}
+		if(keys.get(Keys.JUMP)){
+			if(eater.getVelocity().y==0){
+			eater.getVelocity().y=5;
+			}
 		}
 	}
 	
@@ -112,7 +222,7 @@ public class WorldController {
 		boolean result=false;
 		if(eater.getVelocity().cpy().scl(delta).x+eater.getPosition().x-(eater.getBounds().width/2)<0){
 			eater.getPosition().x=eater.getBounds().width/2;
-			System.out.println(eater.getPosition().x);
+		
 			result=true;
 			
 		}
@@ -127,7 +237,7 @@ public class WorldController {
 /**handles food generation, checking if food spawns will overlap and checking if it is time to spawn food**/
 	public void runFoodGenerator() {
 		if(timeSinceFoodSpawn>spawnInterval){
-			float xSpawnPos=generateX();
+			float xSpawnPos=generateX()+eater.getPosition().x;
 			boolean collisionDetected=checkFoodSpawnCollision(xSpawnPos);
 			if(!collisionDetected){
 				spawnFoodInWorld(xSpawnPos);
@@ -153,17 +263,22 @@ public class WorldController {
 
 
 	public void spawnFoodInWorld(float xSpawnPos) {
-		world.spawnFood(xSpawnPos, 9.75f);
+		world.spawnFood(xSpawnPos, 6.75f);
 		timeSinceFoodSpawn=0;
 	}
 
-	public boolean checkGameOver() {
-		boolean gameOver=false;
-		if(world.getFoodMissed()>maxNoOfFoodMisses){
+	public GameStatus checkGameStatus() {
+		GameStatus gameStatus=GameStatus.INPROGRESS;
+		if(eater.isDead==true){
 			checkIfNewHighScore();
-			gameOver=true;
+			gameStatus=GameStatus.GAMEOVER;
 		}
-		return gameOver;
+		if(world.isLevelCompleted()){
+			checkIfNewHighScore();
+			gameStatus=GameStatus.LEVELCOMPLETED;
+		}
+
+		return gameStatus;
 	}
 
 
@@ -178,7 +293,7 @@ public class WorldController {
 	private float generateX(){
 		   Random randomGenerator = new Random();
 		       float randomInt = randomGenerator.nextInt(7);
-		       return (float) (randomInt+0.5);
+		       return (float) (randomInt+3.0);
 	}
 
 
@@ -265,7 +380,14 @@ public class WorldController {
 
 	}
 	public void setEaterState(){
-		
+	
+			if(eater.getPosition().y<0){
+				System.out.println("dead");
+				eater.isDead=true;
+			}
+			if(!(eater.getVelocity().y==0)){
+				eater.grounded=false;
+			}
 	        timeNotBlinked += Gdx.graphics.getDeltaTime(); 
 			  if(timeNotBlinked>5){
 			        //blink animation
@@ -275,12 +397,36 @@ public class WorldController {
 			
 		
 	}
-	
+	private void getTiles(int startX, int startY, int endX, int endY, Array<Tile> tiles) {
+        TiledMapTileLayer layer = (TiledMapTileLayer)world.getMap().getLayers().get(0);
+        tilePool.freeAll(tiles);
+        tiles.clear();
+        for(int y = startY; y <= endY; y++) {
+                for(int x = startX; x <= endX; x++) {
+                	
+                        Cell cell = layer.getCell(x, y);
+                        if(cell != null) {
+                                Tile tile = tilePool.obtain();
+                                tile.setId(cell.getTile().getId());
+                                if(tile.getId()==1){
+                                	tile.set(x, y, 1, 1);
+                                }
+                                else{
+                                	tile.set(x, y, 0.5f, 0.5f);
+                                }
+                                tiles.add(tile);
+                                
+                        }
+                }
+        }
+}
 	private void setBlinkAnimation() {
 		Eater eater=world.getEater();
 		eater.setState(State.BLINK);
 		timeNotBlinked=0;
 	}
-
+	public void setLevelCompleted(){
+		world.levelCompleted();
+	}
 
 }

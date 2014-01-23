@@ -1,9 +1,11 @@
 package colin.test.newapp.util;
 
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,7 +13,12 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.maps.tiled.TideMapLoader;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -25,6 +32,8 @@ public class Assets implements Disposable, AssetErrorListener {
 
 	public AssetFonts fonts;
 
+
+
 	// singleton: prevent instantiation from other classes
 	private Assets () {
 	}
@@ -35,6 +44,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		public final BitmapFont defaultBig;
 
 		public AssetFonts () {
+			
 			// create three fonts using Libgdx's built-in 15px bitmap font
 			defaultSmall = new BitmapFont(Gdx.files.internal("images/arial-15.fnt"), false);
 			defaultNormal = new BitmapFont(Gdx.files.internal("images/arial-15.fnt"), false);
@@ -48,13 +58,21 @@ public class Assets implements Disposable, AssetErrorListener {
 			defaultNormal.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 			defaultBig.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		}
-	}
 
+	}
+	
 	public void init (AssetManager assetManager) {
 		this.assetManager = assetManager;
+		assetManager.load("images/JellyPig.png", Texture.class);
+		assetManager.load("atlas/textures.pack", TextureAtlas.class);
+		assetManager.load("images/hunger.png", Texture.class);
+		assetManager.load("images/JellyPigSprite.png",Texture.class);
+		assetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+		assetManager.load("maps/longerTestMap.tmx",TiledMap.class);
+		
 		// set asset manager error handler
 		assetManager.setErrorListener(this);
-
+		
 		Gdx.app.debug(TAG, "# of assets loaded: " + assetManager.getAssetNames().size);
 		for (String a : assetManager.getAssetNames()) {
 			Gdx.app.debug(TAG, "asset: " + a);
@@ -62,8 +80,12 @@ public class Assets implements Disposable, AssetErrorListener {
 
 		// create game resource objects
 		fonts = new AssetFonts();
+		
+		
 	}
-
+public AssetManager getAssetManager(){
+	return this.assetManager;
+}
 	@Override
 	public void dispose () {
 		assetManager.dispose();

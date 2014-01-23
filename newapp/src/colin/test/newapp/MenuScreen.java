@@ -1,8 +1,12 @@
 package colin.test.newapp;
 
+import colin.test.newapp.util.Assets;
+import colin.test.newapp.util.ProgressBar;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -13,9 +17,11 @@ public class MenuScreen implements Screen
 		int width;
 		int height;
         private SpriteBatch spriteBatch;
-        private TextureRegion splshreg;
         private Texture splsh;
         private Game myGame;
+		private Texture hungerTexture;
+		private TextureRegion hungerTextureRegion;
+		private ProgressBar progressBar;
         
         /**
          * Constructor for the splash screen
@@ -29,14 +35,20 @@ public class MenuScreen implements Screen
         @Override
         public void render(float delta)
         {
-        	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        	//Gdx.gl.glClearColor(1, 1, 1, 1);
+     
+        	
+        	Gdx.gl.glClearColor(1, 1, 1, 1);
         	spriteBatch.begin();
-        	spriteBatch.draw(splshreg,Gdx.graphics.getWidth() ,Gdx.graphics.getHeight(),0,0, width, height, 1f, 2f,180, false);
+        	spriteBatch.draw(splsh,0,0,width,height);
+        	progressBar.SetEnd(100, Assets.instance.getAssetManager().getProgress()*100);
+        	progressBar.Draw(spriteBatch);
         	spriteBatch.end();
-
-        	if(Gdx.input.justTouched())
+        	Assets.instance.getAssetManager().getLoadedAssets();
+        	System.out.println(Assets.instance.getAssetManager().getProgress());
+        	if(Assets.instance.getAssetManager().update()){
+        		myGame.getScreen().dispose();
         		myGame.setScreen(new GameScreen(this.myGame));
+        	}
         }
         
         @Override
@@ -44,9 +56,13 @@ public class MenuScreen implements Screen
         {
         	Texture.setEnforcePotImages(false);
         	spriteBatch = new SpriteBatch();
-        	splsh = new Texture(Gdx.files.internal("Header.png"));
-        	splshreg = new TextureRegion(splsh);
-        }
+        	splsh = new Texture(Gdx.files.internal("images/logo.png"));
+        	Assets.instance.init(new AssetManager());
+           	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    		hungerTexture = new Texture("images/hunger.png");
+    		hungerTextureRegion = new TextureRegion(hungerTexture);
+    		progressBar=new ProgressBar(hungerTextureRegion, Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()-10);
+        }	
 
 		@Override
 		public void resize(int width, int height) {

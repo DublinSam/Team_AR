@@ -14,11 +14,13 @@ public class Eater {
 	public enum State {
 		IDLE, MOVING, HUNGRY, HOT,BORED,BLINK
 	}
+	
 	private List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
 	public float timeInState;
 	int foodMissed;
 	int foodCollected;
 	public static final float SIZE = 1f; // half a unit
+	public static final float DAMPING = 0.8f;
 	public static float SPEED = 2.5f;	// unit per second
 	Vector2 position = new Vector2();
 	/**Acceleration not used**/
@@ -30,10 +32,15 @@ public class Eater {
 	int score = 0;
 	float cholesterol=0;
 	float fullness=0;
+	public boolean grounded;
+	public boolean isDead;
 	public Eater(Vector2 position) {
+		this.isDead=false;
+		this.acceleration.y=-7;
 		this.position = position;
 		this.bounds.height = SIZE;
 		this.bounds.width = SIZE;
+		this.velocity.x=2;
 		this.timeInState=0;
 	}
 	
@@ -50,6 +57,7 @@ public class Eater {
 	}
 	
 	public Vector2 getVelocity() {
+	
 		return this.velocity;
 	}
 	
@@ -63,6 +71,7 @@ public class Eater {
 	public void update(float delta) {
 		timeInState+=delta;
 		position.add(velocity.cpy().scl(delta));
+		this.bounds.setPosition(position);
 	}
 	
 	public Vector2 getAcceleration() {
@@ -70,7 +79,8 @@ public class Eater {
 	}
 	
 	public boolean isColliding(Food food){
-		return position.dst(food.getPosition()) < (SIZE + food.SIZE/2);
+		
+		return this.bounds.overlaps(food.getBounds());
 	}
 	
 	public void increaseScore(){

@@ -32,7 +32,7 @@ public class PauseButton extends Button {
 public void draw(SpriteBatch batch, float parentAlpha) {
 	batch.end();
 	batch.begin();
-	Assets.instance.fonts.defaultNormal.draw(batch, "Pause ", this.getOriginX(), this.getOriginY()+height);
+	Assets.instance.fonts.defaultNormal.draw(batch, "Pause ", posX, posY+height);
 	batch.end();
 	batch.begin();
 }

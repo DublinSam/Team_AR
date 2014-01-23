@@ -2,7 +2,6 @@ package colin.test.newapp;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,12 +11,12 @@ import colin.test.newapp.model.Food;
 import colin.test.newapp.model.Food.FoodType;
 import colin.test.newapp.model.World;
 import colin.test.newapp.util.Assets;
+import colin.test.newapp.util.ProgressBar;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
-import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -27,14 +26,24 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 
 public class WorldRenderer  implements PropertyChangeListener  {
 
 	private World world;
 	private Eater eater;
 	private OrthographicCamera cam;
-	private OrthographicCamera cameraGUI;
+	int CAMERA_WIDTH=7;
+	int CAMERA_HEIGHT=10;
+	int width;
+	int height;
     private static final int        BLINK_FRAME_COLS = 5;      
     private static final int        BLINK_FRAME_ROWS = 1; 
     
@@ -50,8 +59,8 @@ public class WorldRenderer  implements PropertyChangeListener  {
     SpriteBatch                     spriteBatch;          
     TextureRegion                   currentFrame;          
     FPSLogger fpslog;                                      
-	
 
+	ProgressBar progressBar;
 	/** for debug rendering **/
 	ShapeRenderer debugRenderer = new ShapeRenderer();
 	private TextureRegion chilliTexture;
@@ -60,42 +69,54 @@ public class WorldRenderer  implements PropertyChangeListener  {
 	private TextureRegion lemonTexture;
 	private TextureRegion appleTexture;
 	private TextureRegion pizzaTexture;
+	private Texture hungerTexture;
+	private TextureRegion idleTextureRegion;
+	TextureRegion tr;
+	private TextureRegion hungerTextureRegion;
+     private OrthogonalTiledMapRenderer renderer;
 
 	public WorldRenderer(World world) {
-		// Load assets
+		System.out.println("create renderer");
 		fpslog = new FPSLogger();
-		Assets.instance.init(new AssetManager());
 		this.world = world;
 		this.eater=this.world.getEater();
-		this.cam = new OrthographicCamera(7, 10);
-		this.cam.position.set(3.5f, 5, 0);
-		
+		this.cam = new OrthographicCamera();
+		this.cam.setToOrtho(false, 10, 7);
+		this.cam.position.set(5f, 3.5f, 0);
 		this.cam.update();
 		
-		cameraGUI = new OrthographicCamera(7, 10);
-		cameraGUI.position.set(3.5f, 5f, 0);
-		cameraGUI.setToOrtho(false); // flip y-axis
-		cameraGUI.update();
-
         loadTextures();
+        
+        progressBar=new ProgressBar(hungerTextureRegion, 5, 3.5f);
+        progressBar.SetTargetDimension(1, 4);
 	}
-	
+	public void setSize(int width,int height){
+		this.width=width;
+		this.height=height;
+		
+		
+	}
 	public void loadTextures(){
-		TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("atlas/textures.pack"));
+		System.out.println("load textures");
+		Gdx.app.debug("texts", "loading");
+		renderer = new OrthogonalTiledMapRenderer(world.getMap(), 1/48f);
+		TextureAtlas atlas = Assets.instance.getAssetManager().get("atlas/textures.pack", TextureAtlas.class);
 		spriteBatch = new SpriteBatch();
-	    spriteBatch.setProjectionMatrix(cam.combined);    
-		idleTexture = new Texture(Gdx.files.internal("images/JellyPig.png"));
-		idleTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		TextureRegion tr = new TextureRegion(idleTexture);
+	    spriteBatch.setProjectionMatrix(cam.combined);
+	
+		idleTexture = Assets.instance.getAssetManager().get("images/JellyPig.png", Texture.class);
+		idleTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		hungerTexture = Assets.instance.getAssetManager().get("images/hunger.png", Texture.class);
+		hungerTextureRegion = new TextureRegion(hungerTexture);
 		cookieTexture = atlas.findRegion("Cookie");
-		strawBerryTexture = atlas.findRegion("Cookie");
+		strawBerryTexture = atlas.findRegion("Strawberry");
 		chilliTexture =atlas.findRegion("Chilli");
 		hotdogTexture = atlas.findRegion("Hotdog");
 		burgerTexture = atlas.findRegion("Hamburger");
 		lemonTexture = atlas.findRegion("Lemon");
 		appleTexture = atlas.findRegion("Apple");
 		pizzaTexture = atlas.findRegion("Pizza");
-		blinkSheet = new Texture(Gdx.files.internal("images/JellyPigSprite.png"));     // #9
+		blinkSheet = Assets.instance.getAssetManager().get("images/JellyPigSprite.png", Texture.class);     // #9
         TextureRegion[][] tmp = TextureRegion.split(blinkSheet, blinkSheet.getWidth() / 
         BLINK_FRAME_COLS, blinkSheet.getHeight() / BLINK_FRAME_ROWS);                                // #10
         blinkFrames = new TextureRegion[BLINK_FRAME_COLS * BLINK_FRAME_ROWS];
@@ -108,19 +129,27 @@ public class WorldRenderer  implements PropertyChangeListener  {
         }
        
         blinkAnimation = new Animation(0.1f, blinkFrames);              // #11                                 
-        defaultEaterTexture=new Texture(Gdx.files.internal("images/JellyPig.png"));
+      
         
 	}
 	
 	public void render() {
-		
+		cam.position.x=eater.getPosition().x;
+		cam.update();
+		spriteBatch.setProjectionMatrix(cam.combined);
 		//drawDebug();
 		spriteBatch.begin();
+	
+		
         drawFood();                  
 		drawEater();
+
+		
 		spriteBatch.end();
-		fpslog.log();
 	
+		fpslog.log();
+		renderer.setView(cam);
+        renderer.render();
 	}
 	
 	public void drawEater(){
@@ -131,17 +160,17 @@ public class WorldRenderer  implements PropertyChangeListener  {
 	
 	private void drawEaterAnimation() {
 		Rectangle eaterBounds = eater.getBounds();
-		float eaterBottomLeftX = eater.getPosition().x - eaterBounds.width/2;
-		float eaterBottomLeftY = eater.getPosition().y;
+		
 		if(currentAnimation==null){
 			
-			spriteBatch.draw(idleTexture, eaterBottomLeftX, eaterBottomLeftY,eaterBounds.width,eaterBounds.height);
+			spriteBatch.draw(idleTexture, eater.getPosition().x, eater.getPosition().y,eater.getBounds().width,eater.getBounds().height);
+		
 			
 		}
        else{
 
 	        currentFrame = currentAnimation.getKeyFrame(eater.getTimeInState(), false);
-	        spriteBatch.draw(currentFrame, eaterBottomLeftX, eaterBottomLeftY,eaterBounds.width,eaterBounds.height); 
+	        spriteBatch.draw(currentFrame, eater.getPosition().x, eater.getPosition().y,eaterBounds.width,eaterBounds.height); 
 	        if(currentAnimation.isAnimationFinished(eater.getTimeInState())){
 	        	eater.setState(State.IDLE);
 	        	currentAnimation=null;
@@ -169,32 +198,29 @@ public class WorldRenderer  implements PropertyChangeListener  {
 	
 	public void drawFoodItem(Food food){
 		FoodType foodType = food.getFoodType();
-		Rectangle foodBounds = food.getBounds();
-		float foodBottomLeftX = food.getPosition().x - foodBounds.width/2;
-		float foodBottomLeftY = food.getPosition().y - foodBounds.height/2;
 		switch(foodType){
-		case COOKIE: spriteBatch.draw(cookieTexture, foodBottomLeftX ,foodBottomLeftY, food.getBounds().width, food.getBounds().height);
+		case COOKIE: spriteBatch.draw(cookieTexture, food.getBounds().x ,food.getBounds().y, food.getBounds().width, food.getBounds().height);
 		break;
 		
-		case STRAWBERRY: spriteBatch.draw(strawBerryTexture, foodBottomLeftX ,foodBottomLeftY, food.getBounds().width, food.getBounds().height);
+		case STRAWBERRY: spriteBatch.draw(strawBerryTexture, food.getBounds().x ,food.getBounds().y, food.getBounds().width, food.getBounds().height);
 		break;
 		
-		case CHILLI: spriteBatch.draw(chilliTexture, foodBottomLeftX ,foodBottomLeftY, food.getBounds().width, food.getBounds().height);
+		case CHILLI: spriteBatch.draw(chilliTexture, food.getBounds().x ,food.getBounds().y, food.getBounds().width, food.getBounds().height);
 		break;
 		
-		case HOTDOG: spriteBatch.draw(hotdogTexture, foodBottomLeftX ,foodBottomLeftY, food.getBounds().width, food.getBounds().height);
+		case HOTDOG: spriteBatch.draw(hotdogTexture, food.getBounds().x ,food.getBounds().y, food.getBounds().width, food.getBounds().height);
 		break;
 		
-		case BURGER: spriteBatch.draw(burgerTexture, foodBottomLeftX ,foodBottomLeftY, food.getBounds().width, food.getBounds().height);
+		case BURGER: spriteBatch.draw(burgerTexture, food.getBounds().x ,food.getBounds().y, food.getBounds().width, food.getBounds().height);
 		break;
 		
-		case LEMON: spriteBatch.draw(lemonTexture, foodBottomLeftX ,foodBottomLeftY, food.getBounds().width, food.getBounds().height);
+		case LEMON: spriteBatch.draw(lemonTexture, food.getBounds().x ,food.getBounds().y, food.getBounds().width, food.getBounds().height);
 		break;
 		
-		case APPLE: spriteBatch.draw(appleTexture, foodBottomLeftX ,foodBottomLeftY, food.getBounds().width, food.getBounds().height);
+		case APPLE: spriteBatch.draw(appleTexture, food.getBounds().x ,food.getBounds().y, food.getBounds().width, food.getBounds().height);
 		break;
 		
-		case PIZZA: spriteBatch.draw(pizzaTexture, foodBottomLeftX ,foodBottomLeftY, food.getBounds().width, food.getBounds().height);
+		case PIZZA: spriteBatch.draw(pizzaTexture, food.getBounds().x ,food.getBounds().y, food.getBounds().width, food.getBounds().height);
 		break;
 		}
 	}
@@ -206,10 +232,8 @@ public class WorldRenderer  implements PropertyChangeListener  {
 		Eater eater = world.getEater();
 
 		Rectangle eaterBounds = eater.getBounds();
-		float eaterBottomLeftX = eater.getPosition().x - eaterBounds.width/2;
-		float eaterBottomLeftY = eater.getPosition().y;
 		debugRenderer.setColor(new Color(0, 1, 0, 1));
-		debugRenderer.rect(eaterBottomLeftX, eaterBottomLeftY, eaterBounds.width, eaterBounds.height);
+		debugRenderer.rect(eater.getPosition().x, eater.getPosition().y, eaterBounds.width, eaterBounds.height);
 		List<Food> foodList= world.getFood();
 		Rectangle foodBounds;
 		if(!(foodList==null)){
@@ -217,19 +241,18 @@ public class WorldRenderer  implements PropertyChangeListener  {
 			while(it.hasNext()){
 				Food foodItem = it.next();
 				foodBounds=foodItem.getBounds();
-				float foodBottomLeftX = foodItem.getPosition().x - foodBounds.width/2;
-				float foodBottomLeftY = foodItem.getPosition().y - foodBounds.height/2;
 				if(foodItem.getFoodType()==FoodType.COOKIE){
 					debugRenderer.setColor(1, 0, 0, 1);
 				}
 				else{
 					debugRenderer.setColor(new Color(0, 1, 0, 1));
 				}
-				debugRenderer.rect(foodBottomLeftX, foodBottomLeftY, foodBounds.width, foodBounds.height);
+				debugRenderer.rect(foodItem.getBounds().x, foodItem.getBounds().y, foodBounds.width, foodBounds.height);
 			}
 		}
 		debugRenderer.end();
 	}
+    
 
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
