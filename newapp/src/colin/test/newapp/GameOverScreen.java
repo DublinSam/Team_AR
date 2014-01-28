@@ -1,6 +1,7 @@
 package colin.test.newapp;
 
 import colin.test.newapp.model.Eater;
+import colin.test.newapp.model.World;
 import colin.test.newapp.ui.HighScore;
 import colin.test.newapp.ui.Score;
 import colin.test.newapp.util.PreferencesHelper;
@@ -15,6 +16,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -53,14 +56,17 @@ public GameOverScreen(Game myGame,Eater eater){
 	@Override
 	public void show() {
 		int highScore =phelp.getHighScore();
+		Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 		BitmapFont buttonFont = new BitmapFont();
 		table=new Table();
 		table.setFillParent(true);
 		stage=new Stage();
-		HighScore highscore = new HighScore(highScore,5,3.5f,Gdx.graphics.getWidth()/2-100,Gdx.graphics.getHeight()/2);
-		Score score = new Score(eater,3,1,Gdx.graphics.getWidth()/2-100,Gdx.graphics.getHeight()/2+50);
-		table.add(highscore);
-		table.add(score);
+		Label highScoreLabel = new Label( "Highscore "+highScore, skin);
+		Label scoreLabel = new Label( "Score "+eater.getScore(), skin);
+		table.add(highScoreLabel).pad(10);
+		table.row();
+		table.add(scoreLabel).pad(10);
+		table.row();
 		Texture grey = new Texture(Gdx.files.internal("images/newgreybutton.png"));
 		Texture black = new Texture(Gdx.files.internal("images/newblackbutton.png"));
 		TextureRegion greyRegion = new TextureRegion(grey);
@@ -72,18 +78,29 @@ public GameOverScreen(Game myGame,Eater eater){
 		style.up = new TextureRegionDrawable(upRegion);
 		style.down = new TextureRegionDrawable(downRegion);
 		style.font = buttonFont;
-		TextButton button2 = new TextButton("Restart", style);
-		button2.addListener(new ClickListener() {
+		TextButton restartButton = new TextButton("Restart", style);
+		restartButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
 				myGame.getScreen().dispose();
-				myGame.setScreen(new GameScreen(myGame));
+				myGame.setScreen(new GameScreen(myGame,new World()));
 					}
 			
 	});
-		button2.setPosition(Gdx.graphics.getWidth()/2-100,Gdx.graphics.getHeight()/2-100);
-		table.addActor(button2);
+		TextButton mainMenuButton = new TextButton("Main Menu", style);
+		mainMenuButton.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				// TODO Auto-generated method stub
+				super.clicked(event, x, y);
+				myGame.getScreen().dispose();
+				myGame.setScreen(new MainMenuScreen(myGame));
+			}
+		});
+		table.add(restartButton).pad(10);
+		table.row();
+		table.add(mainMenuButton);
 		stage.addActor(table);
 		Gdx.input.setInputProcessor(stage);
 		

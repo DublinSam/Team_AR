@@ -103,6 +103,7 @@ private Array<Tile> tiles = new Array<Tile>();
 	}
 	public void jumpPressed(){
 		keys.get(keys.put(Keys.JUMP, true));
+	
 	}
 	public void jumpReleased(){
 		keys.get(keys.put(Keys.JUMP, false));
@@ -151,7 +152,7 @@ private Array<Tile> tiles = new Array<Tile>();
                         layer.setCell((int)tile.x, (int)tile.y, null);
                 } else {
                 		if(tile.getId()==2){
-                			eater.isDead=true;
+                			world.levelFailed();
                 		}
                         eater.getPosition().y = tile.y + tile.height;
                         eater.grounded = true;
@@ -179,7 +180,7 @@ private Array<Tile> tiles = new Array<Tile>();
         	
         	if(eaterRect.overlaps(tile)) {
         			if(tile.getId()==2){
-        				eater.isDead=true;
+        				world.levelFailed();
         			}
                     eater.getVelocity().x = 0;
                     break;
@@ -190,16 +191,12 @@ private Array<Tile> tiles = new Array<Tile>();
 
 	private void processInput() {
 		if (keys.get(Keys.LEFT)) {
-			// left is pressed
-			eater.setFacingLeft(true);
-			//eater.setState(State.MOVING);
+
 			eater.getVelocity().x = -Eater.SPEED;
 		}
 		
 		if (keys.get(Keys.RIGHT)) {
-			// left is pressed
-			eater.setFacingLeft(false);
-			//eater.setState(State.MOVING);
+
 			eater.getVelocity().x = Eater.SPEED;
 		}
 		
@@ -212,7 +209,7 @@ private Array<Tile> tiles = new Array<Tile>();
 			//eater.getVelocity().x = 0;
 		}
 		if(keys.get(Keys.JUMP)){
-			if(eater.getVelocity().y==0){
+			if(eater.grounded){
 			eater.getVelocity().y=5;
 			}
 		}
@@ -269,10 +266,7 @@ private Array<Tile> tiles = new Array<Tile>();
 
 	public GameStatus checkGameStatus() {
 		GameStatus gameStatus=GameStatus.INPROGRESS;
-		if(eater.isDead==true){
-			checkIfNewHighScore();
-			gameStatus=GameStatus.GAMEOVER;
-		}
+
 		if(world.isLevelCompleted()){
 			checkIfNewHighScore();
 			gameStatus=GameStatus.LEVELCOMPLETED;
@@ -336,7 +330,6 @@ private Array<Tile> tiles = new Array<Tile>();
 	/**checks for collisions between food items + eater and for food that goes past bottom of screen*/
 	public void checkCollision(Food item){
 		processEaterCollision(item);
-		//Food missed only increases for good food missed
 		processGroundCollision(item);
 			
 	}
@@ -383,7 +376,10 @@ private Array<Tile> tiles = new Array<Tile>();
 	
 			if(eater.getPosition().y<0){
 				System.out.println("dead");
-				eater.isDead=true;
+				world.levelFailed();
+			}
+			if(eater.getPosition().x>20){
+				world.levelCompleted();
 			}
 			if(!(eater.getVelocity().y==0)){
 				eater.grounded=false;
@@ -425,8 +421,6 @@ private Array<Tile> tiles = new Array<Tile>();
 		eater.setState(State.BLINK);
 		timeNotBlinked=0;
 	}
-	public void setLevelCompleted(){
-		world.levelCompleted();
-	}
+	
 
 }

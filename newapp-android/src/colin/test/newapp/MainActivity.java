@@ -14,5 +14,7 @@ public class MainActivity extends AndroidApplication {
         cfg.useGL20 = false;
         
         initialize(new MyGdxGame(), cfg);
+        
+        
     }
 }

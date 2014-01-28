@@ -8,9 +8,9 @@ public class Main {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "newapp";
 		cfg.useGL20 = false;
-		cfg.width = 480;
-		cfg.height = 320;
+		cfg.width = 320;
+		cfg.height = 480;
 		
-		new LwjglApplication(new MyGdxGame(), "Eater", 320,480,true);
+		new LwjglApplication(new MyGdxGame(), "Eater", 480,320,true);
 	}
 }

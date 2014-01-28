@@ -1,13 +1,18 @@
 package colin.test.newapp.model;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import colin.test.newapp.LevelManager;
+import colin.test.newapp.GameScreen.GameStatus;
 import colin.test.newapp.controller.WorldController.Tile;
+import colin.test.newapp.model.Eater.State;
 import colin.test.newapp.util.Assets;
+import colin.test.newapp.util.Assets.LevelManager;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
@@ -17,15 +22,14 @@ import com.badlogic.gdx.utils.Pool;
 
 public class World {
 	/** Our player controlled hero **/
-	
+	private List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
 	Eater eater;
 	List<Food> foodInWorld;
 	int difficulty;
 	int foodMissed;
 	int foodCollected;
-	private TiledMap map;
+	Level level;
 
-	public LevelManager levelManager;
 	private Pool<Food> foodPool = new Pool<Food>(){
 		@Override
 		protected Food newObject(){
@@ -33,18 +37,17 @@ public class World {
 		}
 	};
 	public World(){
-		levelManager = new LevelManager();
+		
 		Texture.setEnforcePotImages(false);
 		foodInWorld = new ArrayList<Food>();
-		createWorld();
+		createLevel();
 		
 	}
 	
 
-	public void createWorld(){
-		String levelLocation=levelManager.getCurrentLevel().getFileString();
-		map=Assets.instance.getAssetManager().get(levelLocation);
-		this.eater=new Eater(new Vector2(3.5f,2.2f));
+	public void createLevel(){
+		level = Assets.instance.getLevelManager().getCurrentLevel();
+		this.eater=new Eater(new Vector2(3.5f,5f));
 	
 	}
 
@@ -89,23 +92,61 @@ public class World {
 	public void setFoodMissed(int foodMissed) {
 		this.foodMissed=foodMissed;
 	}
-	public TiledMap getMap(){
-		return this.map;
-	}
-	public void getCurrentLevel(){
-		levelManager.getCurrentLevel();
-	}
-	public void nextLevel(){
-		levelManager.nextLevel();
+
+	
+	public boolean loadNextLevel(){
+		boolean result=false;
+		eater.position.x=3.5f;
+		eater.position.y=5f;
+		if(Assets.instance.getLevelManager().nextLevel()){
+			result=true;
+			level=Assets.instance.getLevelManager().getCurrentLevel();
+		}
+		return result;
 	}
 
 
-	public void levelCompleted() {
-		levelManager.levelSuccesfull();
+	public Level getCurrentLevel() {
+		
+		return this.level;
 	}
-	public boolean isLevelCompleted(){
-		return levelManager.getLevelSuccessfull();
-	}
+	private void notifyListeners(Object object, String property, GameStatus oldValue, GameStatus newValue) {
+	    for (PropertyChangeListener name : listener) {
+	      name.propertyChange(new PropertyChangeEvent(this, "world", oldValue, newValue));
+	    }
+}
+
+public void addChangeListener(PropertyChangeListener newListener) {
+	    listener.add(newListener);
+}
+
+
+public void levelCompleted() {
+	this.level.levelCompleted();
+	notifyListeners(this.level,"levelCompleted",GameStatus.INPROGRESS,GameStatus.LEVELCOMPLETED);
+	
+}
+
+public void levelFailed() {
+	this.level.levelFailed();
+	notifyListeners(this.level,"levelCompleted",GameStatus.INPROGRESS,GameStatus.GAMEOVER);
+}
+
+public TiledMap getMap() {
+	// TODO Auto-generated method stub
+	return level.getMap();
+}
+
+
+public boolean isLevelCompleted() {
+	// TODO Auto-generated method stub
+	return level.isLevelCompleted();
+}
+
+public void setLevel(int i){
+	level=Assets.instance.getLevelManager().setLevel(i);
+	
+}
 
 
 }

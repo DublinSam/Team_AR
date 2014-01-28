@@ -5,6 +5,8 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import colin.test.newapp.util.Assets;
+
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -14,7 +16,7 @@ public class Eater {
 	public enum State {
 		IDLE, MOVING, HUNGRY, HOT,BORED,BLINK
 	}
-	
+
 	private List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
 	public float timeInState;
 	int foodMissed;
@@ -28,14 +30,11 @@ public class Eater {
 	Vector2 velocity = new Vector2();
 	Rectangle bounds = new Rectangle();
 	State state = State.IDLE;
-	boolean facingLeft = true;
 	int score = 0;
 	float cholesterol=0;
 	float fullness=0;
 	public boolean grounded;
-	public boolean isDead;
 	public Eater(Vector2 position) {
-		this.isDead=false;
 		this.acceleration.y=-7;
 		this.position = position;
 		this.bounds.height = SIZE;
@@ -51,10 +50,7 @@ public class Eater {
 	public Rectangle getBounds(){
 		return this.bounds;
 	}
-	
-	public void setFacingLeft(boolean b) {
-		this.facingLeft=b;
-	}
+
 	
 	public Vector2 getVelocity() {
 	

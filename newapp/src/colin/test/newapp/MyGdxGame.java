@@ -19,6 +19,6 @@ public class MyGdxGame extends Game {
 	private Sprite sprite;
 	@Override
 	public void create() {
-		setScreen(new MenuScreen(this));
+		setScreen(new LoadingScreen(this));
 	}
 }

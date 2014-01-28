@@ -1,6 +1,10 @@
 package colin.test.newapp.util;
 
 
+import java.util.List;
+
+import colin.test.newapp.model.Level;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
@@ -19,6 +23,7 @@ import com.badlogic.gdx.maps.tiled.TideMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -27,6 +32,8 @@ public class Assets implements Disposable, AssetErrorListener {
 	public static final String TAG = Assets.class.getName();
 
 	public static final Assets instance = new Assets();
+	
+	private LevelManager levelManager;
 
 	private AssetManager assetManager;
 
@@ -60,16 +67,54 @@ public class Assets implements Disposable, AssetErrorListener {
 		}
 
 	}
+	public static class LevelManager{
+		int currentLevelIndex;
+		int noOfLevels=2;
+		Level currentLevel;
+		Level[] levelArray;
+		public LevelManager(){
+			levelArray=new Level[noOfLevels];
+			for(int i=0;i<levelArray.length;i++){
+				levelArray[i]=new Level(i);
+			}
+			currentLevelIndex=0;
+			currentLevel=levelArray[currentLevelIndex];
+		}
+		public boolean nextLevel(){
+			boolean result=false;
+			currentLevelIndex++;
+			if(!(currentLevelIndex==noOfLevels)){
+				result=true;
+				currentLevel=levelArray[currentLevelIndex];
+			}
+			return result;
+		}
+		public Level getCurrentLevel(){
+			return currentLevel;
+		}
+		public int getNoOfLevels(){
+			return noOfLevels;
+		}
+		public Level getLevel(int i) {
+			return levelArray[i];
+		}
+		public Level setLevel(int i) {
+			this.currentLevelIndex=i;
+			return this.currentLevel=levelArray[currentLevelIndex];
+			
+		}
+	}
 	
 	public void init (AssetManager assetManager) {
 		this.assetManager = assetManager;
+		
 		assetManager.load("images/JellyPig.png", Texture.class);
 		assetManager.load("atlas/textures.pack", TextureAtlas.class);
 		assetManager.load("images/hunger.png", Texture.class);
 		assetManager.load("images/JellyPigSprite.png",Texture.class);
 		assetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-		assetManager.load("maps/longerTestMap.tmx",TiledMap.class);
-		
+		assetManager.load("maps/level0.tmx",TiledMap.class);
+		assetManager.load("maps/level1.tmx",TiledMap.class);
 		// set asset manager error handler
 		assetManager.setErrorListener(this);
 		
@@ -83,8 +128,14 @@ public class Assets implements Disposable, AssetErrorListener {
 		
 		
 	}
+	public void bindLevelManager(LevelManager levelManager){
+		this.levelManager=levelManager;
+	}
 public AssetManager getAssetManager(){
 	return this.assetManager;
+}
+public LevelManager getLevelManager(){
+	return this.levelManager;
 }
 	@Override
 	public void dispose () {
