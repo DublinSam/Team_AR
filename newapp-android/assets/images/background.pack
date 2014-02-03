@@ -1,0 +1,32 @@
+background.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Mountains
+  rotate: false
+  xy: 2, 604
+  size: 800, 444
+  orig: 800, 600
+  offset: 0, 0
+  index: -1
+Clouds
+  rotate: true
+  xy: 804, 2
+  size: 696, 118
+  orig: 800, 600
+  offset: 56, 448
+  index: -1
+Fog
+  rotate: true
+  xy: 924, 2
+  size: 800, 82
+  orig: 800, 600
+  offset: 0, 0
+  index: -1
+Sky
+  rotate: false
+  xy: 2, 2
+  size: 800, 600
+  orig: 800, 600
+  offset: 0, 0
+  index: -1

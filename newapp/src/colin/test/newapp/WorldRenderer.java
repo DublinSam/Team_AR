@@ -11,6 +11,8 @@ import colin.test.newapp.model.Food;
 import colin.test.newapp.model.Food.FoodType;
 import colin.test.newapp.model.World;
 import colin.test.newapp.util.Assets;
+import colin.test.newapp.util.ParallaxBackground;
+import colin.test.newapp.util.ParallaxLayer;
 import colin.test.newapp.util.ProgressBar;
 
 import com.badlogic.gdx.Gdx;
@@ -20,6 +22,7 @@ import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -32,6 +35,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 
@@ -40,8 +44,8 @@ public class WorldRenderer  implements PropertyChangeListener  {
 	private World world;
 	private Eater eater;
 	private OrthographicCamera cam;
-	int CAMERA_WIDTH=7;
-	int CAMERA_HEIGHT=10;
+	int CAMERA_WIDTH=10;
+	int CAMERA_HEIGHT=7;
 	int width;
 	int height;
     private static final int        BLINK_FRAME_COLS = 5;      
@@ -73,20 +77,24 @@ public class WorldRenderer  implements PropertyChangeListener  {
 	private TextureRegion idleTextureRegion;
 	TextureRegion tr;
 	private TextureRegion hungerTextureRegion;
-     private OrthogonalTiledMapRenderer renderer;
+    private OrthogonalTiledMapRenderer renderer;
+     
+	private ParallaxBackground pb;
 
 	public WorldRenderer(World world) {
 		System.out.println("create renderer");
+	
 		fpslog = new FPSLogger();
 		this.world = world;
 		this.eater=this.world.getEater();
 		this.cam = new OrthographicCamera();
-		this.cam.setToOrtho(false, 10, 7);
+		this.cam.setToOrtho(false, CAMERA_WIDTH, CAMERA_HEIGHT);
 		this.cam.position.set(5f, 3.5f, 0);
-		this.cam.update();
 		
+		this.cam.update();
+		renderer = new OrthogonalTiledMapRenderer(world.getMap(), 1/48f);
         loadTextures();
-        
+    	createBackground();
         progressBar=new ProgressBar(hungerTextureRegion, 5, 3.5f);
         progressBar.SetTargetDimension(1, 4);
 	}
@@ -98,8 +106,7 @@ public class WorldRenderer  implements PropertyChangeListener  {
 	}
 	public void loadTextures(){
 		System.out.println("load textures");
-		Gdx.app.debug("texts", "loading");
-		renderer = new OrthogonalTiledMapRenderer(world.getMap(), 1/48f);
+		
 		TextureAtlas atlas = Assets.instance.getAssetManager().get("atlas/textures.pack", TextureAtlas.class);
 		spriteBatch = new SpriteBatch();
 	    spriteBatch.setProjectionMatrix(cam.combined);
@@ -134,22 +141,47 @@ public class WorldRenderer  implements PropertyChangeListener  {
 	}
 	
 	public void render() {
-		cam.position.x=eater.getPosition().x;
+		pb.render(Gdx.graphics.getDeltaTime());
+		cam.position.x=eater.getPosition().x+CAMERA_WIDTH/2-eater.SIZE;
 		cam.update();
 		spriteBatch.setProjectionMatrix(cam.combined);
-		//drawDebug();
-		spriteBatch.begin();
-	
-		
-        drawFood();                  
-		drawEater();
 
-		
-		spriteBatch.end();
-	
+		drawDebug();
+
 		fpslog.log();
 		renderer.setView(cam);
         renderer.render();
+        
+        spriteBatch.begin();
+	
+    	
+        drawFood();         
+        drawEater();
+        spriteBatch.end();
+       System.out.println(spriteBatch.totalRenderCalls);
+       spriteBatch.totalRenderCalls=0;
+	}
+	
+	private void createBackground() {
+		Vector2 mountainRatio = new Vector2(0.02f,0);
+
+		Vector2 cloudRatio = new Vector2(0.00f,0);
+		//Texture mountaintx = new Texture("images/bigMountainsTrans.png");
+		//Texture sky= new Texture("images/Sky.png");
+		Texture mountaintx = Assets.instance.getAssetManager().get("images/Mountains.png");
+
+		Texture clouds = Assets.instance.getAssetManager().get("images/Clouds.png");
+		Texture fog = Assets.instance.getAssetManager().get("images/Fog.png");
+		TextureRegion fogRegion = new TextureRegion(fog);
+		TextureRegion mountainRegion = new TextureRegion(mountaintx);
+		TextureRegion cloudRegion = new TextureRegion(clouds);
+
+		ParallaxLayer mountainLayer = new ParallaxLayer(mountainRegion,mountainRatio,new Vector2(0,0));
+		ParallaxLayer cloudLayer = new ParallaxLayer(cloudRegion, cloudRatio,new Vector2(0,0));
+		ParallaxLayer[] layers = new ParallaxLayer[2];
+		layers[0]=mountainLayer;
+		layers[1]=cloudLayer;
+		pb = new ParallaxBackground(layers, spriteBatch,cam,CAMERA_WIDTH, CAMERA_HEIGHT, new Vector2(1,0));
 	}
 	
 	public void drawEater(){
@@ -163,14 +195,14 @@ public class WorldRenderer  implements PropertyChangeListener  {
 		
 		if(currentAnimation==null){
 			
-			spriteBatch.draw(idleTexture, eater.getPosition().x, eater.getPosition().y,eater.getBounds().width,eater.getBounds().height);
+			spriteBatch.draw(idleTexture, eater.getPosition().x, eater.getPosition().y-0.1f,eater.getBounds().width,eater.getBounds().height);
 		
 			
 		}
        else{
 
 	        currentFrame = currentAnimation.getKeyFrame(eater.getTimeInState(), false);
-	        spriteBatch.draw(currentFrame, eater.getPosition().x, eater.getPosition().y,eaterBounds.width,eaterBounds.height); 
+	        spriteBatch.draw(currentFrame, eater.getPosition().x, eater.getPosition().y-0.1f,eaterBounds.width,eaterBounds.height); 
 	        if(currentAnimation.isAnimationFinished(eater.getTimeInState())){
 	        	eater.setState(State.IDLE);
 	        	currentAnimation=null;

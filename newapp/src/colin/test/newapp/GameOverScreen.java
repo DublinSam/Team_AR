@@ -25,15 +25,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class GameOverScreen implements Screen{
-	private static final float CAMERA_WIDTH = 10;
-	private static final float CAMERA_HEIGHT = 7;
 	private Game myGame;
 	Stage stage;
 	Eater eater;
 	Table table;
 	PreferencesHelper phelp = new PreferencesHelper();
 	private OrthographicCamera cam;
+	private int CAMERA_WIDTH;
+	private int CAMERA_HEIGHT;
 public GameOverScreen(Game myGame,Eater eater){
+	CAMERA_WIDTH=Gdx.graphics.getWidth();
+	CAMERA_HEIGHT=Gdx.graphics.getHeight();
 	this.cam = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
 	this.cam.position.set(CAMERA_WIDTH / 2f, CAMERA_HEIGHT / 2f, 0);
 	this.cam.update();
@@ -56,7 +58,7 @@ public GameOverScreen(Game myGame,Eater eater){
 	@Override
 	public void show() {
 		int highScore =phelp.getHighScore();
-		Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
+		Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
 		BitmapFont buttonFont = new BitmapFont();
 		table=new Table();
 		table.setFillParent(true);
@@ -67,18 +69,8 @@ public GameOverScreen(Game myGame,Eater eater){
 		table.row();
 		table.add(scoreLabel).pad(10);
 		table.row();
-		Texture grey = new Texture(Gdx.files.internal("images/newgreybutton.png"));
-		Texture black = new Texture(Gdx.files.internal("images/newblackbutton.png"));
-		TextureRegion greyRegion = new TextureRegion(grey);
-		TextureRegion blackRegion = new TextureRegion(black);
-		TextureRegion upRegion =greyRegion;
-		TextureRegion downRegion =blackRegion;
 		
-		TextButtonStyle style = new TextButtonStyle();
-		style.up = new TextureRegionDrawable(upRegion);
-		style.down = new TextureRegionDrawable(downRegion);
-		style.font = buttonFont;
-		TextButton restartButton = new TextButton("Restart", style);
+		TextButton restartButton = new TextButton("Restart", skin);
 		restartButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -88,7 +80,7 @@ public GameOverScreen(Game myGame,Eater eater){
 					}
 			
 	});
-		TextButton mainMenuButton = new TextButton("Main Menu", style);
+		TextButton mainMenuButton = new TextButton("Main Menu", skin);
 		mainMenuButton.addListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -98,9 +90,9 @@ public GameOverScreen(Game myGame,Eater eater){
 				myGame.setScreen(new MainMenuScreen(myGame));
 			}
 		});
-		table.add(restartButton).pad(10);
+		table.add(restartButton).pad(10).width(CAMERA_WIDTH/3);
 		table.row();
-		table.add(mainMenuButton);
+		table.add(mainMenuButton).width(CAMERA_WIDTH/3);
 		stage.addActor(table);
 		Gdx.input.setInputProcessor(stage);
 		

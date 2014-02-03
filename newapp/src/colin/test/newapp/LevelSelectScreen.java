@@ -37,7 +37,7 @@ public LevelSelectScreen(Game game){
 
 	@Override
 	public void show() {
-		Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
+		Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
 		int noOfLevels=Assets.instance.getLevelManager().getNoOfLevels();
 		stage=new Stage();
 		Gdx.input.setInputProcessor(stage);
@@ -89,9 +89,10 @@ public LevelSelectScreen(Game game){
 		            @Override
 		            public void clicked(InputEvent event, float x, float y) {
 						super.clicked(event, x, y);
-						World world = new World();
-						world.setLevel(level);
-						myGame.setScreen(new GameScreen(myGame,world));
+						
+						;
+					
+						myGame.setScreen(new GameScreen(myGame,new World(level)));
 		            };
 		      });
 		   }

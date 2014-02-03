@@ -36,18 +36,31 @@ public class World {
 			return new Food();
 		}
 	};
+	public World(int i){
+		
+		Texture.setEnforcePotImages(false);
+		foodInWorld = new ArrayList<Food>();
+		
+		level = new Level(i);
+		setLevel(i);
+		createEater();
+		
+	}
 	public World(){
 		
 		Texture.setEnforcePotImages(false);
 		foodInWorld = new ArrayList<Food>();
-		createLevel();
+		createEater();
+		int x=Assets.instance.getLevelManager().getLevelIndex();
+		setLevel(x);
+	
+		
 		
 	}
 	
-
-	public void createLevel(){
-		level = Assets.instance.getLevelManager().getCurrentLevel();
-		this.eater=new Eater(new Vector2(3.5f,5f));
+	
+	public void createEater(){
+		this.eater=new Eater(new Vector2(3.5f,3.00f));
 	
 	}
 
@@ -139,12 +152,14 @@ public TiledMap getMap() {
 
 
 public boolean isLevelCompleted() {
-	// TODO Auto-generated method stub
 	return level.isLevelCompleted();
 }
 
 public void setLevel(int i){
+
+	Assets.instance.getLevelManager().loadLevel(i);
 	level=Assets.instance.getLevelManager().setLevel(i);
+	level.loadMap();
 	
 }
 

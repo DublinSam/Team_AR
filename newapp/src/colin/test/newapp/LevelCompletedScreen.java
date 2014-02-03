@@ -58,7 +58,7 @@ public LevelCompletedScreen(Game myGame,World world){
 	@Override
 	public void show() {
 		int highScore =phelp.getHighScore();
-		Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
+		Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
 		BitmapFont buttonFont = new BitmapFont();
 		table=new Table();
 		table.setFillParent(true);
@@ -70,25 +70,15 @@ public LevelCompletedScreen(Game myGame,World world){
 		table.add(scoreLabel).pad(10);
 		table.row();
 		if(world.loadNextLevel()){
-		Texture grey = new Texture(Gdx.files.internal("images/newgreybutton.png"));
-		Texture black = new Texture(Gdx.files.internal("images/newblackbutton.png"));
-		TextureRegion greyRegion = new TextureRegion(grey);
-		TextureRegion blackRegion = new TextureRegion(black);
-		TextureRegion upRegion =greyRegion;
-		TextureRegion downRegion =blackRegion;
 		
-		TextButtonStyle style = new TextButtonStyle();
-		style.up = new TextureRegionDrawable(upRegion);
-		style.down = new TextureRegionDrawable(downRegion);
-		style.font = buttonFont;
-		TextButton nextLevelButton = new TextButton("Next Level", style);
+		TextButton nextLevelButton = new TextButton("Next Level", skin );
 		nextLevelButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
 				myGame.getScreen().dispose();
 				
-				world.createLevel();
+
 				myGame.setScreen(new GameScreen(myGame,world));
 					}
 			

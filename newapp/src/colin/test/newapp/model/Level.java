@@ -2,7 +2,9 @@ package colin.test.newapp.model;
 
 import colin.test.newapp.util.Assets;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 
 public class Level {
@@ -16,8 +18,9 @@ enum LevelStatus{
 	COMPLETED, FAILED, INPROGRESS
 }
 public Level(int i){
-	levelName="Level "+i;
-	map=Assets.instance.getAssetManager().get("maps/level"+i+".tmx",TiledMap.class);
+	int levelNumber=i+1;
+	levelName="Level "+levelNumber;
+	LevelLocation="maps/level"+i+".tmx";
 	this.eater=new Eater(new Vector2(3.5f,2.2f));
 }
 protected TiledMap getMap(){
@@ -36,4 +39,10 @@ this.levelStatus=LevelStatus.FAILED;
 public String getLevelName(){
 	return this.levelName;
 }
+public void loadMap() {
+
+	map=Assets.instance.getAssetManager().get(LevelLocation,TiledMap.class);
+	
+}
+
 }

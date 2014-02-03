@@ -6,7 +6,6 @@ import java.beans.PropertyChangeListener;
 import colin.test.newapp.controller.WorldController;
 import colin.test.newapp.model.Level;
 import colin.test.newapp.model.World;
-import colin.test.newapp.ui.PauseButton;
 import colin.test.newapp.ui.Score;
 import colin.test.newapp.util.Assets;
 import colin.test.newapp.util.ProgressBar;
@@ -53,8 +52,8 @@ public class GameScreen implements Screen, InputProcessor, PropertyChangeListene
 	private int width, height;
 	private Game myGame;
 	GameStatus gameStatus;
-	Level currentLevel;
-	Table pauseTable;
+
+	PauseTable pauseTable;
 	private final float CAMERA_WIDTH = Gdx.graphics.getWidth();
 	private final float CAMERA_HEIGHT= Gdx.graphics.getHeight();
 	boolean gamePaused=false;
@@ -63,13 +62,12 @@ public class GameScreen implements Screen, InputProcessor, PropertyChangeListene
 	private ProgressBar progressBar;
 	private Texture hungerTexture;
 	private OrthographicCamera cam;
+	private TextButton beginButton;
 
-	
-	
 	public GameScreen(Game game,World world){
-		
+		renderer=new WorldRenderer(world);
+		controller = new WorldController(world);
 		this.world = world;
-		this.currentLevel=world.getCurrentLevel();
 		this.myGame=game;
 		this.cam = new OrthographicCamera();
 		this.cam.setToOrtho(false, CAMERA_WIDTH,CAMERA_HEIGHT);
@@ -81,10 +79,9 @@ public class GameScreen implements Screen, InputProcessor, PropertyChangeListene
 	@Override
 	public void render(float delta) {
 		//Background color blue
-		Gdx.gl.glClearColor(0f, 0f, 0.2f, 1);
+		Gdx.gl.glClearColor(0.16f, 0.67f, 0.95f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
-		//Controller updates objects positions, render draws them to screen, positions should not change if paused
 		if(!(gamePaused)){
 		controller.update(delta);
 		}
@@ -96,7 +93,7 @@ public class GameScreen implements Screen, InputProcessor, PropertyChangeListene
 		else if(gameStatus==GameStatus.LEVELCOMPLETED){
 			myGame.setScreen(new LevelCompletedScreen(this.myGame,world));
 		}
-		
+		ui.act();
 	}
 
 	@Override
@@ -114,14 +111,12 @@ public class GameScreen implements Screen, InputProcessor, PropertyChangeListene
 		hungerTexture = Assets.instance.getAssetManager().get("images/hunger.png",Texture.class);
 		hungerTextureRegion = new TextureRegion(hungerTexture);
 		progressBar=new ProgressBar(hungerTextureRegion, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()-10);
-		renderer=new WorldRenderer(world);
-		controller = new WorldController(world);
+		
 		world.getEater().addChangeListener(renderer);
 		world.addChangeListener(this);
-		pauseTable = new Table();
-		//sets pause table to fill screen, will want to change this in future
-        pauseTable.setFillParent(true);
-        //stage.addActor(table);
+		pauseTable = new PauseTable();
+        pauseTable.setPosition(Gdx.graphics.getWidth()/2, -Gdx.graphics.getHeight()/2);
+        createBeginButton();
         createPauseButton();
         createScore();
         createPauseTable();
@@ -136,20 +131,26 @@ public class GameScreen implements Screen, InputProcessor, PropertyChangeListene
 		renderer.setSize(width, height);
 	}
 
+private void createBeginButton() {
+	Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
+	beginButton = new TextButton("Begin", skin);
+	beginButton.addListener(new ClickListener() {
+		@Override
+		public void clicked(InputEvent event, float x, float y) {
+			super.clicked(event, x, y);
+			controller.beginTouched();
+			beginButton.remove();
+			
+				}
+		
+});
+	beginButton.setPosition(CAMERA_WIDTH/2, CAMERA_HEIGHT/2);
+	ui.addActor(beginButton);
+	}
+
 public void createPauseTable(){
-	BitmapFont buttonFont = new BitmapFont();
-	Texture grey = new Texture(Gdx.files.internal("images/newgreybutton.png"));
-	Texture black = new Texture(Gdx.files.internal("images/newblackbutton.png"));
-	TextureRegion greyRegion = new TextureRegion(grey);
-	TextureRegion blackRegion = new TextureRegion(black);
-	TextureRegion upRegion =greyRegion;
-	TextureRegion downRegion =blackRegion;
-	
-	TextButtonStyle style = new TextButtonStyle();
-	style.up = new TextureRegionDrawable(upRegion);
-	style.down = new TextureRegionDrawable(downRegion);
-	style.font = buttonFont;
-	TextButton resumeButton = new TextButton("Resume", style);
+	Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
+	TextButton resumeButton = new TextButton("Resume", skin);
 	resumeButton.addListener(new ClickListener() {
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
@@ -158,21 +159,22 @@ public void createPauseTable(){
 				}
 		
 });
-	pauseTable.add(resumeButton).padBottom(10);
+	pauseTable.add(resumeButton).padBottom(10).width(CAMERA_WIDTH/3);
 	pauseTable.row();
-	TextButton restartButton = new TextButton("Restart", style);
+	TextButton restartButton = new TextButton("Restart", skin);
 	restartButton.addListener(new ClickListener() {
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
 			super.clicked(event, x, y);
 			myGame.getScreen().dispose();
-			myGame.setScreen(new GameScreen(myGame,new World()));
+			int levelIndex=Assets.instance.getLevelManager().getLevelIndex();
+			myGame.setScreen(new GameScreen(myGame,new World(levelIndex)));
 				}
 		
 });
-	pauseTable.add(restartButton).pad(10);
+	pauseTable.add(restartButton).pad(10).width(CAMERA_WIDTH/3);
 	pauseTable.row();
-	TextButton mainMenuButton = new TextButton("Main Menu", style);
+	TextButton mainMenuButton = new TextButton("Main Menu", skin);
 	mainMenuButton.addListener(new ClickListener(){
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
@@ -182,7 +184,8 @@ public void createPauseTable(){
 			myGame.setScreen(new MainMenuScreen(myGame));
 		}
 	});
-	pauseTable.add(mainMenuButton);
+	pauseTable.add(mainMenuButton).width(CAMERA_WIDTH/3);
+	
 }
 /**renders the GUI, pause screen, pause button and score**/
 	private void renderGui (SpriteBatch batch) {
@@ -199,8 +202,9 @@ public void createPauseTable(){
 		
 	}
 public void createPauseButton(){
-	PauseButton pb = new PauseButton(50,20,Gdx.graphics.getWidth()-50,Gdx.graphics.getHeight()-20);
-
+	Skin skin =Assets.instance.getAssetManager().get("data/textbuttons.json", Skin.class);
+	TextButton pb = new TextButton("Pause",skin);
+	pb.setPosition(CAMERA_WIDTH-pb.getWidth(), CAMERA_HEIGHT-pb.getHeight());;
 	pb.addListener(new ClickListener() {
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
@@ -235,6 +239,8 @@ public void pauseGame() {
 	public void resume() {
 		gamePaused=false;
 		pauseTable.remove();
+		pauseTable.setVelocity();
+		pauseTable.setPosition(Gdx.graphics.getWidth()/2, -Gdx.graphics.getHeight()/2);
 		
 	}
 
@@ -276,7 +282,7 @@ public void pauseGame() {
 	
 	@Override
     public boolean touchDown(int x, int y, int pointer, int button) {
-		touchDown=true;
+
 		if (x > width / 2 && y > height / 2) {
 			//controller.rightPressed();
 		}
@@ -327,6 +333,26 @@ public void pauseGame() {
 				gameStatus=(GameStatus)evt.getNewValue();
 		
 	}
-	
+	public class PauseTable extends Table{
+		float tableVelocity=10;
+		float tableDamping=0.9f;
+		@Override
+		public void act(float delta) {
+			// TODO Auto-generated method stub
+			float xPos = this.getX();
+			float yPos = this.getY();
+			super.act(delta);
+			if(yPos>Gdx.graphics.getHeight()/3&&gamePaused){
+				tableVelocity*=tableDamping;
+			}
+			if(yPos<Gdx.graphics.getHeight()/2&&gamePaused){
+				yPos=yPos+tableVelocity;
+				this.setPosition(xPos, yPos);
+			}
+		}
+		public void setVelocity(){
+			tableVelocity=10;
+		}
+	}
 
 }

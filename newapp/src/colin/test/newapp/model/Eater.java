@@ -23,7 +23,7 @@ public class Eater {
 	int foodCollected;
 	public static final float SIZE = 1f; // half a unit
 	public static final float DAMPING = 0.8f;
-	public static float SPEED = 2.5f;	// unit per second
+	public static float SPEED = 8f;	// unit per second
 	Vector2 position = new Vector2();
 	/**Acceleration not used**/
 	Vector2 acceleration = new Vector2();
@@ -35,12 +35,14 @@ public class Eater {
 	float fullness=0;
 	public boolean grounded;
 	public Eater(Vector2 position) {
-		this.acceleration.y=-7;
+		this.acceleration.y=-15;
 		this.position = position;
+		this.bounds.setPosition(position);
 		this.bounds.height = SIZE;
 		this.bounds.width = SIZE;
-		this.velocity.x=2;
+		this.velocity.x=SPEED;
 		this.timeInState=0;
+	
 	}
 	
 	public Vector2 getPosition(){

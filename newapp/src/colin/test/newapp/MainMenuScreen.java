@@ -27,39 +27,66 @@ public class MainMenuScreen implements Screen {
 	SpriteBatch spriteBatch;
 	private Stage stage;
 	private Table table;
+	int CAMERA_WIDTH;
+	int CAMERA_HEIGHT;
+	private TextButton playButton;
+	Skin textButtonSkin;
+	private TextButton levelSelectButton;
+	private TextButton settingsButton;
 	
 	public MainMenuScreen(Game game){
 	myGame=game;
+	CAMERA_HEIGHT=Gdx.graphics.getHeight();
+	CAMERA_WIDTH=Gdx.graphics.getWidth();
 	}
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		stage.act();
 		stage.draw();
-		Table.drawDebug(stage);
+		//Table.drawDebug(stage);
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
+		CAMERA_WIDTH=width;
+		CAMERA_HEIGHT=height;
 		
 	}
 
 	@Override
 	public void show() {
-        Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
-		Label welcomeLabel = new Label( "EATER", skin);
-		TextButton playButton = new TextButton( "PLAY", skin);
-		playButton.addListener(new ClickListener(){
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				super.clicked(event, x, y);
-				myGame.getScreen().dispose();
-				myGame.setScreen(new GameScreen(myGame,new World()));
-			}
-		});
-		TextButton settingsButton = new TextButton( "SETTINGS", skin);
-		TextButton levelSelectButton = new TextButton("LEVEL SELECT", skin);
+        //Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
+        textButtonSkin = new Skin(Gdx.files.internal("data/textbuttons.json"));
+		Label welcomeLabel = new Label( "EATER", textButtonSkin);
+		createPlayButton();
+		createSettingsButton();
+		createLevelSelectButton();
+		stage=new Stage();
+		Gdx.input.setInputProcessor(stage);
+		table = new Table();
+		table.setFillParent(true);
+		stage.addActor(table);
+		
+		//table.debug();
+		
+		table.add(welcomeLabel).pad(10);
+		table.row();
+		table.add(playButton).pad(10).width(CAMERA_WIDTH/3);
+		table.row();
+		table.add(settingsButton).pad(10).width(CAMERA_WIDTH/3);
+		table.row();
+		table.add(levelSelectButton).width(CAMERA_WIDTH/3);
+		
+		
+	}
+
+	private void createSettingsButton() {
+		settingsButton = new TextButton( "SETTINGS", textButtonSkin);
+	}
+	private void createLevelSelectButton() {
+		levelSelectButton = new TextButton("LEVEL SELECT", textButtonSkin);
 		levelSelectButton.addListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -68,25 +95,20 @@ public class MainMenuScreen implements Screen {
 				myGame.setScreen(new LevelSelectScreen(myGame));
 			}
 		});
-		stage=new Stage();
-		Gdx.input.setInputProcessor(stage);
-		table = new Table();
-		table.setFillParent(true);
-		stage.addActor(table);
-		
-		table.debug();
-		
-		table.add(welcomeLabel).pad(10);
-		table.row();
-		table.add(playButton).pad(10);
-		table.row();
-		table.add(settingsButton).pad(10);
-		table.row();
-		table.add(levelSelectButton);
-		
 		
 	}
-
+	private void createPlayButton() {
+		playButton = new TextButton( "PLAY", textButtonSkin);
+		playButton.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				super.clicked(event, x, y);
+				myGame.getScreen().dispose();
+				myGame.setScreen(new GameScreen(myGame,new World(0)));
+			}
+		});
+		
+	}
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub

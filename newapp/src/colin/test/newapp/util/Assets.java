@@ -24,6 +24,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -69,7 +70,7 @@ public class Assets implements Disposable, AssetErrorListener {
 	}
 	public static class LevelManager{
 		int currentLevelIndex;
-		int noOfLevels=2;
+		int noOfLevels=3;
 		Level currentLevel;
 		Level[] levelArray;
 		public LevelManager(){
@@ -89,6 +90,9 @@ public class Assets implements Disposable, AssetErrorListener {
 			}
 			return result;
 		}
+		public int getLevelIndex(){
+			return this.currentLevelIndex;
+		}
 		public Level getCurrentLevel(){
 			return currentLevel;
 		}
@@ -100,21 +104,40 @@ public class Assets implements Disposable, AssetErrorListener {
 		}
 		public Level setLevel(int i) {
 			this.currentLevelIndex=i;
+	
 			return this.currentLevel=levelArray[currentLevelIndex];
+			
+		}
+		public void loadLevel(int i) {
+
+			Assets.instance.getAssetManager().load("maps/level"+i+".tmx",TiledMap.class);
+
+			Assets.instance.getAssetManager().finishLoading();
+
 			
 		}
 	}
 	
-	public void init (AssetManager assetManager) {
-		this.assetManager = assetManager;
-		
+	public void init (AssetManager manager) {
+		this.assetManager = manager;
+		assetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+		/*
+		assetManager.load("maps/level0.tmx",TiledMap.class);
+		assetManager.load("maps/level1.tmx",TiledMap.class);
+		assetManager.load("maps/level2.tmx",TiledMap.class);
+		*/
 		assetManager.load("images/JellyPig.png", Texture.class);
 		assetManager.load("atlas/textures.pack", TextureAtlas.class);
 		assetManager.load("images/hunger.png", Texture.class);
 		assetManager.load("images/JellyPigSprite.png",Texture.class);
-		assetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-		assetManager.load("maps/level0.tmx",TiledMap.class);
-		assetManager.load("maps/level1.tmx",TiledMap.class);
+		
+
+		assetManager.load("images/Mountains.png", Texture.class);
+		assetManager.load("images/Sky.png", Texture.class);
+		assetManager.load("images/Clouds.png", Texture.class);
+		assetManager.load("images/Fog.png", Texture.class);
+		assetManager.load("data/textbuttons.json",Skin.class);
+		
 		// set asset manager error handler
 		assetManager.setErrorListener(this);
 		

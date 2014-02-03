@@ -39,6 +39,10 @@ public class WorldController {
         }
 };
 public class Tile extends Rectangle{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	int id;
 	Tile(){
 		super();
@@ -52,6 +56,13 @@ public class Tile extends Rectangle{
 	}
 	public int getId() {
 		return this.id;
+	}
+	@Override
+	public boolean overlaps(Rectangle r) {
+		return x < r.x + r.width && x + width > r.x && y <= r.y + r.height && y + height >= r.y;
+	}
+	public boolean overlapsX(Rectangle r){
+		return x <= r.x + r.width && x + width >= r.x && y < r.y + r.height && y + height > r.y;
 	}
 	
 }
@@ -68,6 +79,7 @@ private Array<Tile> tiles = new Array<Tile>();
 	public float spawnInterval=3;
 	public int maxNoOfFoodMisses=0;
 	float timeNotBlinked=0;
+	private boolean gameStarted= false;
 	public WorldController(World world) {
 		this.cam = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
 		this.cam.position.set(CAMERA_WIDTH / 2f, CAMERA_HEIGHT / 2f, 0);
@@ -110,30 +122,35 @@ private Array<Tile> tiles = new Array<Tile>();
 	}
 	
 	public GameStatus update(float delta) {
-		
+		if(gameStarted){
+			System.out.println("y "+eater.getPosition().y);
 		processInput();
+	
+		eater.getVelocity().add(new Vector2(0,eater.getAcceleration().y*delta));
+		
 		setEaterState();
 		foodList = world.getFood();
-		eater.getVelocity().add(new Vector2(0,eater.getAcceleration().y*delta));
+		
         checkTileCollisions(delta);
     
 		eater.update(delta);
 		runFoodGenerator();
 		updateFoodPosition();
 		updateFoodCollision(delta);
+		}
 		return checkGameStatus();
 	}
 	
 	private void checkTileCollisions(float delta) {
 	
-	
-		checkXAxisCollision(delta);
 		checkYAxisCollision(delta);
+		checkXAxisCollision(delta);
+		
 	
 	}
 
 	private void checkYAxisCollision(float delta) {
-		Rectangle eaterRect = eater.getBounds();
+		Rectangle eaterRect = new Rectangle(eater.getBounds());
 		int startX, startY, endX, endY;
         if(eater.getVelocity().y > 0) {
         startY = endY = (int)(eater.getPosition().y + eater.getBounds().height + eater.getVelocity().y*delta);
@@ -144,20 +161,33 @@ private Array<Tile> tiles = new Array<Tile>();
         endX = (int)(eater.getPosition().x + eater.getBounds().width);
         getTiles(startX, startY, endX, endY, tiles);
         eaterRect.y += eater.getVelocity().y*delta;
+
+        System.out.println("chonk "+tiles.size);
         for(Tile tile: tiles) {
-        	if(eaterRect.overlaps(tile)) {
+        	System.out.println(tile.getId());
+        	System.out.println(eater.getBounds().y+" "+tile.y);
+        	if(tile.overlaps(eaterRect)) {
+        		System.out.println("binnk");
                 if(eater.getVelocity().y > 0) {
-                        eater.getPosition().y = tile.y - eater.getBounds().height;
-                        TiledMapTileLayer layer = (TiledMapTileLayer)world.getMap().getLayers().get(0);
-                        layer.setCell((int)tile.x, (int)tile.y, null);
+                	System.out.println("bonnk");
+                        //eater.getPosition().y = tile.y - eater.getBounds().height;
+                        //TiledMapTileLayer layer = (TiledMapTileLayer)world.getMap().getLayers().get(0);
+                        //layer.setCell((int)tile.x, (int)tile.y, null);
                 } else {
-                		if(tile.getId()==2){
-                			world.levelFailed();
-                		}
+                System.out.println("duck");
+                System.out.println("tileid "+tile.getId());
+                		if(tile.getId()==47||tile.getId()==43){
+                			System.out.println("pon "+eater.getBounds().y+" "+tile.y+" "+tile.height+" "+tile.getId());
+                		
+                		if(eater.getBounds().y>=tile.y+tile.height){
                         eater.getPosition().y = tile.y + tile.height;
                         eater.grounded = true;
+                        eater.getVelocity().y = 0;
+                		}
+                		}
+                		
                 }
-                eater.getVelocity().y = 0;
+                
                 break;
         	}
         }
@@ -165,7 +195,7 @@ private Array<Tile> tiles = new Array<Tile>();
 	}
 
 	private void checkXAxisCollision(float delta) {
-		Rectangle eaterRect = eater.getBounds();
+		Tile eaterRect = new Tile(0,eater.getBounds());
 		int startX, startY, endX, endY;
         if(eater.getVelocity().x > 0) {
             startX = endX = (int)(eater.getPosition().x + eater.getBounds().width + eater.getVelocity().x*delta);
@@ -177,12 +207,10 @@ private Array<Tile> tiles = new Array<Tile>();
         getTiles(startX, startY, endX, endY, tiles);
         eaterRect.x += eater.getVelocity().x*delta;
         for(Tile tile: tiles) {
-        	
-        	if(eaterRect.overlaps(tile)) {
-        			if(tile.getId()==2){
-        				world.levelFailed();
-        			}
-                    eater.getVelocity().x = 0;
+        	if(eaterRect.overlapsX(tile)) {
+        			
+                    //eater.getVelocity().x = 0;
+                    //eater.getPosition().x=tile.x-eaterRect.width;
                     break;
             }
     }
@@ -209,8 +237,10 @@ private Array<Tile> tiles = new Array<Tile>();
 			//eater.getVelocity().x = 0;
 		}
 		if(keys.get(Keys.JUMP)){
+			
 			if(eater.grounded){
-			eater.getVelocity().y=5;
+				
+			eater.getVelocity().y=11;
 			}
 		}
 	}
@@ -275,7 +305,6 @@ private Array<Tile> tiles = new Array<Tile>();
 		return gameStatus;
 	}
 
-
 	public void checkIfNewHighScore(){
 		int currentHighScore=prefs.getHighScore();
 		if(eater.getScore()>currentHighScore){
@@ -283,6 +312,7 @@ private Array<Tile> tiles = new Array<Tile>();
 		prefs.save();
 		}
 	}
+	
 	/**generate random X value for food spawning**/
 	private float generateX(){
 		   Random randomGenerator = new Random();
@@ -378,9 +408,9 @@ private Array<Tile> tiles = new Array<Tile>();
 				System.out.println("dead");
 				world.levelFailed();
 			}
-			if(eater.getPosition().x>20){
-				world.levelCompleted();
-			}
+			//if(eater.getPosition().x>20){
+			//	world.levelCompleted();
+			//}
 			if(!(eater.getVelocity().y==0)){
 				eater.grounded=false;
 			}
@@ -399,7 +429,6 @@ private Array<Tile> tiles = new Array<Tile>();
         tiles.clear();
         for(int y = startY; y <= endY; y++) {
                 for(int x = startX; x <= endX; x++) {
-                	
                         Cell cell = layer.getCell(x, y);
                         if(cell != null) {
                                 Tile tile = tilePool.obtain();
@@ -408,7 +437,7 @@ private Array<Tile> tiles = new Array<Tile>();
                                 	tile.set(x, y, 1, 1);
                                 }
                                 else{
-                                	tile.set(x, y, 0.5f, 0.5f);
+                                	tile.set(x, y, 1, 1);
                                 }
                                 tiles.add(tile);
                                 
@@ -422,5 +451,9 @@ private Array<Tile> tiles = new Array<Tile>();
 		timeNotBlinked=0;
 	}
 	
+	public void beginTouched(){
+		gameStarted=true;
+		eater.getVelocity().x=8;
+	}
 
 }
