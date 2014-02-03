@@ -45,6 +45,7 @@ public class GameScreen implements Screen, InputProcessor, PropertyChangeListene
 	public enum GameStatus{
 		INPROGRESS,GAMEOVER,LEVELCOMPLETED
 	}
+	
 	boolean touchDown;
 	private World world;
 	private WorldRenderer renderer;
@@ -155,8 +156,16 @@ public void createPauseTable(){
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
 			super.clicked(event, x, y);
-			resume();
+			resumeGame();
 				}
+
+		private void resumeGame() {
+			gamePaused=false;
+			pauseTable.remove();
+			pauseTable.setVelocity();
+			pauseTable.setPosition(Gdx.graphics.getWidth()/2, -Gdx.graphics.getHeight()/2);
+			
+		}
 		
 });
 	pauseTable.add(resumeButton).padBottom(10).width(CAMERA_WIDTH/3);
@@ -237,10 +246,7 @@ public void pauseGame() {
 
 	@Override
 	public void resume() {
-		gamePaused=false;
-		pauseTable.remove();
-		pauseTable.setVelocity();
-		pauseTable.setPosition(Gdx.graphics.getWidth()/2, -Gdx.graphics.getHeight()/2);
+
 		
 	}
 
@@ -298,7 +304,6 @@ public void pauseGame() {
     @Override
     public boolean touchUp(int x, int y, int pointer, int button) {
         if (x < width / 2 && y > height / 2) {
-            //controller.leftReleased();
             controller.jumpReleased();
         }
         if (x > width / 2 && y > height / 2) {

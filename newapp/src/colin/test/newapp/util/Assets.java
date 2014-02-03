@@ -70,7 +70,7 @@ public class Assets implements Disposable, AssetErrorListener {
 	}
 	public static class LevelManager{
 		int currentLevelIndex;
-		int noOfLevels=3;
+		int noOfLevels=4;
 		Level currentLevel;
 		Level[] levelArray;
 		public LevelManager(){

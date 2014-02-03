@@ -1,6 +1,8 @@
 package colin.test.newapp;
 
+import colin.test.newapp.model.World;
 import colin.test.newapp.util.Assets;
+import colin.test.newapp.util.Assets.LevelManager;
 import colin.test.newapp.util.ProgressBar;
 
 import com.badlogic.gdx.Game;
@@ -12,7 +14,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 /**Displays the Swordbit image, continues to GameScreen onClick**/
-public class MenuScreen implements Screen
+public class LoadingScreen implements Screen
 {
 		int width;
 		int height;
@@ -27,7 +29,7 @@ public class MenuScreen implements Screen
          * Constructor for the splash screen
          * @param g Game which called this splash screen.
          */
-        public MenuScreen(Game g)
+        public LoadingScreen(Game g)
         {
         	myGame = g;
         }
@@ -35,8 +37,7 @@ public class MenuScreen implements Screen
         @Override
         public void render(float delta)
         {
-     
-        	
+
         	Gdx.gl.glClearColor(1, 1, 1, 1);
         	spriteBatch.begin();
         	spriteBatch.draw(splsh,0,0,width,height);
@@ -46,18 +47,21 @@ public class MenuScreen implements Screen
         	Assets.instance.getAssetManager().getLoadedAssets();
         	System.out.println(Assets.instance.getAssetManager().getProgress());
         	if(Assets.instance.getAssetManager().update()){
+        		Assets.instance.bindLevelManager(new LevelManager());
         		myGame.getScreen().dispose();
-        		myGame.setScreen(new GameScreen(this.myGame));
+        		myGame.setScreen(new MainMenuScreen(this.myGame));
         	}
         }
         
         @Override
         public void show()
         {
+       
         	Texture.setEnforcePotImages(false);
         	spriteBatch = new SpriteBatch();
         	splsh = new Texture(Gdx.files.internal("images/logo.png"));
         	Assets.instance.init(new AssetManager());
+        	
            	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     		hungerTexture = new Texture("images/hunger.png");
     		hungerTextureRegion = new TextureRegion(hungerTexture);

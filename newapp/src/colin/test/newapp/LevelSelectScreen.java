@@ -7,6 +7,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -15,15 +17,25 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class LevelSelectScreen implements Screen {
+	
 	Game myGame;
 	private Stage stage;
 	private Table table;
+	Texture backgroundImage;
+	SpriteBatch spriteBatch;
+	int CAMERA_HEIGHT;
+	int CAMERA_WIDTH;
 public LevelSelectScreen(Game game){
 	myGame=game;
+	CAMERA_WIDTH=Gdx.graphics.getWidth();
+	CAMERA_HEIGHT=Gdx.graphics.getHeight();
 }
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		spriteBatch.begin();
+		spriteBatch.draw(backgroundImage,0,0,CAMERA_WIDTH, CAMERA_HEIGHT);
+		spriteBatch.end();
 		stage.draw();
 		// TODO Auto-generated method stub
 		
@@ -38,8 +50,10 @@ public LevelSelectScreen(Game game){
 	@Override
 	public void show() {
 		Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
+		backgroundImage=new Texture("images/LandingPage.png");
 		int noOfLevels=Assets.instance.getLevelManager().getNoOfLevels();
 		stage=new Stage();
+		spriteBatch = stage.getSpriteBatch();
 		Gdx.input.setInputProcessor(stage);
 		table = new Table();
 		table.setFillParent(true);
@@ -47,7 +61,7 @@ public LevelSelectScreen(Game game){
 			TextButton levelButton=new TextButton(Assets.instance.getLevelManager().getLevel(i).getLevelName(),skin);
 			LevelListener levelListener =new LevelListener(i,levelButton);
 			levelListener.createListener();
-			table.add(levelListener.button).pad(10);
+			table.add(levelListener.button).width(CAMERA_WIDTH/3).pad(10);
 			table.row();
 		}
 		stage.addActor(table);

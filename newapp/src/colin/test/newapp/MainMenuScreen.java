@@ -33,16 +33,24 @@ public class MainMenuScreen implements Screen {
 	Skin textButtonSkin;
 	private TextButton levelSelectButton;
 	private TextButton settingsButton;
+	private Texture backgroundImage;
 	
 	public MainMenuScreen(Game game){
 	myGame=game;
 	CAMERA_HEIGHT=Gdx.graphics.getHeight();
 	CAMERA_WIDTH=Gdx.graphics.getWidth();
+	backgroundImage=new Texture(Gdx.files.internal("images/LandingPage.png"));
+	spriteBatch=new SpriteBatch();
 	}
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		spriteBatch.begin();
+		spriteBatch.draw(backgroundImage,0,0,CAMERA_WIDTH,CAMERA_HEIGHT);
+		spriteBatch.end();
+		
+		
 		stage.act();
 		stage.draw();
 		//Table.drawDebug(stage);
@@ -58,6 +66,7 @@ public class MainMenuScreen implements Screen {
 	@Override
 	public void show() {
         //Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
+		
         textButtonSkin = new Skin(Gdx.files.internal("data/textbuttons.json"));
 		Label welcomeLabel = new Label( "EATER", textButtonSkin);
 		createPlayButton();
@@ -70,13 +79,14 @@ public class MainMenuScreen implements Screen {
 		stage.addActor(table);
 		
 		//table.debug();
-		
-		table.add(welcomeLabel).pad(10);
-		table.row();
-		table.add(playButton).pad(10).width(CAMERA_WIDTH/3);
-		table.row();
-		table.add(settingsButton).pad(10).width(CAMERA_WIDTH/3);
-		table.row();
+		table.top().padTop(10);
+	
+		table.left();
+		//table.row();
+		table.add(playButton).width(CAMERA_WIDTH/3);
+		//table.row();
+		table.add(settingsButton).width(CAMERA_WIDTH/3);
+		//table.row();
 		table.add(levelSelectButton).width(CAMERA_WIDTH/3);
 		
 		
