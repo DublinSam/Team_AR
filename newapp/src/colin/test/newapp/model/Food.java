@@ -9,6 +9,7 @@ public class Food {
 	public enum State {
 		IDLE, MOVING
 	}
+	/**Food types with their respective height and widths**/
 	public enum FoodType {
 		STRAWBERRY(0.5f,0.5f), COOKIE(0.5f,0.5f), CHILLI(0.25f,0.70f), APPLE(0.5f,0.5f), BURGER(0.75f,0.75f), HOTDOG(0.90f,0.5f), PIZZA(0.75f,0.75f), LEMON(0.5f,0.5f);
 		public final float height;

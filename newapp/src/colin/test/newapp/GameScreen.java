@@ -4,7 +4,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import colin.test.newapp.controller.WorldController;
-import colin.test.newapp.model.Level;
 import colin.test.newapp.model.World;
 import colin.test.newapp.ui.Score;
 import colin.test.newapp.util.Assets;
@@ -12,33 +11,24 @@ import colin.test.newapp.util.ProgressBar;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+
+
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+
 
 /**Game Screen, repsonsible for displaying all game events, and also catching relevant input commands**/
 public class GameScreen implements Screen, InputProcessor, PropertyChangeListener {
@@ -52,11 +42,11 @@ public class GameScreen implements Screen, InputProcessor, PropertyChangeListene
 	private WorldController controller;
 	private int width, height;
 	private Game myGame;
-	GameStatus gameStatus;
-
+	
+	Skin skin;
 	PauseTable pauseTable;
-	private final float CAMERA_WIDTH = Gdx.graphics.getWidth();
-	private final float CAMERA_HEIGHT= Gdx.graphics.getHeight();
+	private final float CAMERA_WIDTH = 480;
+	private final float CAMERA_HEIGHT= 320;
 	boolean gamePaused=false;
 	private TextureRegion hungerTextureRegion;
 	Stage ui;
@@ -64,16 +54,32 @@ public class GameScreen implements Screen, InputProcessor, PropertyChangeListene
 	private Texture hungerTexture;
 	private OrthographicCamera cam;
 	private TextButton beginButton;
+	private int currentLevel;
+	private boolean itemCollected;
+	private ScoreAnimation scoreAnimation;
 
 	public GameScreen(Game game,World world){
-		renderer=new WorldRenderer(world);
-		controller = new WorldController(world);
-		this.world = world;
-		this.myGame=game;
+		currentLevel=world.getCurrentLevelIndex();
+		scoreAnimation = new ScoreAnimation();
+		ui = new Stage();
 		this.cam = new OrthographicCamera();
 		this.cam.setToOrtho(false, CAMERA_WIDTH,CAMERA_HEIGHT);
 		//this.cam.position.set(CAMERA_WIDTH,CAMERA_HEIGHT, 0);
 		this.cam.update();
+		ui.setCamera(cam);
+		pauseTable = new PauseTable();
+
+        pauseTable.setPosition(CAMERA_WIDTH/2, -CAMERA_HEIGHT/2);
+		skin = Assets.instance.getAssetManager().get("data/textbuttons.json",Skin.class);
+		renderer=new WorldRenderer(world);
+		controller = new WorldController(world);
+		this.world = world;
+		this.myGame=game;
+
+	      	createBeginButton();
+	        createPauseButton();
+	        createScore();
+	        createPauseTable();
 	}
 	
 	/**Draw Screen**/
@@ -88,12 +94,7 @@ public class GameScreen implements Screen, InputProcessor, PropertyChangeListene
 		}
 		renderer.render();
 		renderGui(ui.getSpriteBatch());
-		if(gameStatus==GameStatus.GAMEOVER){
-			myGame.setScreen(new GameOverScreen(this.myGame,world.getEater()));
-		}
-		else if(gameStatus==GameStatus.LEVELCOMPLETED){
-			myGame.setScreen(new LevelCompletedScreen(this.myGame,world));
-		}
+		
 		ui.act();
 	}
 
@@ -106,23 +107,14 @@ public class GameScreen implements Screen, InputProcessor, PropertyChangeListene
 	@Override
 	public void show() {
 		
-		System.out.println("show screen");
-		ui = new Stage();
-		ui.setCamera(cam);
 		hungerTexture = Assets.instance.getAssetManager().get("images/hunger.png",Texture.class);
 		hungerTextureRegion = new TextureRegion(hungerTexture);
-		progressBar=new ProgressBar(hungerTextureRegion, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()-10);
+		progressBar=new ProgressBar(hungerTextureRegion, CAMERA_WIDTH/2, CAMERA_HEIGHT-10);
 		
 		world.getEater().addChangeListener(renderer);
+		world.getEater().addChangeListener(this);
 		world.addChangeListener(this);
-		pauseTable = new PauseTable();
-        pauseTable.setPosition(Gdx.graphics.getWidth()/2, -Gdx.graphics.getHeight()/2);
-        createBeginButton();
-        createPauseButton();
-        createScore();
-        createPauseTable();
-        
-	    //stage.addActor(table);
+
 		InputMultiplexer multiplexer = new InputMultiplexer();
 		multiplexer.addProcessor(ui);
 		multiplexer.addProcessor(this);
@@ -133,7 +125,7 @@ public class GameScreen implements Screen, InputProcessor, PropertyChangeListene
 	}
 
 private void createBeginButton() {
-	Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
+
 	beginButton = new TextButton("Begin", skin);
 	beginButton.addListener(new ClickListener() {
 		@Override
@@ -150,7 +142,7 @@ private void createBeginButton() {
 	}
 
 public void createPauseTable(){
-	Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
+
 	TextButton resumeButton = new TextButton("Resume", skin);
 	resumeButton.addListener(new ClickListener() {
 		@Override
@@ -163,7 +155,7 @@ public void createPauseTable(){
 			gamePaused=false;
 			pauseTable.remove();
 			pauseTable.setVelocity();
-			pauseTable.setPosition(Gdx.graphics.getWidth()/2, -Gdx.graphics.getHeight()/2);
+			pauseTable.setPosition(CAMERA_WIDTH/2, -CAMERA_HEIGHT/2);
 			
 		}
 		
@@ -172,12 +164,13 @@ public void createPauseTable(){
 	pauseTable.row();
 	TextButton restartButton = new TextButton("Restart", skin);
 	restartButton.addListener(new ClickListener() {
+	
+
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
 			super.clicked(event, x, y);
 			myGame.getScreen().dispose();
-			int levelIndex=Assets.instance.getLevelManager().getLevelIndex();
-			myGame.setScreen(new GameScreen(myGame,new World(levelIndex)));
+			myGame.setScreen(new GameScreen(myGame,new World(currentLevel)));
 				}
 		
 });
@@ -200,7 +193,13 @@ public void createPauseTable(){
 	private void renderGui (SpriteBatch batch) {
 		ui.draw();
 		ui.getSpriteBatch().begin();
-		progressBar.SetEnd(100, world.getFoodCollected());
+		if(itemCollected){
+			boolean result=scoreAnimation.draw();
+			if(result){
+				itemCollected=false;
+			}
+		}
+		progressBar.SetEnd(100, world.getEater().getFullness());
 		progressBar.Draw(ui.getSpriteBatch());
 		ui.getSpriteBatch().end();
 	}
@@ -211,7 +210,7 @@ public void createPauseTable(){
 		
 	}
 public void createPauseButton(){
-	Skin skin =Assets.instance.getAssetManager().get("data/textbuttons.json", Skin.class);
+
 	TextButton pb = new TextButton("Pause",skin);
 	pb.setPosition(CAMERA_WIDTH-pb.getWidth(), CAMERA_HEIGHT-pb.getHeight());;
 	pb.addListener(new ClickListener() {
@@ -230,7 +229,7 @@ public void createPauseButton(){
 	ui.addActor(pb);
 }
 public void createScore(){ 
-	Score score = new Score(world.getEater(),75,25,5,Gdx.graphics.getHeight()-20);
+	Score score = new Score(world.getEater(),75,25,5,CAMERA_HEIGHT-20);
 	ui.addActor(score);
 }
 public void pauseGame() {
@@ -250,18 +249,11 @@ public void pauseGame() {
 		
 	}
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-		
-	}
+
 	
 	@Override
 	public boolean keyDown(int keycode) {
-		if (keycode == Keys.LEFT)
-			controller.leftPressed();
-		if (keycode == Keys.RIGHT)
-			controller.rightPressed();
+		
 		if(keycode==Keys.Z){
 			controller.jumpPressed();
 		}
@@ -270,13 +262,7 @@ public void pauseGame() {
 	
 	@Override
 	public boolean keyUp(int keycode) {
-		if (keycode == Keys.LEFT)
-			controller.leftReleased();
-		if (keycode == Keys.RIGHT)
-			controller.rightReleased();
-		if(keycode==Keys.Z){
-			controller.jumpReleased();
-		}
+		
 		return true;
 	}
 	
@@ -289,13 +275,9 @@ public void pauseGame() {
 	@Override
     public boolean touchDown(int x, int y, int pointer, int button) {
 
-		if (x > width / 2 && y > height / 2) {
-			//controller.rightPressed();
-		}
 		if (x < width / 2 && y > height / 2) {
 			controller.jumpPressed();
-		}else{
-			controller.jumpReleased();
+		
 			 }
 
 		return true;
@@ -303,13 +285,10 @@ public void pauseGame() {
  
     @Override
     public boolean touchUp(int x, int y, int pointer, int button) {
-        if (x < width / 2 && y > height / 2) {
-            controller.jumpReleased();
-        }
-        if (x > width / 2 && y > height / 2) {
-            controller.jumpReleased();
-        }
-      
+		if (x < width / 2 && y > height / 2) {
+			controller.jumpReleased();
+		
+			 }
         return true;
     }
     
@@ -333,10 +312,26 @@ public void pauseGame() {
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		System.out.println("Changed property: " + evt.getPropertyName() + " [old -> "
-                + evt.getOldValue() + "] | [new -> " + evt.getNewValue() +"]");
-				gameStatus=(GameStatus)evt.getNewValue();
+		//listens to world controller, waiting for a game over to change screen
+		if(evt.getPropertyName().equals("score")){
+			itemCollected=true;
+			int newScore= (Integer) evt.getNewValue();
+			int oldScore = (Integer) evt.getOldValue();
+			int difference=newScore-oldScore;
+			scoreAnimation.init(ui.getSpriteBatch(),ui.getCamera().position,String.valueOf(difference));
+		}
+		else if(evt.getPropertyName().equals("world")){
+		GameStatus gameStatus=(GameStatus)evt.getNewValue();
 		
+				if(gameStatus==GameStatus.GAMEOVER){
+					myGame.getScreen().dispose();
+					myGame.setScreen(new GameOverScreen(this.myGame,world.getEater(),currentLevel));
+				}
+				else if(gameStatus==GameStatus.LEVELCOMPLETED){
+					myGame.getScreen().dispose();
+					myGame.setScreen(new LevelCompletedScreen(this.myGame,world));
+				}
+		}
 	}
 	public class PauseTable extends Table{
 		float tableVelocity=10;
@@ -347,10 +342,10 @@ public void pauseGame() {
 			float xPos = this.getX();
 			float yPos = this.getY();
 			super.act(delta);
-			if(yPos>Gdx.graphics.getHeight()/3&&gamePaused){
+			if(yPos>CAMERA_HEIGHT/3&&gamePaused){
 				tableVelocity*=tableDamping;
 			}
-			if(yPos<Gdx.graphics.getHeight()/2&&gamePaused){
+			if(yPos<CAMERA_HEIGHT/2&&gamePaused){
 				yPos=yPos+tableVelocity;
 				this.setPosition(xPos, yPos);
 			}
@@ -358,6 +353,11 @@ public void pauseGame() {
 		public void setVelocity(){
 			tableVelocity=10;
 		}
+	}
+	@Override
+	public void dispose() {
+		Assets.instance.getAssetManager().unload("maps/level"+currentLevel+".tmx");
+		
 	}
 
 }

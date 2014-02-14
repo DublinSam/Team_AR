@@ -9,7 +9,6 @@ import colin.test.newapp.GameScreen.GameStatus;
 import colin.test.newapp.controller.WorldController.Tile;
 import colin.test.newapp.model.Eater.State;
 import colin.test.newapp.util.Assets;
-import colin.test.newapp.util.Assets.LevelManager;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.Map;
@@ -26,10 +25,18 @@ public class World {
 	Eater eater;
 	List<Food> foodInWorld;
 	int difficulty;
+	/**food that has not been collected**/
 	int foodMissed;
+	/**food that has been collected**/
 	int foodCollected;
+	/**Current level in world**/
 	Level level;
-
+	/**array of all map file locations**/
+	String[] levelLocations;
+	/**total number of levels**/
+	int noOfLevels=6;
+	/**current level index**/
+	int currentLevel;
 	private Pool<Food> foodPool = new Pool<Food>(){
 		@Override
 		protected Food newObject(){
@@ -37,22 +44,29 @@ public class World {
 		}
 	};
 	public World(int i){
-		
+		currentLevel=i;
+		level= new Level(i);
+		levelLocations = new String[noOfLevels];
+		for(int j=0;j<noOfLevels;j++){
+			levelLocations[j]="maps/level"+j+".tmx";
+		}
 		Texture.setEnforcePotImages(false);
 		foodInWorld = new ArrayList<Food>();
 		
-		level = new Level(i);
-		setLevel(i);
+		setLevel(levelLocations[i]);
 		createEater();
 		
 	}
 	public World(){
-		
-		Texture.setEnforcePotImages(false);
+		currentLevel=0;
+		level= new Level(0);
+		levelLocations = new String[noOfLevels];
+		for(int j=0;j<noOfLevels;j++){
+			levelLocations[j]="maps/level"+j+".tmx";
+		}
 		foodInWorld = new ArrayList<Food>();
 		createEater();
-		int x=Assets.instance.getLevelManager().getLevelIndex();
-		setLevel(x);
+		setLevel(levelLocations[0]);
 	
 		
 		
@@ -60,7 +74,7 @@ public class World {
 	
 	
 	public void createEater(){
-		this.eater=new Eater(new Vector2(3.5f,3.00f));
+		this.eater=new Eater(new Vector2(1f,1f));
 	
 	}
 
@@ -96,6 +110,7 @@ public class World {
 	public void setFoodCollected(int foodCollected){
 		this.foodCollected=foodCollected;
 	}
+	
 	public int getFoodMissed() {
 		return foodMissed;
 	}
@@ -107,14 +122,12 @@ public class World {
 	}
 
 	
-	public boolean loadNextLevel(){
-		boolean result=false;
-		eater.position.x=3.5f;
-		eater.position.y=5f;
-		if(Assets.instance.getLevelManager().nextLevel()){
+	public boolean nextLevelExists(int i){
+		boolean result = false;
+		if(i+1<noOfLevels){
 			result=true;
-			level=Assets.instance.getLevelManager().getCurrentLevel();
 		}
+
 		return result;
 	}
 
@@ -132,7 +145,9 @@ public class World {
 public void addChangeListener(PropertyChangeListener newListener) {
 	    listener.add(newListener);
 }
-
+public int getCurrentLevelIndex(){
+	return currentLevel;
+}
 
 public void levelCompleted() {
 	this.level.levelCompleted();
@@ -146,21 +161,20 @@ public void levelFailed() {
 }
 
 public TiledMap getMap() {
-	// TODO Auto-generated method stub
 	return level.getMap();
 }
-
 
 public boolean isLevelCompleted() {
 	return level.isLevelCompleted();
 }
 
-public void setLevel(int i){
+public void setLevel(String levelLoc){
 
-	Assets.instance.getLevelManager().loadLevel(i);
-	level=Assets.instance.getLevelManager().setLevel(i);
-	level.loadMap();
-	
+	level.loadMap(levelLoc);
+}
+public int getLevelCount() {
+
+	return noOfLevels;
 }
 
 

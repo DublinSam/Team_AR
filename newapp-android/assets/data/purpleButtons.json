@@ -8,8 +8,8 @@ com.badlogic.gdx.graphics.Color: {
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
-        default: { down: textbuttondown, up: textbuttonup, font: default-font, fontColor: white, pressedOffsetX: 1,pressedOffsetY: -1  },
-        toggle: { down: textbuttondown, up: textbuttonup, checked: textbuttondown, font: default-font, fontColor: white, downFontColor: red}
+        default: { down: purpleButtonDown, up: purpleButtonUp, font: default-font, fontColor: white, pressedOffsetX: 1,pressedOffsetY: -1  },
+        toggle: { down: purpleButtonDown, up: purpleButtonUp, checked: purpleButtonDown, font: default-font, fontColor: white, downFontColor: red}
 },
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
         default: { font: default-font, fontColor: black }

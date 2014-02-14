@@ -1,8 +1,6 @@
 package colin.test.newapp;
 
-import colin.test.newapp.model.World;
 import colin.test.newapp.util.Assets;
-import colin.test.newapp.util.Assets.LevelManager;
 import colin.test.newapp.util.ProgressBar;
 
 import com.badlogic.gdx.Game;
@@ -13,7 +11,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-/**Displays the Swordbit image, continues to GameScreen onClick**/
+
+/**Loading Screen that displays swordbit logo and a loading bar**/
 public class LoadingScreen implements Screen
 {
 		int width;
@@ -31,7 +30,11 @@ public class LoadingScreen implements Screen
          */
         public LoadingScreen(Game g)
         {
+        	Texture.setEnforcePotImages(false);
         	myGame = g;
+        	splsh = new Texture(Gdx.files.internal("images/logo.png"));
+        	Assets.instance.init(new AssetManager());
+        	hungerTexture = new Texture("images/hunger.png");
         }
 
         @Override
@@ -39,15 +42,14 @@ public class LoadingScreen implements Screen
         {
 
         	Gdx.gl.glClearColor(1, 1, 1, 1);
+        	
         	spriteBatch.begin();
         	spriteBatch.draw(splsh,0,0,width,height);
         	progressBar.SetEnd(100, Assets.instance.getAssetManager().getProgress()*100);
         	progressBar.Draw(spriteBatch);
         	spriteBatch.end();
         	Assets.instance.getAssetManager().getLoadedAssets();
-        	System.out.println(Assets.instance.getAssetManager().getProgress());
         	if(Assets.instance.getAssetManager().update()){
-        		Assets.instance.bindLevelManager(new LevelManager());
         		myGame.getScreen().dispose();
         		myGame.setScreen(new MainMenuScreen(this.myGame));
         	}
@@ -57,13 +59,12 @@ public class LoadingScreen implements Screen
         public void show()
         {
        
-        	Texture.setEnforcePotImages(false);
+        	
         	spriteBatch = new SpriteBatch();
-        	splsh = new Texture(Gdx.files.internal("images/logo.png"));
-        	Assets.instance.init(new AssetManager());
+        	
         	
            	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-    		hungerTexture = new Texture("images/hunger.png");
+    		
     		hungerTextureRegion = new TextureRegion(hungerTexture);
     		progressBar=new ProgressBar(hungerTextureRegion, Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()-10);
         }	

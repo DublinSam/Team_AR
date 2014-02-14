@@ -8,63 +8,86 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 public class LevelSelectScreen implements Screen {
 	
 	Game myGame;
+	/**Stage used to display all ui elements**/
 	private Stage stage;
+	/**table to be used to create scrollpane**/
 	private Table table;
+	Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
+	ScrollPane scroll;
+	/**container for scrollpane**/
+	Table container;
 	Texture backgroundImage;
 	SpriteBatch spriteBatch;
 	int CAMERA_HEIGHT;
 	int CAMERA_WIDTH;
-public LevelSelectScreen(Game game){
+	World world;
+public LevelSelectScreen(Game game,World world){
 	myGame=game;
-	CAMERA_WIDTH=Gdx.graphics.getWidth();
-	CAMERA_HEIGHT=Gdx.graphics.getHeight();
+	this.world=world;
+	CAMERA_WIDTH=480;
+	CAMERA_HEIGHT=320;
 }
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		spriteBatch.begin();
-		spriteBatch.draw(backgroundImage,0,0,CAMERA_WIDTH, CAMERA_HEIGHT);
-		spriteBatch.end();
+
+		stage.act();
 		stage.draw();
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void show() {
-		Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
-		backgroundImage=new Texture("images/LandingPage.png");
-		int noOfLevels=Assets.instance.getLevelManager().getNoOfLevels();
+		table=new Table();
+		container = new Table();
+		container.setFillParent(true);
+		Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
+		backgroundImage=Assets.instance.getAssetManager().get("images/LandingPage.png", Texture.class);
+
+		container.add(table);
+		
+		
 		stage=new Stage();
 		spriteBatch = stage.getSpriteBatch();
 		Gdx.input.setInputProcessor(stage);
 		table = new Table();
-		table.setFillParent(true);
-		for(int i=0;i<noOfLevels;i++){
-			TextButton levelButton=new TextButton(Assets.instance.getLevelManager().getLevel(i).getLevelName(),skin);
+		
+		scroll = new ScrollPane(table,skin);
+		scroll.getStyle().background= new SpriteDrawable(new Sprite(backgroundImage));
+		
+		
+		for(int i=0;i<world.getLevelCount();i++){
+			TextButton levelButton=new TextButton("Level "+(i+1),skin);
 			LevelListener levelListener =new LevelListener(i,levelButton);
 			levelListener.createListener();
-			table.add(levelListener.button).width(CAMERA_WIDTH/3).pad(10);
+			table.add(levelListener.button).width(CAMERA_WIDTH/3).pad(60);
 			table.row();
 		}
-		stage.addActor(table);
+		
+		container.add(scroll).width(CAMERA_WIDTH).height(CAMERA_HEIGHT);
+	    container.row();
+	    stage.addActor(container);
+	    scroll.layout();
 	}
 
 	@Override
@@ -90,6 +113,7 @@ public LevelSelectScreen(Game game){
 		// TODO Auto-generated method stub
 		
 	}
+/**listener designed to create correct game screen depending on button clicked**/	
 	public class LevelListener{
 
 		   int level;    
@@ -103,9 +127,6 @@ public LevelSelectScreen(Game game){
 		            @Override
 		            public void clicked(InputEvent event, float x, float y) {
 						super.clicked(event, x, y);
-						
-						;
-					
 						myGame.setScreen(new GameScreen(myGame,new World(level)));
 		            };
 		      });

@@ -16,9 +16,10 @@ import colin.test.newapp.util.PreferencesHelper;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -28,9 +29,6 @@ import com.badlogic.gdx.utils.Pool;
 /**class responsible for updating velocity and positions based on input given at that point in time
  * (the final position is calculated in food/eater update method)**/
 public class WorldController {
-	public enum Keys {
-		LEFT, RIGHT, JUMP
-	}
 
     private Pool<Tile> tilePool = new Pool<Tile>() {
         @Override
@@ -38,35 +36,11 @@ public class WorldController {
                 return new Tile();
         }
 };
-public class Tile extends Rectangle{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	int id;
-	Tile(){
-		super();
-	}
-	Tile(int id,Rectangle rect){
-		super(rect);
-		this.id=id;
-	}
-	public void setId(int id){
-		this.id=id;
-	}
-	public int getId() {
-		return this.id;
-	}
-	@Override
-	public boolean overlaps(Rectangle r) {
-		return x < r.x + r.width && x + width > r.x && y <= r.y + r.height && y + height >= r.y;
-	}
-	public boolean overlapsX(Rectangle r){
-		return x <= r.x + r.width && x + width >= r.x && y < r.y + r.height && y + height > r.y;
-	}
-	
-}
+
+
+int tileWidth=48;
 private Array<Tile> tiles = new Array<Tile>();
+private Array<MapObject> mapObjects = new Array<MapObject>();
 	OrthographicCamera cam;
 	int height=10;
 	int CAMERA_WIDTH=10;
@@ -77,7 +51,6 @@ private Array<Tile> tiles = new Array<Tile>();
 	PreferencesHelper prefs=new PreferencesHelper();
 	public float timeSinceFoodSpawn=0;
 	public float spawnInterval=3;
-	public int maxNoOfFoodMisses=0;
 	float timeNotBlinked=0;
 	private boolean gameStarted= false;
 	public WorldController(World world) {
@@ -86,69 +59,88 @@ private Array<Tile> tiles = new Array<Tile>();
 		this.cam.update();
 		this.world = world;
 		this.eater = world.getEater();
-		//set initial velocity of eater
 		this.foodList = world.getFood();
 		
 	}
 	
-	public static Map<Keys, Boolean> keys = new HashMap<WorldController.Keys, Boolean>();
-	static {
-		keys.put(Keys.LEFT, false);
-		keys.put(Keys.RIGHT, false);
-		keys.put(Keys.JUMP, false);
-	};
+
 	
-	public void leftPressed() {
-		keys.get(keys.put(Keys.LEFT, true));
+	
+	public void jumpPressed(){
+		if(eater.grounded){
+		eater.setState(State.JUMPING);
+		eater.getVelocity().y=12;
+		
+		}
 	}
 
-	public void rightPressed() {
-		keys.get(keys.put(Keys.RIGHT, true));
-	}
 	
-	public void leftReleased() {
-		keys.get(keys.put(Keys.LEFT, false));
-	}
-	
-	public void rightReleased() {
-		keys.get(keys.put(Keys.RIGHT, false));
-	}
-	public void jumpPressed(){
-		keys.get(keys.put(Keys.JUMP, true));
-	
-	}
-	public void jumpReleased(){
-		keys.get(keys.put(Keys.JUMP, false));
-	}
-	
-	public GameStatus update(float delta) {
+	public void update(float delta) {
 		if(gameStarted){
-			System.out.println("y "+eater.getPosition().y);
-		processInput();
-	
+
+		
 		eater.getVelocity().add(new Vector2(0,eater.getAcceleration().y*delta));
 		
 		setEaterState();
 		foodList = world.getFood();
 		
         checkTileCollisions(delta);
-    
+        checkObjectCollisions(delta);
 		eater.update(delta);
 		runFoodGenerator();
 		updateFoodPosition();
 		updateFoodCollision(delta);
 		}
-		return checkGameStatus();
+	
 	}
 	
+	private void checkObjectCollisions(float delta) {
+		getObjects();
+		boolean crystalCollision= false;
+		for(int i=0;i<mapObjects.size;i++){
+		
+		Rectangle objRectangle =((RectangleMapObject)mapObjects.get(i)).getRectangle();
+		float rectangleWidth =objRectangle.width/tileWidth;
+		float rectangleHeight =objRectangle.height/tileWidth;
+		float rectangleX=objRectangle.x/tileWidth;
+		float rectangleY=objRectangle.y/tileWidth;
+		Rectangle rect = new Rectangle(rectangleX, rectangleY, rectangleWidth, rectangleHeight);
+
+		if(rect.overlaps(eater.getBounds())){
+			String finish=(String)mapObjects.get(i).getProperties().get("finish");
+			if(!(finish==null)){
+				if(finish.equals("true")){
+				world.levelCompleted();
+				}
+				}else{
+					world.levelFailed();
+				}
+			}
+		}
+
+		mapObjects.clear();
+		}
+/**returns any objects that are passed the center of the screen**/
+	private void getObjects() {
+		MapObjects objects=world.getMap().getLayers().get("Collision").getObjects();
+		
+		for(int i=0;i<objects.getCount();i++){
+			if((((RectangleMapObject)objects.get(i)).getRectangle().x/tileWidth)<eater.getPosition().x+CAMERA_WIDTH/2){
+			mapObjects.add((objects.get(i)));
+			}
+		}
+	
+		
+	}
+
 	private void checkTileCollisions(float delta) {
 	
 		checkYAxisCollision(delta);
-		checkXAxisCollision(delta);
+		//checkXAxisCollision(delta);
 		
 	
 	}
-
+/**checks if eater rectangle is about to land on a tile**/
 	private void checkYAxisCollision(float delta) {
 		Rectangle eaterRect = new Rectangle(eater.getBounds());
 		int startX, startY, endX, endY;
@@ -161,30 +153,31 @@ private Array<Tile> tiles = new Array<Tile>();
         endX = (int)(eater.getPosition().x + eater.getBounds().width);
         getTiles(startX, startY, endX, endY, tiles);
         eaterRect.y += eater.getVelocity().y*delta;
+        
 
-        System.out.println("chonk "+tiles.size);
         for(Tile tile: tiles) {
-        	System.out.println(tile.getId());
-        	System.out.println(eater.getBounds().y+" "+tile.y);
+       
+
         	if(tile.overlaps(eaterRect)) {
-        		System.out.println("binnk");
+     
                 if(eater.getVelocity().y > 0) {
-                	System.out.println("bonnk");
+             
                         //eater.getPosition().y = tile.y - eater.getBounds().height;
                         //TiledMapTileLayer layer = (TiledMapTileLayer)world.getMap().getLayers().get(0);
                         //layer.setCell((int)tile.x, (int)tile.y, null);
                 } else {
-                System.out.println("duck");
-                System.out.println("tileid "+tile.getId());
-                		if(tile.getId()==47||tile.getId()==43){
-                			System.out.println("pon "+eater.getBounds().y+" "+tile.y+" "+tile.height+" "+tile.getId());
+          
+            
+                		if(tile.getCollidable().equals("true")){
+                		
                 		
                 		if(eater.getBounds().y>=tile.y+tile.height){
                         eater.getPosition().y = tile.y + tile.height;
-                        eater.grounded = true;
+                        eater.setGrounded(true);
                         eater.getVelocity().y = 0;
                 		}
                 		}
+
                 		
                 }
                 
@@ -195,7 +188,7 @@ private Array<Tile> tiles = new Array<Tile>();
 	}
 
 	private void checkXAxisCollision(float delta) {
-		Tile eaterRect = new Tile(0,eater.getBounds());
+		Tile eaterRect = new Tile("0",eater.getBounds());
 		int startX, startY, endX, endY;
         if(eater.getVelocity().x > 0) {
             startX = endX = (int)(eater.getPosition().x + eater.getBounds().width + eater.getVelocity().x*delta);
@@ -207,7 +200,7 @@ private Array<Tile> tiles = new Array<Tile>();
         getTiles(startX, startY, endX, endY, tiles);
         eaterRect.x += eater.getVelocity().x*delta;
         for(Tile tile: tiles) {
-        	if(eaterRect.overlapsX(tile)) {
+        	if(eaterRect.overlapsBoundary(tile)) {
         			
                     //eater.getVelocity().x = 0;
                     //eater.getPosition().x=tile.x-eaterRect.width;
@@ -217,49 +210,8 @@ private Array<Tile> tiles = new Array<Tile>();
 		
 	}
 
-	private void processInput() {
-		if (keys.get(Keys.LEFT)) {
-
-			eater.getVelocity().x = -Eater.SPEED;
-		}
-		
-		if (keys.get(Keys.RIGHT)) {
-
-			eater.getVelocity().x = Eater.SPEED;
-		}
-		
-		// need to check if both or none direction are pressed, then Bob is idle
-		if ((keys.get(Keys.LEFT) && keys.get(Keys.RIGHT)) || (!keys.get(Keys.LEFT) && !(keys.get(Keys.RIGHT)))) {
-			//eater.setState(State.IDLE);
-			// acceleration is 0 on the x
-			eater.getAcceleration().x = 0;
-			// horizontal speed is 0
-			//eater.getVelocity().x = 0;
-		}
-		if(keys.get(Keys.JUMP)){
-			
-			if(eater.grounded){
-				
-			eater.getVelocity().y=11;
-			}
-		}
-	}
 	
-	public boolean sideCollisionCheck(float delta){
-		boolean result=false;
-		if(eater.getVelocity().cpy().scl(delta).x+eater.getPosition().x-(eater.getBounds().width/2)<0){
-			eater.getPosition().x=eater.getBounds().width/2;
-		
-			result=true;
-			
-		}
-		if(eater.getVelocity().cpy().scl(delta).x+eater.getPosition().x+(eater.getBounds().width/2)>CAMERA_WIDTH){
-			eater.getPosition().x=CAMERA_WIDTH-eater.getBounds().width/2;
-			result=true;
-			
-		}
-		return result;
-	}
+	
 	
 /**handles food generation, checking if food spawns will overlap and checking if it is time to spawn food**/
 	public void runFoodGenerator() {
@@ -301,6 +253,7 @@ private Array<Tile> tiles = new Array<Tile>();
 			checkIfNewHighScore();
 			gameStatus=GameStatus.LEVELCOMPLETED;
 		}
+		
 
 		return gameStatus;
 	}
@@ -405,40 +358,41 @@ private Array<Tile> tiles = new Array<Tile>();
 	public void setEaterState(){
 	
 			if(eater.getPosition().y<0){
-				System.out.println("dead");
+			
 				world.levelFailed();
 			}
-			//if(eater.getPosition().x>20){
-			//	world.levelCompleted();
-			//}
 			if(!(eater.getVelocity().y==0)){
-				eater.grounded=false;
+				eater.setGrounded(false);
 			}
+
 	        timeNotBlinked += Gdx.graphics.getDeltaTime(); 
 			  if(timeNotBlinked>5){
-			        //blink animation
 			        setBlinkAnimation();
 			        timeNotBlinked=0;
 			  }
 			
 		
 	}
+	/**Gets tiles that are to be considered for collision detection**/
 	private void getTiles(int startX, int startY, int endX, int endY, Array<Tile> tiles) {
-        TiledMapTileLayer layer = (TiledMapTileLayer)world.getMap().getLayers().get(0);
+        TiledMapTileLayer layer = (TiledMapTileLayer)world.getMap().getLayers().get("Terrain");
         tilePool.freeAll(tiles);
+        
         tiles.clear();
         for(int y = startY; y <= endY; y++) {
                 for(int x = startX; x <= endX; x++) {
                         Cell cell = layer.getCell(x, y);
                         if(cell != null) {
                                 Tile tile = tilePool.obtain();
-                                tile.setId(cell.getTile().getId());
-                                if(tile.getId()==1){
-                                	tile.set(x, y, 1, 1);
-                                }
+                                if(cell.getTile().getProperties().containsKey("collision")){
+                        
+                                tile.setCollidable((String)cell.getTile().getProperties().get("collision"));
+                }
                                 else{
-                                	tile.set(x, y, 1, 1);
+                                	tile.setCollidable("false");
                                 }
+                                	tile.set(x, y, 1f, 1f);
+                           
                                 tiles.add(tile);
                                 
                         }
@@ -453,7 +407,43 @@ private Array<Tile> tiles = new Array<Tile>();
 	
 	public void beginTouched(){
 		gameStarted=true;
-		eater.getVelocity().x=8;
+		eater.getVelocity().x=eater.SPEED;
+	}
+	public class Tile extends Rectangle{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		private String collidable;
+		Tile(){
+			super();
+		}
+		Tile(String collidable,Rectangle rect){
+			super(rect);
+			this.collidable=collidable;
+		}
+
+		public String getCollidable() {
+			return this.collidable;
+		}
+		@Override
+		public boolean overlaps(Rectangle r) {
+			return x < r.x + r.width && x + width > r.x && y <= r.y + r.height && y + height >= r.y;
+		}
+		public boolean overlapsBoundary(Rectangle r){
+			return x <= r.x + r.width && x + width >= r.x && y <= r.y + r.height && y + height >= r.y;
+		}
+		public void setCollidable(String collidable) {
+			this.collidable=collidable;
+		}
+		
+	}
+	public void jumpReleased() {
+		if(eater.getVelocity().y>6){
+			eater.getVelocity().y=6;
+		}
+		
 	}
 
 }

@@ -34,7 +34,6 @@ public class Assets implements Disposable, AssetErrorListener {
 
 	public static final Assets instance = new Assets();
 	
-	private LevelManager levelManager;
 
 	private AssetManager assetManager;
 
@@ -60,6 +59,7 @@ public class Assets implements Disposable, AssetErrorListener {
 			// set font sizes
 			defaultSmall.setScale(0.75f);
 			defaultNormal.setScale(1.0f);
+			//defaultNormal.usesIntegerPositions();
 			defaultBig.setScale(2.0f);
 			// enable linear texture filtering for smooth fonts
 			defaultSmall.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -68,55 +68,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		}
 
 	}
-	public static class LevelManager{
-		int currentLevelIndex;
-		int noOfLevels=4;
-		Level currentLevel;
-		Level[] levelArray;
-		public LevelManager(){
-			levelArray=new Level[noOfLevels];
-			for(int i=0;i<levelArray.length;i++){
-				levelArray[i]=new Level(i);
-			}
-			currentLevelIndex=0;
-			currentLevel=levelArray[currentLevelIndex];
-		}
-		public boolean nextLevel(){
-			boolean result=false;
-			currentLevelIndex++;
-			if(!(currentLevelIndex==noOfLevels)){
-				result=true;
-				currentLevel=levelArray[currentLevelIndex];
-			}
-			return result;
-		}
-		public int getLevelIndex(){
-			return this.currentLevelIndex;
-		}
-		public Level getCurrentLevel(){
-			return currentLevel;
-		}
-		public int getNoOfLevels(){
-			return noOfLevels;
-		}
-		public Level getLevel(int i) {
-			return levelArray[i];
-		}
-		public Level setLevel(int i) {
-			this.currentLevelIndex=i;
 	
-			return this.currentLevel=levelArray[currentLevelIndex];
-			
-		}
-		public void loadLevel(int i) {
-
-			Assets.instance.getAssetManager().load("maps/level"+i+".tmx",TiledMap.class);
-
-			Assets.instance.getAssetManager().finishLoading();
-
-			
-		}
-	}
 	
 	public void init (AssetManager manager) {
 		this.assetManager = manager;
@@ -126,7 +78,16 @@ public class Assets implements Disposable, AssetErrorListener {
 		assetManager.load("maps/level1.tmx",TiledMap.class);
 		assetManager.load("maps/level2.tmx",TiledMap.class);
 		*/
-		assetManager.load("images/JellyPig.png", Texture.class);
+		assetManager.load("images/LandingPage.png",Texture.class);
+		assetManager.load("images/Explosion48.png", Texture.class);
+		assetManager.load("images/Eating.png", Texture.class);
+		assetManager.load("images/JellyPig_Jump48.png",Texture.class);
+		assetManager.load("images/HappyJellyPig-01.png",Texture.class);
+		assetManager.load("images/LemonJellyPig-01.png",Texture.class);
+		assetManager.load("images/FatJellyPig-01.png",Texture.class);
+		assetManager.load("images/AcneJellyPig-01.png",Texture.class);
+		assetManager.load("images/EnchiladoJellyPig-01.png",Texture.class);
+		assetManager.load("images/JellyPig48.png", Texture.class);
 		assetManager.load("atlas/textures.pack", TextureAtlas.class);
 		assetManager.load("images/hunger.png", Texture.class);
 		assetManager.load("images/JellyPigSprite.png",Texture.class);
@@ -137,7 +98,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		assetManager.load("images/Clouds.png", Texture.class);
 		assetManager.load("images/Fog.png", Texture.class);
 		assetManager.load("data/textbuttons.json",Skin.class);
-		
+	
 		// set asset manager error handler
 		assetManager.setErrorListener(this);
 		
@@ -151,15 +112,11 @@ public class Assets implements Disposable, AssetErrorListener {
 		
 		
 	}
-	public void bindLevelManager(LevelManager levelManager){
-		this.levelManager=levelManager;
-	}
+
 public AssetManager getAssetManager(){
 	return this.assetManager;
 }
-public LevelManager getLevelManager(){
-	return this.levelManager;
-}
+
 	@Override
 	public void dispose () {
 		assetManager.dispose();

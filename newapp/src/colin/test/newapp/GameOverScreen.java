@@ -4,6 +4,7 @@ import colin.test.newapp.model.Eater;
 import colin.test.newapp.model.World;
 import colin.test.newapp.ui.HighScore;
 import colin.test.newapp.ui.Score;
+import colin.test.newapp.util.Assets;
 import colin.test.newapp.util.PreferencesHelper;
 
 import com.badlogic.gdx.Game;
@@ -33,7 +34,9 @@ public class GameOverScreen implements Screen{
 	private OrthographicCamera cam;
 	private int CAMERA_WIDTH;
 	private int CAMERA_HEIGHT;
-public GameOverScreen(Game myGame,Eater eater){
+	int levelIndex;
+public GameOverScreen(Game myGame,Eater eater,int levelIndex){
+	this.levelIndex=levelIndex;
 	CAMERA_WIDTH=Gdx.graphics.getWidth();
 	CAMERA_HEIGHT=Gdx.graphics.getHeight();
 	this.cam = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
@@ -58,8 +61,9 @@ public GameOverScreen(Game myGame,Eater eater){
 	@Override
 	public void show() {
 		int highScore =phelp.getHighScore();
-		Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
-		BitmapFont buttonFont = new BitmapFont();
+		//Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
+		Skin skin =Assets.instance.getAssetManager().get("data/textbuttons.json", Skin.class);
+		
 		table=new Table();
 		table.setFillParent(true);
 		stage=new Stage();
@@ -76,7 +80,8 @@ public GameOverScreen(Game myGame,Eater eater){
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
 				myGame.getScreen().dispose();
-				myGame.setScreen(new GameScreen(myGame,new World()));
+				myGame.setScreen(new GameScreen(myGame,new World(levelIndex)));
+				
 					}
 			
 	});

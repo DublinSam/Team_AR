@@ -19,11 +19,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -44,19 +46,21 @@ public class WorldRenderer  implements PropertyChangeListener  {
 	private World world;
 	private Eater eater;
 	private OrthographicCamera cam;
-	int CAMERA_WIDTH=10;
-	int CAMERA_HEIGHT=7;
-	int width;
-	int height;
+	float CAMERA_WIDTH=10;
+	float CAMERA_HEIGHT=7;
     private static final int        BLINK_FRAME_COLS = 5;      
     private static final int        BLINK_FRAME_ROWS = 1; 
-    
+    private static final int        EATING_FRAME_COLS = 3;      
+    private static final int        EATING_FRAME_ROWS = 2; 
+
     Texture idleTexture;
     TextureRegion cookieTexture;
     TextureRegion strawBerryTexture;
     Texture defaultEaterTexture;
     Animation                       blinkAnimation;
+    Animation                       eatingAnimation;
     Animation                       currentAnimation;
+    Animation 						nextAnimation;
     Texture                         blinkSheet;              
     TextureRegion[]                 blinkFrames;
     TextureRegion[] 				idleFrames;
@@ -74,22 +78,30 @@ public class WorldRenderer  implements PropertyChangeListener  {
 	private TextureRegion appleTexture;
 	private TextureRegion pizzaTexture;
 	private Texture hungerTexture;
-	private TextureRegion idleTextureRegion;
 	TextureRegion tr;
 	private TextureRegion hungerTextureRegion;
     private OrthogonalTiledMapRenderer renderer;
-     
-	private ParallaxBackground pb;
+    AssetManager assetManager;
+	private ParallaxBackground background;
+	private boolean itemCollected=false;
+	private ScoreAnimation scoreAnimation;
+	private Texture eatingSheet;
+	private TextureRegion[] eatingFrames;
+	private int TRANSFORMATION_FRAME_COLS=3;
+	private TextureRegion[] transformationFrames;
+	private Texture transformationSheet;
+	private int TRANSFORMATION_FRAME_ROWS=1;
+	private Animation transformationAnimation;
 
 	public WorldRenderer(World world) {
-		System.out.println("create renderer");
-	
+		assetManager = Assets.instance.getAssetManager();
+		scoreAnimation=new ScoreAnimation();
 		fpslog = new FPSLogger();
 		this.world = world;
 		this.eater=this.world.getEater();
 		this.cam = new OrthographicCamera();
 		this.cam.setToOrtho(false, CAMERA_WIDTH, CAMERA_HEIGHT);
-		this.cam.position.set(5f, 3.5f, 0);
+		this.cam.position.set(CAMERA_WIDTH/2, CAMERA_HEIGHT/2, 0);
 		
 		this.cam.update();
 		renderer = new OrthogonalTiledMapRenderer(world.getMap(), 1/48f);
@@ -99,21 +111,19 @@ public class WorldRenderer  implements PropertyChangeListener  {
         progressBar.SetTargetDimension(1, 4);
 	}
 	public void setSize(int width,int height){
-		this.width=width;
-		this.height=height;
-		
+	
 		
 	}
 	public void loadTextures(){
-		System.out.println("load textures");
+	
 		
-		TextureAtlas atlas = Assets.instance.getAssetManager().get("atlas/textures.pack", TextureAtlas.class);
+		TextureAtlas atlas = assetManager.get("atlas/textures.pack", TextureAtlas.class);
 		spriteBatch = new SpriteBatch();
 	    spriteBatch.setProjectionMatrix(cam.combined);
 	
-		idleTexture = Assets.instance.getAssetManager().get("images/JellyPig.png", Texture.class);
+		idleTexture = assetManager.get("images/JellyPig48.png", Texture.class);
 		idleTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		hungerTexture = Assets.instance.getAssetManager().get("images/hunger.png", Texture.class);
+		hungerTexture = assetManager.get("images/hunger.png", Texture.class);
 		hungerTextureRegion = new TextureRegion(hungerTexture);
 		cookieTexture = atlas.findRegion("Cookie");
 		strawBerryTexture = atlas.findRegion("Strawberry");
@@ -123,11 +133,49 @@ public class WorldRenderer  implements PropertyChangeListener  {
 		lemonTexture = atlas.findRegion("Lemon");
 		appleTexture = atlas.findRegion("Apple");
 		pizzaTexture = atlas.findRegion("Pizza");
-		blinkSheet = Assets.instance.getAssetManager().get("images/JellyPigSprite.png", Texture.class);     // #9
+		constructBlinkAnimation();
+		constructEatingAnimation();
+		constructTransformationAnimation();
+        
+	}
+	
+	private void constructTransformationAnimation() {
+		transformationSheet = assetManager.get("images/Explosion48.png", Texture.class);    
+		TextureRegion[][] tmp2 = TextureRegion.split(transformationSheet, transformationSheet.getWidth() / 
+        TRANSFORMATION_FRAME_COLS, transformationSheet.getHeight() / TRANSFORMATION_FRAME_ROWS);                                
+        transformationFrames = new TextureRegion[TRANSFORMATION_FRAME_COLS * TRANSFORMATION_FRAME_ROWS];
+        int index2 = 0;
+        for (int i = 0; i < TRANSFORMATION_FRAME_ROWS; i++) {
+                for (int j = 0; j < TRANSFORMATION_FRAME_COLS; j++) {
+                        transformationFrames[index2++] = tmp2[i][j];
+                }
+        }
+       
+        transformationAnimation = new Animation(0.1f, transformationFrames);
+        transformationAnimation.setPlayMode(Animation.NORMAL);
+		
+	}
+	private void constructEatingAnimation() {
+		eatingSheet = assetManager.get("images/Eating.png", Texture.class);     // #9
+		TextureRegion[][] tmp2 = TextureRegion.split(eatingSheet, eatingSheet.getWidth() / 
+        EATING_FRAME_COLS, eatingSheet.getHeight() / EATING_FRAME_ROWS);                                // #10
+        eatingFrames = new TextureRegion[EATING_FRAME_COLS * EATING_FRAME_ROWS];
+        int index2 = 0;
+        for (int i = 0; i < EATING_FRAME_ROWS; i++) {
+                for (int j = 0; j < EATING_FRAME_COLS; j++) {
+                        eatingFrames[index2++] = tmp2[i][j];
+                }
+        }
+       
+        eatingAnimation = new Animation(0.1f, eatingFrames);
+        eatingAnimation.setPlayMode(Animation.NORMAL);
+		
+	}
+	private void constructBlinkAnimation() {
+		blinkSheet = assetManager.get("images/JellyPigSprite.png", Texture.class);     // #9
         TextureRegion[][] tmp = TextureRegion.split(blinkSheet, blinkSheet.getWidth() / 
         BLINK_FRAME_COLS, blinkSheet.getHeight() / BLINK_FRAME_ROWS);                                // #10
         blinkFrames = new TextureRegion[BLINK_FRAME_COLS * BLINK_FRAME_ROWS];
-        idleFrames=new TextureRegion[0];
         int index = 0;
         for (int i = 0; i < BLINK_FRAME_ROWS; i++) {
                 for (int j = 0; j < BLINK_FRAME_COLS; j++) {
@@ -135,17 +183,15 @@ public class WorldRenderer  implements PropertyChangeListener  {
                 }
         }
        
-        blinkAnimation = new Animation(0.1f, blinkFrames);              // #11                                 
-      
-        
+        blinkAnimation = new Animation(0.1f, blinkFrames);
+        blinkAnimation.setPlayMode(Animation.LOOP_PINGPONG);
+		
 	}
-	
 	public void render() {
-		pb.render(Gdx.graphics.getDeltaTime());
-		cam.position.x=eater.getPosition().x+CAMERA_WIDTH/2-eater.SIZE;
-		cam.update();
+		background.render(Gdx.graphics.getDeltaTime());
+		setCameraPosition();
 		spriteBatch.setProjectionMatrix(cam.combined);
-
+		
 		drawDebug();
 
 		fpslog.log();
@@ -157,21 +203,42 @@ public class WorldRenderer  implements PropertyChangeListener  {
     	
         drawFood();         
         drawEater();
+        drawScoreAnimation();
         spriteBatch.end();
-       System.out.println(spriteBatch.totalRenderCalls);
-       spriteBatch.totalRenderCalls=0;
+
+    
 	}
 	
+	private void setCameraPosition() {
+		cam.position.x=eater.getPosition().x+CAMERA_WIDTH/2-eater.SIZE;
+		if(eater.getPosition().y>3.5&&cam.position.y<5){
+			cam.position.y+=0.1;;
+		}else if(eater.getPosition().y<3.5&&cam.position.y>3.5){
+			
+			cam.position.y-=0.1;
+		}
+		cam.update();
+		
+	}
+	private void drawScoreAnimation() {
+		if(itemCollected){
+			Boolean result=scoreAnimation.draw();
+			if(result){
+				System.out.println(itemCollected);
+				itemCollected=false;
+			}
+		}
+	}
 	private void createBackground() {
 		Vector2 mountainRatio = new Vector2(0.02f,0);
 
 		Vector2 cloudRatio = new Vector2(0.00f,0);
 		//Texture mountaintx = new Texture("images/bigMountainsTrans.png");
 		//Texture sky= new Texture("images/Sky.png");
-		Texture mountaintx = Assets.instance.getAssetManager().get("images/Mountains.png");
+		Texture mountaintx = assetManager.get("images/Mountains.png");
 
-		Texture clouds = Assets.instance.getAssetManager().get("images/Clouds.png");
-		Texture fog = Assets.instance.getAssetManager().get("images/Fog.png");
+		Texture clouds = assetManager.get("images/Clouds.png");
+		Texture fog = assetManager.get("images/Fog.png");
 		TextureRegion fogRegion = new TextureRegion(fog);
 		TextureRegion mountainRegion = new TextureRegion(mountaintx);
 		TextureRegion cloudRegion = new TextureRegion(clouds);
@@ -181,7 +248,7 @@ public class WorldRenderer  implements PropertyChangeListener  {
 		ParallaxLayer[] layers = new ParallaxLayer[2];
 		layers[0]=mountainLayer;
 		layers[1]=cloudLayer;
-		pb = new ParallaxBackground(layers, spriteBatch,cam,CAMERA_WIDTH, CAMERA_HEIGHT, new Vector2(1,0));
+		background = new ParallaxBackground(layers, spriteBatch,cam,CAMERA_WIDTH, CAMERA_HEIGHT, new Vector2(1,0));
 	}
 	
 	public void drawEater(){
@@ -195,20 +262,29 @@ public class WorldRenderer  implements PropertyChangeListener  {
 		
 		if(currentAnimation==null){
 			
-			spriteBatch.draw(idleTexture, eater.getPosition().x, eater.getPosition().y-0.1f,eater.getBounds().width,eater.getBounds().height);
+			spriteBatch.draw(idleTexture, eater.getPosition().x, eater.getPosition().y,eater.getBounds().width,eater.getBounds().height);
 		
 			
 		}
        else{
-
+    	
 	        currentFrame = currentAnimation.getKeyFrame(eater.getTimeInState(), false);
 	        spriteBatch.draw(currentFrame, eater.getPosition().x, eater.getPosition().y-0.1f,eaterBounds.width,eaterBounds.height); 
 	        if(currentAnimation.isAnimationFinished(eater.getTimeInState())){
-	        	eater.setState(State.IDLE);
+	        	if(eater.getState()==State.EATING){
+	        		eater.forceState(State.TRANSFORMING);
+	        	}else if(eater.getState()==State.TRANSFORMING){
+	        		
+	        		State finalState=eater.getFinalState();
+	        		eater.forceState(finalState);
+	        		currentAnimation=null;
+	        	}else{
+	        	eater.forceState(State.IDLE);
 	        	currentAnimation=null;
+	        	}
 	        	
 	        }
-        }
+       }
 		
 	}
 
@@ -288,9 +364,35 @@ public class WorldRenderer  implements PropertyChangeListener  {
 
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		System.out.println("Changed property: " + event.getPropertyName() + " [old -> "
-                + event.getOldValue() + "] | [new -> " + event.getNewValue() +"]");
-		currentAnimation=blinkAnimation;
-		
+		//code listens for changes to eater, called in setState in eater class
+		if(event.getPropertyName().equals("state")){
+			State state=(State)event.getNewValue();
+			switch(state){
+			case BLINK: currentAnimation=blinkAnimation;
+			break;
+			case JUMPING: idleTexture=assetManager.get("images/JellyPig_Jump48.png",Texture.class);
+			break;
+			case IDLE: idleTexture=assetManager.get("images/JellyPig48.png", Texture.class);
+			break;
+			case TRANSFORMING: currentAnimation=transformationAnimation;
+			break;
+			case FAT: idleTexture=assetManager.get("images/FatJellyPig-01.png", Texture.class);
+			break;
+			case ACNE: idleTexture=assetManager.get("images/AcneJellyPig-01.png", Texture.class);
+			break;
+			case HOT: idleTexture=assetManager.get("images/EnchiladoJellyPig-01.png", Texture.class);
+			break;
+			case SOUR: idleTexture=assetManager.get("images/LemonJellyPig-01.png", Texture.class);
+			break;
+			case HAPPY: idleTexture=assetManager.get("images/HappyJellyPig-01.png", Texture.class);
+			break;
+			case EATING: currentAnimation=eatingAnimation;
+			break;
+		 	
+			default: currentAnimation=eatingAnimation;
+			break;
+		}
+	
+}
 	}
 }

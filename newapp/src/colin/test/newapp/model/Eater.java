@@ -5,25 +5,25 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import colin.test.newapp.util.Assets;
+import colin.test.newapp.model.Eater.State;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-
+/**Eater AKA JellyPig**/
 public class Eater {
 	/**State is only recorded in case we are going to be using some Movement or Idle animations, currently its not used for anything
 	 * it is only set**/
 	public enum State {
-		IDLE, MOVING, HUNGRY, HOT,BORED,BLINK
+		IDLE, MOVING, HUNGRY, HOT,BORED,BLINK,JUMPING,ACNE, SOUR, FAT, HAPPY, EATING, TRANSFORMING
 	}
 
 	private List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
 	public float timeInState;
 	int foodMissed;
 	int foodCollected;
-	public static final float SIZE = 1f; // half a unit
+	public static final float SIZE = 1f;
 	public static final float DAMPING = 0.8f;
-	public static float SPEED = 8f;	// unit per second
+	public static float SPEED = 8f;
 	Vector2 position = new Vector2();
 	/**Acceleration not used**/
 	Vector2 acceleration = new Vector2();
@@ -34,13 +34,13 @@ public class Eater {
 	float cholesterol=0;
 	float fullness=0;
 	public boolean grounded;
+	private State finalState;
 	public Eater(Vector2 position) {
-		this.acceleration.y=-15;
+		this.acceleration.y=-30;
 		this.position = position;
 		this.bounds.setPosition(position);
 		this.bounds.height = SIZE;
 		this.bounds.width = SIZE;
-		this.velocity.x=SPEED;
 		this.timeInState=0;
 	
 	}
@@ -60,16 +60,42 @@ public class Eater {
 	}
 	
 	public void setState(State newState) {
-		notifyListeners(this, "state", state, newState);
-		timeInState=0;
-		this.state = newState;
-		
+		if(timeInState>3){
+			if(state==State.JUMPING){
+				bounds.height-=0.25;
+			}
+			notifyListeners(this, "State", state, newState);
+			timeInState=0;
+			this.state = newState;
+		}
+		else if(state==State.IDLE||state==State.JUMPING||state==State.BLINK){
+			if(newState==State.JUMPING){
+				bounds.height+=0.25;
+			}
+			else if(state==State.JUMPING){
+				bounds.height-=0.25;
+			}
+			notifyListeners(this, "State", state, newState);
+			timeInState=0;
+			this.state = newState;
+		}
+
 	}
-	
+	/**updates eaters position based on velocity**/
 	public void update(float delta) {
+	
 		timeInState+=delta;
+		//add velocity times times time to do the distance traveled
 		position.add(velocity.cpy().scl(delta));
 		this.bounds.setPosition(position);
+		if(!(state==State.IDLE)){
+			if(timeInState>3){
+				setState(State.IDLE);
+			}
+		}
+		if((grounded)&&state.equals(State.JUMPING)){
+			setState(State.IDLE);
+		}
 	}
 	
 	public Vector2 getAcceleration() {
@@ -83,10 +109,12 @@ public class Eater {
 	
 	public void increaseScore(){
 		score += 100;
+		notifyScoreListeners(this, "Score", score-100, score);
 		
 	}
 	public void decreaseScore(){
 		score-=100;
+		notifyScoreListeners(this, "Score", score+100, score);
 		
 	}
 	public int getScore(){
@@ -101,10 +129,14 @@ public class Eater {
 	public float getTimeInState(){
 		return this.timeInState;
 	}
-	
+	private void notifyScoreListeners(Object object, String property, int oldScore, int newScore) {
+	    for (PropertyChangeListener name : listener) {
+	      name.propertyChange(new PropertyChangeEvent(this, "score", oldScore, newScore));
+	    }
+}
 	private void notifyListeners(Object object, String property, State oldValue, State newValue) {
 		    for (PropertyChangeListener name : listener) {
-		      name.propertyChange(new PropertyChangeEvent(this, "eater", oldValue, newValue));
+		      name.propertyChange(new PropertyChangeEvent(this, "state", oldValue, newValue));
 		    }
 	}
 
@@ -116,38 +148,55 @@ public class Eater {
 		switch(food.getFoodType()){
 		case STRAWBERRY:
 			increaseScore();
+			setState(State.EATING);
+			setFinalState(State.HAPPY);
 			increaseFullness();
 			break;
 		case COOKIE:
 			decreaseScore();
+			setState(State.EATING);
+			setFinalState(State.ACNE);
 			increaseFullness();
 			increaseCholesterol();
 			break;
 		case CHILLI:
 			increaseScore();
+			setState(State.EATING);
+			setFinalState(State.HOT);
 			increaseFullness();
 			break;
 		case APPLE:
 			increaseScore();
+			setState(State.EATING);
+			setFinalState(State.HAPPY);
 			increaseFullness();
 			break;
 		case LEMON:
 			increaseScore();
+			setState(State.EATING);
+			setFinalState(State.SOUR);
 			increaseFullness();
 			break;
 		
 		case BURGER:
 			increaseScore();
+			setState(State.EATING);
+			setFinalState(State.FAT);
 			increaseCholesterol();
 			increaseFullness();
 			break;
 		case HOTDOG:
+			
 			increaseScore();
+			setState(State.EATING);
+			setFinalState(State.FAT);
 			increaseCholesterol();
 			increaseScore();
 			break;
 		case PIZZA:
 			increaseScore();
+			setState(State.EATING);
+			setFinalState(State.FAT);
 			increaseCholesterol();
 			increaseFullness();
 			
@@ -162,6 +211,41 @@ public class Eater {
 	private void increaseCholesterol() {
 		this.cholesterol+=1;
 		
+	}
+
+	public void setGrounded(boolean b) {
+		grounded=b;
+		if(b&&(state==State.JUMPING)){
+			//state=State.IDLE;
+		}
+		
+		
+	}
+
+	public State getFinalState() {
+
+		return finalState;
+	}
+	public void setFinalState(State state){
+		finalState=state;
+	}
+
+	public void forceState(State newState) {
+		if(newState==State.JUMPING){
+			bounds.height+=0.25;
+		}
+		if(state==State.JUMPING){
+			bounds.height-=0.25;
+		}
+		notifyListeners(this, "State", state, newState);
+		this.state=newState;
+		timeInState=0;
+		
+	}
+
+	public float getFullness() {
+	
+		return this.fullness;
 	}
 
 }

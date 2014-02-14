@@ -1,6 +1,7 @@
 package colin.test.newapp;
 
 import colin.test.newapp.model.World;
+import colin.test.newapp.util.Assets;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -21,7 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-
+/**Main menu, play, settings nad level select buttons which all go to their respective screens**/
 public class MainMenuScreen implements Screen {
 	private Game myGame;
 	SpriteBatch spriteBatch;
@@ -39,7 +40,7 @@ public class MainMenuScreen implements Screen {
 	myGame=game;
 	CAMERA_HEIGHT=Gdx.graphics.getHeight();
 	CAMERA_WIDTH=Gdx.graphics.getWidth();
-	backgroundImage=new Texture(Gdx.files.internal("images/LandingPage.png"));
+	backgroundImage=Assets.instance.getAssetManager().get("images/LandingPage.png", Texture.class);
 	spriteBatch=new SpriteBatch();
 	}
 	@Override
@@ -67,8 +68,8 @@ public class MainMenuScreen implements Screen {
 	public void show() {
         //Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 		
-        textButtonSkin = new Skin(Gdx.files.internal("data/textbuttons.json"));
-		Label welcomeLabel = new Label( "EATER", textButtonSkin);
+        textButtonSkin = new Skin(Gdx.files.internal("data/purpleButtons.json"));
+		//Label welcomeLabel = new Label( "EATER", textButtonSkin);
 		createPlayButton();
 		createSettingsButton();
 		createLevelSelectButton();
@@ -102,7 +103,7 @@ public class MainMenuScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
 				myGame.getScreen().dispose();
-				myGame.setScreen(new LevelSelectScreen(myGame));
+				myGame.setScreen(new LevelSelectScreen(myGame,new World()));
 			}
 		});
 		

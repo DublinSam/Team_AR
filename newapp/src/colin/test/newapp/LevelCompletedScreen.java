@@ -69,7 +69,7 @@ public LevelCompletedScreen(Game myGame,World world){
 		table.row();
 		table.add(scoreLabel).pad(10);
 		table.row();
-		if(world.loadNextLevel()){
+		if(world.nextLevelExists(world.getCurrentLevelIndex())){
 		
 		TextButton nextLevelButton = new TextButton("Next Level", skin );
 		nextLevelButton.addListener(new ClickListener() {
@@ -83,10 +83,19 @@ public LevelCompletedScreen(Game myGame,World world){
 					}
 			
 	});
-		//button2.setPosition(Gdx.graphics.getWidth()/2-100,Gdx.graphics.getHeight()/2-100);
+
 		table.add(nextLevelButton).pad(10);
 		}
-		
+		TextButton mainMenuButton = new TextButton("Main Menu", skin);
+		mainMenuButton.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				super.clicked(event, x, y);
+				myGame.getScreen().dispose();
+				myGame.setScreen(new MainMenuScreen(myGame));
+			}
+		});
+		table.add(mainMenuButton);
 		stage.addActor(table);
 		Gdx.input.setInputProcessor(stage);
 		

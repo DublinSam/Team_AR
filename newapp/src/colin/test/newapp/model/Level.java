@@ -18,6 +18,8 @@ enum LevelStatus{
 	COMPLETED, FAILED, INPROGRESS
 }
 public Level(int i){
+	Assets.instance.getAssetManager().load("maps/level"+i+".tmx",TiledMap.class);
+	Assets.instance.getAssetManager().finishLoading();
 	int levelNumber=i+1;
 	levelName="Level "+levelNumber;
 	LevelLocation="maps/level"+i+".tmx";
@@ -39,9 +41,9 @@ this.levelStatus=LevelStatus.FAILED;
 public String getLevelName(){
 	return this.levelName;
 }
-public void loadMap() {
+public void loadMap(String level) {
 
-	map=Assets.instance.getAssetManager().get(LevelLocation,TiledMap.class);
+	map=Assets.instance.getAssetManager().get(level,TiledMap.class);
 	
 }
 
