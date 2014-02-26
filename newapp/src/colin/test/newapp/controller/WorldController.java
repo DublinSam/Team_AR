@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import colin.test.newapp.GameScreen.GameStatus;
 import colin.test.newapp.model.Eater;
 import colin.test.newapp.model.Eater.State;
 import colin.test.newapp.model.Food;
@@ -26,6 +25,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
+import com.swordbit.game.GameScreen.GameStatus;
 /**class responsible for updating velocity and positions based on input given at that point in time
  * (the final position is calculated in food/eater update method)**/
 public class WorldController {

@@ -1,4 +1,4 @@
-package colin.test.newapp;
+package com.swordbit.game;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;

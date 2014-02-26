@@ -5,7 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import colin.test.newapp.GameScreen.GameStatus;
 import colin.test.newapp.controller.WorldController.Tile;
 import colin.test.newapp.model.Eater.State;
 import colin.test.newapp.util.Assets;
@@ -17,6 +16,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
+import com.swordbit.game.GameScreen.GameStatus;
 /** The world where we place out eater and also the bits of food.**/
 
 public class World {

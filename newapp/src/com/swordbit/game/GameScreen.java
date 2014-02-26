@@ -1,4 +1,4 @@
-package colin.test.newapp;
+package com.swordbit.game;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -28,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
 
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.swordbit.game.animations.ScoreAnimation;
 
 
 /**Game Screen, repsonsible for displaying all game events, and also catching relevant input commands**/

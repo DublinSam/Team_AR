@@ -1,4 +1,4 @@
-package colin.test.newapp;
+package com.swordbit.game;
 
 import colin.test.newapp.util.Assets;
 import colin.test.newapp.util.ProgressBar;
