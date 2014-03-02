@@ -4,6 +4,7 @@
 *.DS_Store
 *.swp
 *.out
+*.gitignore
 
 # Java specific
 *.class
@@ -12,3 +13,4 @@
 .classpath
 .settings/
 .loadpath
+/bin
