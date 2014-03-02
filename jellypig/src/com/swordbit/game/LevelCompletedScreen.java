@@ -1,30 +1,23 @@
 package com.swordbit.game;
 
-import colin.test.newapp.model.Eater;
-import colin.test.newapp.model.World;
-import colin.test.newapp.ui.HighScore;
-import colin.test.newapp.ui.Score;
-import colin.test.newapp.util.PreferencesHelper;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.swordbit.game.model.Eater;
+import com.swordbit.game.model.World;
+import com.swordbit.game.util.PreferencesHelper;
 
-public class LevelCompletedScreen implements Screen{
+public class LevelCompletedScreen implements Screen {
 	private static final float CAMERA_WIDTH = 10;
 	private static final float CAMERA_HEIGHT = 7;
 	private Game myGame;
@@ -34,14 +27,16 @@ public class LevelCompletedScreen implements Screen{
 	World world;
 	PreferencesHelper phelp = new PreferencesHelper();
 	private OrthographicCamera cam;
-public LevelCompletedScreen(Game myGame,World world){
-	this.cam = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
-	this.cam.position.set(CAMERA_WIDTH / 2f, CAMERA_HEIGHT / 2f, 0);
-	this.cam.update();
-	this.myGame=myGame;
-	this.world=world;
-	this.eater=this.world.getEater();
-}
+
+	public LevelCompletedScreen(Game myGame, World world) {
+		this.cam = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
+		this.cam.position.set(CAMERA_WIDTH / 2f, CAMERA_HEIGHT / 2f, 0);
+		this.cam.update();
+		this.myGame = myGame;
+		this.world = world;
+		this.eater = this.world.getEater();
+	}
+
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0f, 1f, 0f, 1);
@@ -52,42 +47,41 @@ public LevelCompletedScreen(Game myGame,World world){
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void show() {
-		int highScore =phelp.getHighScore();
+		int highScore = phelp.getHighScore();
 		Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
 		BitmapFont buttonFont = new BitmapFont();
-		table=new Table();
+		table = new Table();
 		table.setFillParent(true);
-		stage=new Stage();
-		Label highScoreLabel = new Label( "Highscore "+highScore, skin);
-		Label scoreLabel = new Label( "Score "+eater.getScore(), skin);
+		stage = new Stage();
+		Label highScoreLabel = new Label("Highscore " + highScore, skin);
+		Label scoreLabel = new Label("Score " + eater.getScore(), skin);
 		table.add(highScoreLabel);
 		table.row();
 		table.add(scoreLabel).pad(10);
 		table.row();
-		if(world.nextLevelExists(world.getCurrentLevelIndex())){
-		
-		TextButton nextLevelButton = new TextButton("Next Level", skin );
-		nextLevelButton.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				super.clicked(event, x, y);
-				myGame.getScreen().dispose();
-				
+		if (world.nextLevelExists(world.getCurrentLevelIndex())) {
 
-				myGame.setScreen(new GameScreen(myGame,world));
-					}
-			
-	});
+			TextButton nextLevelButton = new TextButton("Next Level", skin);
+			nextLevelButton.addListener(new ClickListener() {
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					super.clicked(event, x, y);
+					myGame.getScreen().dispose();
 
-		table.add(nextLevelButton).pad(10);
+					myGame.setScreen(new GameScreen(myGame, world));
+				}
+
+			});
+
+			table.add(nextLevelButton).pad(10);
 		}
 		TextButton mainMenuButton = new TextButton("Main Menu", skin);
-		mainMenuButton.addListener(new ClickListener(){
+		mainMenuButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
@@ -98,31 +92,31 @@ public LevelCompletedScreen(Game myGame,World world){
 		table.add(mainMenuButton);
 		stage.addActor(table);
 		Gdx.input.setInputProcessor(stage);
-		
+
 	}
 
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
