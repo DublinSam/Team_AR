@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
-import com.swordbit.game.GameScreen.GameStatus;
+import com.swordbit.game.screens.GameScreen.GameStatus;
 
 /** The world where we place out eater and also the bits of food. **/
 

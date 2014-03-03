@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package colin.test.newapp;
+package com.swordbit.game;
 
 public final class R {
     public static final class attr {

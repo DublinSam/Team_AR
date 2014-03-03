@@ -1,5 +1,5 @@
 /** Automatically generated file. DO NOT MODIFY */
-package colin.test.newapp;
+package com.swordbit.game;
 
 public final class BuildConfig {
     public final static boolean DEBUG = true;

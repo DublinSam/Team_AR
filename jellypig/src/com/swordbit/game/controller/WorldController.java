@@ -16,12 +16,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
-import com.swordbit.game.GameScreen.GameStatus;
 import com.swordbit.game.model.Eater;
 import com.swordbit.game.model.Eater.State;
 import com.swordbit.game.model.Food;
 import com.swordbit.game.model.Food.FoodType;
 import com.swordbit.game.model.World;
+import com.swordbit.game.screens.GameScreen.GameStatus;
 import com.swordbit.game.util.PreferencesHelper;
 
 /**
