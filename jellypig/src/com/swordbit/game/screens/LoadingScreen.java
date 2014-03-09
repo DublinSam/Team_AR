@@ -2,70 +2,82 @@ package com.swordbit.game.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.swordbit.game.util.Assets;
-import com.swordbit.game.util.ProgressBar;
 
-/**
- * Loading Screen that displays swordbit logo and a loading bar
- **/
-public class LoadingScreen implements Screen {
+public class LoadingScreen extends AbstractGameScreen {
 	int width;
 	int height;
+	private float progress;
+	private Texture textTexture;
+	private Texture ballTexture;
 	private SpriteBatch spriteBatch;
-	private Texture splsh;
-	private Game myGame;
-	private Texture hungerTexture;
-	private TextureRegion hungerTextureRegion;
-	private ProgressBar progressBar;
 
-	/**
-	 * Constructor for the splash screen
-	 * 
-	 * @param g
-	 *            Game which called this splash screen.
-	 */
-	public LoadingScreen(Game g) {
-		Texture.setEnforcePotImages(false);
-		myGame = g;
-		splsh = new Texture(Gdx.files.internal("images/logo.png"));
-		Assets.instance.init(new AssetManager());
-		hungerTexture = new Texture("images/hunger.png");
+	public LoadingScreen(Game game) {
+		super(game);
+		loadResources();
 	}
-
-	@Override
-	public void render(float delta) {
-
-		Gdx.gl.glClearColor(1, 1, 1, 1);
-
-		spriteBatch.begin();
-		spriteBatch.draw(splsh, 0, 0, width, height);
-		progressBar.SetEnd(100,
-				Assets.instance.getAssetManager().getProgress() * 100);
-		progressBar.Draw(spriteBatch);
-		spriteBatch.end();
-		Assets.instance.getAssetManager().getLoadedAssets();
-		if (Assets.instance.getAssetManager().update()) {
-			myGame.getScreen().dispose();
-			myGame.setScreen(new MainMenuScreen(this.myGame));
-		}
-	}
-
+	
 	@Override
 	public void show() {
-
 		spriteBatch = new SpriteBatch();
-
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		hungerTextureRegion = new TextureRegion(hungerTexture);
-		progressBar = new ProgressBar(hungerTextureRegion,
-				Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() - 10);
+	}
+	
+	private void loadResources() {
+		Texture.setEnforcePotImages(false);
+		textTexture = new Texture(Gdx.files.internal("images/loading.png"));
+		ballTexture = new Texture(Gdx.files.internal("images/ball.png"));
+		Assets.instance.init(new AssetManager());
+	}
+	
+	@Override
+	public void render(float delta) {
+		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);	
+		progress = Assets.instance.getAssetManager().getProgress();
+		spriteBatch.begin();
+		spriteBatch.draw(textTexture, 0, 0);
+		drawProgressBalls(progress);
+		spriteBatch.end();
+		switchToMainMenu();
+	}
+	
+	private void drawProgressBalls(float progress) {
+		if (progress < 0.2) {
+			// Don't draw balls
+		} else if (progress < 0.4) {
+			drawOneBall();
+		} else if (progress < 0.6) {
+			drawTwoBalls();
+		} else {
+			drawThreeBalls();
+		}
+	}
+	
+	private void drawOneBall() {
+		spriteBatch.draw(ballTexture, 130, 80);
+	}
+	
+	private void drawTwoBalls() {
+		spriteBatch.draw(ballTexture, 130, 80);
+		spriteBatch.draw(ballTexture, 200, 80);
+	}
+	
+	private void drawThreeBalls() {
+		spriteBatch.draw(ballTexture, 130, 80);
+		spriteBatch.draw(ballTexture, 200, 80);
+		spriteBatch.draw(ballTexture, 270, 80);
+	}
+	
+	private void switchToMainMenu() {
+		Assets.instance.getAssetManager().getLoadedAssets();
+		if (Assets.instance.getAssetManager().update()) {
+			game.getScreen().dispose();
+			game.setScreen(new MainMenuScreen(this.game, world));
+		}
 	}
 
 	@Override
@@ -74,27 +86,7 @@ public class LoadingScreen implements Screen {
 		this.width = width;
 	}
 
-	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-
-	}
+	@Override public void pause() {}
+	@Override public void resume() {}
+	@Override public void dispose() {}
 }

@@ -19,8 +19,7 @@ import com.swordbit.game.util.Assets;
  * Main menu, play, settings nad level select buttons which all go to their
  * respective screens
  **/
-public class MainMenuScreen implements Screen {
-	private Game myGame;
+public class MainMenuScreen extends AbstractGameScreen {
 	SpriteBatch spriteBatch;
 	private Stage stage;
 	private Table table;
@@ -32,8 +31,8 @@ public class MainMenuScreen implements Screen {
 	private TextButton settingsButton;
 	private Texture backgroundImage;
 
-	public MainMenuScreen(Game game) {
-		myGame = game;
+	public MainMenuScreen(Game game, World world) {
+		super(game, world);
 		CAMERA_HEIGHT = Gdx.graphics.getHeight();
 		CAMERA_WIDTH = Gdx.graphics.getWidth();
 		backgroundImage = Assets.instance.getAssetManager().get(
@@ -99,8 +98,8 @@ public class MainMenuScreen implements Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				myGame.getScreen().dispose();
-				myGame.setScreen(new LevelSelectScreen(myGame, new World()));
+				game.getScreen().dispose();
+				game.setScreen(new LevelSelectScreen(game, new World()));
 			}
 		});
 
@@ -112,18 +111,13 @@ public class MainMenuScreen implements Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				myGame.getScreen().dispose();
-				myGame.setScreen(new GameScreen(myGame, new World(0)));
+				game.getScreen().dispose();
+				game.setScreen(new GameScreen(game, new World(0)));
 			}
 		});
 
 	}
 
-	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void pause() {

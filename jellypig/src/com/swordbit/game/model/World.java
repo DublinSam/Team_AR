@@ -11,26 +11,19 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
 import com.swordbit.game.screens.GameScreen.GameStatus;
 
-/** The world where we place out eater and also the bits of food. **/
+// The world where we place out eater and food.
 
 public class World {
-	/** Our player controlled hero **/
 	private List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
 	Eater eater;
 	List<Food> foodInWorld;
-	int difficulty;
-	/** food that has not been collected **/
-	int foodMissed;
-	/** food that has been collected **/
-	int foodCollected;
-	/** Current level in world **/
-	Level level;
-	/** array of all map file locations **/
-	String[] levelLocations;
-	/** total number of levels **/
-	int noOfLevels = 6;
-	/** current level index **/
-	int currentLevel;
+	int difficulty; 
+	int foodMissed; // food that has not been collected
+	int foodCollected; // food that has been collected 
+	Level level; // Current level in world 
+	String[] levelLocations; // array of all map file locations
+	int noOfLevels = 6; // total number of levels 
+	int currentLevel; // current level index
 	private Pool<Food> foodPool = new Pool<Food>() {
 		@Override
 		protected Food newObject() {
@@ -132,7 +125,6 @@ public class World {
 	}
 
 	public Level getCurrentLevel() {
-
 		return this.level;
 	}
 

@@ -17,23 +17,21 @@ import com.swordbit.game.model.Eater;
 import com.swordbit.game.model.World;
 import com.swordbit.game.util.PreferencesHelper;
 
-public class LevelCompletedScreen implements Screen {
+public class LevelCompletedScreen extends AbstractGameScreen {
 	private static final float CAMERA_WIDTH = 10;
 	private static final float CAMERA_HEIGHT = 7;
 	private Game myGame;
-	Stage stage;
-	Eater eater;
-	Table table;
-	World world;
-	PreferencesHelper phelp = new PreferencesHelper();
+	private Stage stage;
+	private Eater eater;
+	private Table table;
+	private World world;
 	private OrthographicCamera cam;
 
-	public LevelCompletedScreen(Game myGame, World world) {
+	public LevelCompletedScreen(Game game, World world) {
+		super(game, world);
 		this.cam = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
 		this.cam.position.set(CAMERA_WIDTH / 2f, CAMERA_HEIGHT / 2f, 0);
 		this.cam.update();
-		this.myGame = myGame;
-		this.world = world;
 		this.eater = this.world.getEater();
 	}
 
@@ -45,13 +43,8 @@ public class LevelCompletedScreen implements Screen {
 	}
 
 	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void show() {
+		PreferencesHelper phelp = new PreferencesHelper();
 		int highScore = phelp.getHighScore();
 		Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
 		BitmapFont buttonFont = new BitmapFont();
@@ -86,7 +79,7 @@ public class LevelCompletedScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
 				myGame.getScreen().dispose();
-				myGame.setScreen(new MainMenuScreen(myGame));
+				myGame.setScreen(new MainMenuScreen(myGame, world));
 			}
 		});
 		table.add(mainMenuButton);
@@ -96,7 +89,7 @@ public class LevelCompletedScreen implements Screen {
 	}
 
 	@Override
-	public void hide() {
+	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
 
 	}
@@ -106,17 +99,4 @@ public class LevelCompletedScreen implements Screen {
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-
-	}
-
 }

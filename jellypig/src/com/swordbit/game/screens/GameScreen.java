@@ -7,7 +7,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -27,20 +26,17 @@ import com.swordbit.game.ui.Score;
 import com.swordbit.game.util.Assets;
 import com.swordbit.game.util.ProgressBar;
 
-/**
+/*
  * Game Screen is responsible for displaying all game events, and also catching
  * relevant input commands
- **/
+ */
 
-public class GameScreen implements Screen, InputProcessor,
+public class GameScreen extends AbstractGameScreen implements InputProcessor,
 		PropertyChangeListener {
 	boolean touchDown;
-	private World world;
 	private WorldRenderer renderer;
 	private WorldController controller;
 	private int width, height;
-	private Game myGame;
-
 	Skin skin;
 	PauseTable pauseTable;
 	private final float CAMERA_WIDTH = 480;
@@ -60,43 +56,41 @@ public class GameScreen implements Screen, InputProcessor,
 	}
 
 	public GameScreen(Game game, World world) {
-		currentLevel = world.getCurrentLevelIndex();
-		scoreAnimation = new ScoreAnimation();
-		ui = new Stage();
-		this.cam = new OrthographicCamera();
-		this.cam.setToOrtho(false, CAMERA_WIDTH, CAMERA_HEIGHT);
-		// this.cam.position.set(CAMERA_WIDTH,CAMERA_HEIGHT, 0);
-		this.cam.update();
-		ui.setCamera(cam);
-		pauseTable = new PauseTable();
-
-		pauseTable.setPosition(CAMERA_WIDTH / 2, -CAMERA_HEIGHT / 2);
-		skin = Assets.instance.getAssetManager().get("data/textbuttons.json",
-				Skin.class);
+		super(game, world);
 		renderer = new WorldRenderer(world);
-		controller = new WorldController(world);
-		this.world = world;
-		this.myGame = game;
-
+		controller = new WorldController(world);	
+		currentLevel = world.getCurrentLevelIndex();
+		buildUI();
+		createScore();
+	}
+	
+	private void buildUI() {
+		ui = new Stage();
+		setUpCamera();
+		ui.setCamera(cam);
+		skin = Assets.instance.getAssetManager().get("data/textbuttons.json",
+				Skin.class);	
 		createBeginButton();
 		createPauseButton();
-		createScore();
 		createPauseTable();
 	}
+	
+	private void setUpCamera() {
+		this.cam = new OrthographicCamera();
+		this.cam.setToOrtho(false, CAMERA_WIDTH, CAMERA_HEIGHT);
+		this.cam.update();	
+	}
 
-	/** Draw Screen **/
 	@Override
 	public void render(float delta) {
 		// Background color blue
 		Gdx.gl.glClearColor(0.16f, 0.67f, 0.95f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-
 		if (!(gamePaused)) {
 			controller.update(delta);
 		}
 		renderer.render();
 		renderGui(ui.getSpriteBatch());
-
 		ui.act();
 	}
 
@@ -108,7 +102,6 @@ public class GameScreen implements Screen, InputProcessor,
 
 	@Override
 	public void show() {
-
 		hungerTexture = Assets.instance.getAssetManager().get(
 				"images/hunger.png", Texture.class);
 		hungerTextureRegion = new TextureRegion(hungerTexture);
@@ -145,7 +138,9 @@ public class GameScreen implements Screen, InputProcessor,
 	}
 
 	public void createPauseTable() {
-
+		
+		pauseTable = new PauseTable();
+		pauseTable.setPosition(CAMERA_WIDTH / 2, -CAMERA_HEIGHT / 2);
 		TextButton resumeButton = new TextButton("Resume", skin);
 		resumeButton.addListener(new ClickListener() {
 			@Override
@@ -171,8 +166,8 @@ public class GameScreen implements Screen, InputProcessor,
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				myGame.getScreen().dispose();
-				myGame.setScreen(new GameScreen(myGame, new World(currentLevel)));
+				game.getScreen().dispose();
+				game.setScreen(new GameScreen(game, new World(currentLevel)));
 			}
 
 		});
@@ -184,8 +179,8 @@ public class GameScreen implements Screen, InputProcessor,
 			public void clicked(InputEvent event, float x, float y) {
 				// TODO Auto-generated method stub
 				super.clicked(event, x, y);
-				myGame.getScreen().dispose();
-				myGame.setScreen(new MainMenuScreen(myGame));
+				game.getScreen().dispose();
+				game.setScreen(new MainMenuScreen(game, world));
 			}
 		});
 		pauseTable.add(mainMenuButton).width(CAMERA_WIDTH / 3);
@@ -205,12 +200,6 @@ public class GameScreen implements Screen, InputProcessor,
 		progressBar.SetEnd(100, world.getEater().getFullness());
 		progressBar.Draw(ui.getSpriteBatch());
 		ui.getSpriteBatch().end();
-	}
-
-	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void createPauseButton() {
@@ -235,6 +224,7 @@ public class GameScreen implements Screen, InputProcessor,
 	}
 
 	public void createScore() {
+		scoreAnimation = new ScoreAnimation();
 		Score score = new Score(world.getEater(), 75, 25, 5, CAMERA_HEIGHT - 20);
 		ui.addActor(score);
 	}
@@ -247,12 +237,6 @@ public class GameScreen implements Screen, InputProcessor,
 	@Override
 	public void pause() {
 		pauseGame();
-
-	}
-
-	@Override
-	public void resume() {
-
 	}
 
 	@Override
@@ -328,12 +312,11 @@ public class GameScreen implements Screen, InputProcessor,
 			GameStatus gameStatus = (GameStatus) evt.getNewValue();
 
 			if (gameStatus == GameStatus.GAMEOVER) {
-				myGame.getScreen().dispose();
-				myGame.setScreen(new GameOverScreen(this.myGame, world
-						.getEater(), currentLevel));
+				game.getScreen().dispose();
+				game.setScreen(new GameOverScreen(this.game, world));
 			} else if (gameStatus == GameStatus.LEVELCOMPLETED) {
-				myGame.getScreen().dispose();
-				myGame.setScreen(new LevelCompletedScreen(this.myGame, world));
+				game.getScreen().dispose();
+				game.setScreen(new LevelCompletedScreen(this.game, world));
 			}
 		}
 	}
@@ -366,7 +349,6 @@ public class GameScreen implements Screen, InputProcessor,
 	public void dispose() {
 		Assets.instance.getAssetManager().unload(
 				"maps/level" + currentLevel + ".tmx");
-
 	}
 
 }

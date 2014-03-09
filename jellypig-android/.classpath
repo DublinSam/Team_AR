@@ -7,6 +7,6 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="lib" path="/jellypig/libs/gdx.jar" sourcepath="/jellypig/libs/gdx-sources.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jellypig"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jellypig"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

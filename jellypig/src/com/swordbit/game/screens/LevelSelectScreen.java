@@ -18,9 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.swordbit.game.model.World;
 import com.swordbit.game.util.Assets;
 
-public class LevelSelectScreen implements Screen {
+public class LevelSelectScreen extends AbstractGameScreen {
 
-	Game myGame;
 	private Stage stage;
 	private Table table;
 	Skin skin = new Skin(Gdx.files.internal("data/textbuttons.json"));
@@ -30,11 +29,9 @@ public class LevelSelectScreen implements Screen {
 	SpriteBatch spriteBatch;
 	int CAMERA_HEIGHT;
 	int CAMERA_WIDTH;
-	World world;
 
 	public LevelSelectScreen(Game game, World world) {
-		myGame = game;
-		this.world = world;
+		super(game, world);
 		CAMERA_WIDTH = 480;
 		CAMERA_HEIGHT = 320;
 	}
@@ -85,11 +82,6 @@ public class LevelSelectScreen implements Screen {
 		scroll.layout();
 	}
 
-	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void pause() {
@@ -128,7 +120,7 @@ public class LevelSelectScreen implements Screen {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
 					super.clicked(event, x, y);
-					myGame.setScreen(new GameScreen(myGame, new World(level)));
+					game.setScreen(new GameScreen(game, new World(level)));
 				};
 			});
 		}
