@@ -1,8 +1,7 @@
 package com.swordbit.game.util;
 
 public class Constants {
-	// Seconds spent showing swordbit logo
-	public static final float LOGO_TIMER = 4f;
+	public static final float LOGO_TIMER_IN_SECONDS = 1.5f;
 	
 	// Proportion of the logo screen width to be covered by the logo
 	public static final float LOGO_SIZE = 0.6f;

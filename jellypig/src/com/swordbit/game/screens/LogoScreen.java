@@ -18,14 +18,14 @@ public class LogoScreen extends AbstractGameScreen {
 	
 	public LogoScreen(Game game) {
 		super(game);
-		countDown = Constants.LOGO_TIMER;
-		logoTexture = new Texture(Gdx.files.internal("images/logo.png"));
-		configureLogoDimensions();
+		calculateLogoCoordinates();
 	}
 
 	@Override
 	public void show() {
 		spriteBatch = new SpriteBatch();
+		countDown = Constants.LOGO_TIMER_IN_SECONDS;
+		logoTexture = new Texture(Gdx.files.internal("images/logo.png"));
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class LogoScreen extends AbstractGameScreen {
 			game.setScreen(new LoadingScreen(game));
 	}
 	
-	private void configureLogoDimensions() {
+	private void calculateLogoCoordinates() {
 		int screenWidth = Gdx.graphics.getWidth();
 		int screenHeight = Gdx.graphics.getHeight();
 		bottomLeftCornerX = 
