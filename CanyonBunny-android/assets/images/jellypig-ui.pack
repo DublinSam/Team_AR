@@ -1,0 +1,19 @@
+
+jellypig-ui.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Play
+  rotate: false
+  xy: 270, 2
+  size: 266, 97
+  orig: 266, 97
+  offset: 0, 0
+  index: -1
+Play-pressed
+  rotate: false
+  xy: 2, 2
+  size: 266, 97
+  orig: 266, 97
+  offset: 0, 0
+  index: -1

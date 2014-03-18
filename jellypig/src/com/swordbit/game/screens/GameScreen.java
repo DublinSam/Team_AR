@@ -33,24 +33,24 @@ import com.swordbit.game.util.ProgressBar;
 
 public class GameScreen extends AbstractGameScreen implements InputProcessor,
 		PropertyChangeListener {
-	boolean touchDown;
-	private WorldRenderer renderer;
-	private WorldController controller;
-	private int width, height;
+	Stage ui;
 	Skin skin;
 	PauseTable pauseTable;
-	private final float CAMERA_WIDTH = 480;
-	private final float CAMERA_HEIGHT = 320;
+	boolean touchDown;
 	boolean gamePaused = false;
+	private int width, height;
 	private TextureRegion hungerTextureRegion;
-	Stage ui;
+	private int currentLevel;
 	private ProgressBar progressBar;
 	private Texture hungerTexture;
 	private OrthographicCamera cam;
 	private TextButton beginButton;
-	private int currentLevel;
 	private boolean itemCollected;
+	private WorldRenderer renderer;
+	private WorldController controller;
 	private ScoreAnimation scoreAnimation;
+	private final float CAMERA_WIDTH = 480;
+	private final float CAMERA_HEIGHT = 320;
 	public enum GameStatus {
 		INPROGRESS, GAMEOVER, LEVELCOMPLETED
 	}
@@ -76,8 +76,8 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	}
 	
 	private void setUpCamera() {
-		this.cam = new OrthographicCamera();
-		this.cam.setToOrtho(false, CAMERA_WIDTH, CAMERA_HEIGHT);
+		this.cam = new OrthographicCamera(); 
+		this.cam.setToOrtho(false);//, CAMERA_WIDTH, CAMERA_HEIGHT);
 		this.cam.update();	
 	}
 

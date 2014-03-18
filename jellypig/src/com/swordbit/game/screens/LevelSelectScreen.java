@@ -55,7 +55,7 @@ public class LevelSelectScreen extends AbstractGameScreen {
 		container.setFillParent(true);
 		Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 		backgroundImage = Assets.instance.getAssetManager().get(
-				"images/LandingPage.png", Texture.class);
+				"images/main-menu-background.png", Texture.class);
 
 		container.add(table);
 
