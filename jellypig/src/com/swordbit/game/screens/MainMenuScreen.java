@@ -80,7 +80,7 @@ public class MainMenuScreen extends AbstractGameScreen {
 	
 	private Table addPlayButtonToLayer(Table layer) {
 		playButton = new Button(menuSkin, "play");
-		layer.add(playButton).width(200.0f).height(73.0f);
+		layer.add(playButton).width(290.0f).height(150.3f);
 		playButton.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
