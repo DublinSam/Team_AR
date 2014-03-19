@@ -1,0 +1,19 @@
+
+purpleButtons.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+purpleButtonUp
+  rotate: false
+  xy: 0, 0
+  size: 88, 82
+  orig: 88, 82
+  offset: 0, 0
+  index: -1
+purpleButtonDown
+  rotate: false
+  xy: 88, 0
+  size: 88, 82
+  orig: 88, 82
+  offset: 0, 0
+  index: -1
