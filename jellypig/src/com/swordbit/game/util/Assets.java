@@ -16,26 +16,18 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
 public class Assets implements Disposable, AssetErrorListener {
 
-	public static final String TAG = Assets.class.getName();
-	public static final Assets instance = new Assets();
 	public AssetFonts fonts;
-	
+	public static final Assets instance = new Assets();
+	public static final String TAG = Assets.class.getName();
 	private AssetManager assetManager;
 
-	private Assets() {} // singleton constructor
+	private Assets() {} 
 
 	public void init(AssetManager manager) {
-		
 		this.assetManager = manager;
 		assetManager.setLoader(TiledMap.class, new TmxMapLoader(
 								new InternalFileHandleResolver()));
-		/*
-		 * assetManager.load("maps/level0.tmx",TiledMap.class);
-		 * assetManager.load("maps/level1.tmx",TiledMap.class);
-		 * assetManager.load("maps/level2.tmx",TiledMap.class);
-		 */
-		
-				
+	
 		assetManager.load("atlas/textures.pack", TextureAtlas.class);
 		assetManager.load("data/textbuttons.json", Skin.class);
 		assetManager.load("images/Fog.png", Texture.class);
@@ -55,12 +47,9 @@ public class Assets implements Disposable, AssetErrorListener {
 		assetManager.load("images/main-menu-background.png", Texture.class);
 		assetManager.load("images/EnchiladoJellyPig-01.png", Texture.class);
 
-		// set asset manager error handler
 		assetManager.setErrorListener(this);
-
 		Gdx.app.debug(TAG,"# of assets loaded: " 
 						+ assetManager.getAssetNames().size);
-		
 		for (String a : assetManager.getAssetNames()) {
 			Gdx.app.debug(TAG, "asset: " + a);
 		}

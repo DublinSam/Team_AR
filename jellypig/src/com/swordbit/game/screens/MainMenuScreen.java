@@ -91,7 +91,7 @@ public class MainMenuScreen extends AbstractGameScreen {
 	}
 	
 	private void onPlayButtonClicked () {
-		game.setScreen(new GameScreen(game, new World(0)));
+		game.setScreen(new GameScreen(game, new World(5)));
 	}
 	
 	void rebuildStage() {

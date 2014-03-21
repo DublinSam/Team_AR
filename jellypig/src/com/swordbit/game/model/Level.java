@@ -1,16 +1,16 @@
 package com.swordbit.game.model;
 
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.swordbit.game.util.Assets;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 
 public class Level {
-	TiledMap map;
+	Eater eater;
 	String LevelLocation;
 	Vector2 eaterPosition;
-	LevelStatus levelStatus;
-	Eater eater;
-	String levelName;
+	private TiledMap map;
+	private String levelName;
+	private LevelStatus levelStatus;
 
 	enum LevelStatus {
 		COMPLETED, FAILED, INPROGRESS
@@ -29,28 +29,25 @@ public class Level {
 	protected TiledMap getMap() {
 		return this.map;
 	}
+	
+	public void levelFailed() {
+		this.levelStatus = LevelStatus.FAILED;
+	}
+	
+	public String getLevelName() {
+		return this.levelName;
+	}
+	
+	protected void levelCompleted() {
+		this.levelStatus = LevelStatus.COMPLETED;
+	}
 
 	protected boolean isLevelCompleted() {
 		return levelStatus == LevelStatus.COMPLETED;
 	}
 
-	protected void levelCompleted() {
-		this.levelStatus = LevelStatus.COMPLETED;
-	}
-
-	public void levelFailed() {
-		this.levelStatus = LevelStatus.FAILED;
-
-	}
-
-	public String getLevelName() {
-		return this.levelName;
-	}
-
 	public void loadMap(String level) {
-
 		map = Assets.instance.getAssetManager().get(level, TiledMap.class);
-
 	}
 
 }
