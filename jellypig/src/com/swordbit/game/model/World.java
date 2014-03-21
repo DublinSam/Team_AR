@@ -8,6 +8,8 @@ import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.swordbit.game.model.food.Food;
+import com.swordbit.game.model.food.Strawberry;
 import com.swordbit.game.screens.GameScreen.GameStatus;
 
 //The world where we place the eater and food.
@@ -24,10 +26,11 @@ public class World {
 	private List<PropertyChangeListener> listener =
 				new ArrayList<PropertyChangeListener>();
 	
+	
 	private Pool<Food> foodPool = new Pool<Food>() {
 		@Override
 		protected Food newObject() {
-			return new Food();
+			return new Strawberry(); // Testing the mechanism
 		}
 	};
 	
@@ -68,7 +71,7 @@ public class World {
 	public void spawnFood(float posX, float posY) {
 		Food food = foodPool.obtain();
 		food.setPosition(posX, posY);
-		food.generateFoodType();
+		// food.generateFoodType();
 
 		foodInWorld.add(food);
 

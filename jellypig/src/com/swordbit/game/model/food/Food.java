@@ -1,37 +1,33 @@
-package com.swordbit.game.model;
+package com.swordbit.game.model.food;
 
-import java.util.Random;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Food {
-	public static final float SIZE = 0.5f; // half a unit
-	public static final float SPEED = -2f; // unit per second
+	// Fixed properties for every food item
+	protected static final float SIZE = 0.5f; // half a unit
+	protected static final float SPEED = -2f; // unit per second
+	protected Vector2 velocity = new Vector2();
+	protected Vector2 acceleration = new Vector2();
+	
+	// Properties that are defined in the food subtype
+	public String consequence;
+	public int scoreValue;
+	protected float width;
+	protected float height;
+	protected TextureRegion foodTexture;
+	
+	
+	
 	float timeAlive;
 	boolean released;
-	FoodType foodType;
-	float stateTime = 0;
+	//float stateTime = 0;
 	boolean exists = true;
 	Vector2 position = new Vector2();
-	Vector2 velocity = new Vector2();
 	Rectangle bounds = new Rectangle();
-	Vector2 acceleration = new Vector2();
 	
-	/** Food types with their respective height and widths **/
-	public enum FoodType {
-		STRAWBERRY(0.5f, 0.5f), COOKIE(0.5f, 0.5f), CHILLI(0.25f, 0.70f), APPLE(
-				0.5f, 0.5f), BURGER(0.75f, 0.75f), HOTDOG(0.90f, 0.5f), PIZZA(
-				0.75f, 0.75f), LEMON(0.5f, 0.5f);
-		
-		public final float width;
-		public final float height;
-		
-		private FoodType(float width, float height) {
-			this.width = width;
-			this.height = height;
-		}
-	}
-
 	public enum State {
 		IDLE, MOVING
 	}
@@ -40,15 +36,16 @@ public class Food {
 	}
 
 	public Food(Vector2 position) {
-		generateFoodType();
+		//generateFoodType();
 		this.timeAlive = 0;
 		this.position = position;
 		this.bounds.setPosition(this.position);
-		this.bounds.height = this.foodType.height;
-		this.bounds.width = this.foodType.width;
+		// this.bounds.height = this.foodType.height;
+		// this.bounds.width = this.foodType.width;
 		this.velocity = new Vector2(0, SPEED);
 	}
 
+	/*
 	public void generateFoodType() {
 		Random randomGenerator = new Random();
 		int randomInt = randomGenerator.nextInt(8);
@@ -58,6 +55,7 @@ public class Food {
 		this.velocity.y = -2;
 
 	}
+	*/
 
 	public Vector2 getAcceleration() {
 		return this.acceleration;
@@ -71,9 +69,11 @@ public class Food {
 		return exists;
 	}
 
+	/*
 	public FoodType getFoodType() {
 		return foodType;
 	}
+	*/
 
 	public Vector2 getPosition() {
 		return this.position;
@@ -94,10 +94,11 @@ public class Food {
 	public void setExists(boolean isAlive) {
 		exists = isAlive;
 	}
-
+	/*
 	public void setFoodType(FoodType foodType) {
 		this.foodType = foodType;
 	}
+	*/
 
 	public void setPosition(float posX, float posY) {
 		this.position.x = posX;
@@ -113,5 +114,15 @@ public class Food {
 			position.add(velocity.cpy().scl(delta));
 			this.bounds.setPosition(position);
 		}
+	}
+	
+	public void render(SpriteBatch spriteBatch) {
+		TextureRegion reg = null;
+		reg = foodTexture;
+		spriteBatch.draw(reg.getTexture(), 
+						this.getBounds().x,
+						this.getBounds().y, 
+						this.getBounds().width,
+						this.getBounds().height);
 	}
 }

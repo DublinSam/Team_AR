@@ -119,6 +119,7 @@ public class LoadingScreen extends AbstractGameScreen {
 	private void switchToMainMenu() {
 		Assets.instance.getAssetManager().getLoadedAssets();
 		if (Assets.instance.getAssetManager().update()) {
+			Assets.instance.exposeAssetClasses();
 			game.getScreen().dispose();
 			game.setScreen(new MainMenuScreen(this.game, world));
 		}

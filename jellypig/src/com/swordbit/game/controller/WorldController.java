@@ -17,9 +17,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.swordbit.game.model.Eater;
-import com.swordbit.game.model.Eater.State;
-import com.swordbit.game.model.Food;
-import com.swordbit.game.model.Food.FoodType;
+import com.swordbit.game.model.food.Food;
 import com.swordbit.game.model.World;
 import com.swordbit.game.screens.GameScreen.GameStatus;
 import com.swordbit.game.util.PreferencesHelper;
@@ -66,7 +64,7 @@ public class WorldController {
 
 	public void jumpPressed() {
 		if (eater.grounded) {
-			eater.setState(State.JUMPING);
+			eater.setState("JUMPING");
 			eater.getVelocity().y = 12;
 
 		}
@@ -331,9 +329,9 @@ public class WorldController {
 				+ (item.getBounds().getHeight() / 2);
 		if (topOfFoodPos < 0) {
 			item.setExists(false);
-			if (item.getFoodType() == FoodType.STRAWBERRY) {
-				world.increaseFoodMissed();
-			}
+			//if (item.getFoodType() == FoodType.STRAWBERRY) {
+			//	world.increaseFoodMissed();
+			//}
 
 		}
 	}
@@ -407,7 +405,7 @@ public class WorldController {
 
 	private void setBlinkAnimation() {
 		Eater eater = world.getEater();
-		eater.setState(State.BLINK);
+		eater.setState("BLINK");
 		timeNotBlinked = 0;
 	}
 

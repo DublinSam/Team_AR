@@ -22,11 +22,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.swordbit.game.animations.ScoreAnimation;
 import com.swordbit.game.model.Eater;
-import com.swordbit.game.model.Food;
 import com.swordbit.game.model.World;
-import com.swordbit.game.model.Eater.State;
-import com.swordbit.game.model.Food.FoodType;
+import com.swordbit.game.model.food.Cookie;
+import com.swordbit.game.model.food.Food;
 import com.swordbit.game.util.Assets;
+import com.swordbit.game.util.Constants;
 import com.swordbit.game.util.ParallaxBackground;
 import com.swordbit.game.util.ParallaxLayer;
 import com.swordbit.game.util.ProgressBar;
@@ -108,7 +108,7 @@ public class WorldRenderer implements PropertyChangeListener {
 
 	public void loadTextures() {
 
-		TextureAtlas atlas = assetManager.get("atlas/textures.pack",
+		TextureAtlas atlas = assetManager.get(Constants.TEXTURE_ATLAS_FOOD,
 				TextureAtlas.class);
 		spriteBatch = new SpriteBatch();
 		spriteBatch.setProjectionMatrix(cam.combined);
@@ -278,15 +278,15 @@ public class WorldRenderer implements PropertyChangeListener {
 					eater.getPosition().y - 0.1f, eaterBounds.width,
 					eaterBounds.height);
 			if (currentAnimation.isAnimationFinished(eater.getTimeInState())) {
-				if (eater.getState() == State.EATING) {
-					eater.forceState(State.TRANSFORMING);
-				} else if (eater.getState() == State.TRANSFORMING) {
+				if (eater.getState() == "EATING") {
+					eater.forceState("TRANSFORMING");
+				} else if (eater.getState() == "TRANSFORMING") {
 
-					State finalState = eater.getFinalState();
+					String finalState = eater.getFinalState();
 					eater.forceState(finalState);
 					currentAnimation = null;
 				} else {
-					eater.forceState(State.IDLE);
+					eater.forceState("IDLE");
 					currentAnimation = null;
 				}
 
@@ -309,56 +309,7 @@ public class WorldRenderer implements PropertyChangeListener {
 	}
 
 	public void drawFoodItem(Food food) {
-		FoodType foodType = food.getFoodType();
-		switch (foodType) {
-		case COOKIE:
-			spriteBatch.draw(cookieTexture, food.getBounds().x,
-					food.getBounds().y, food.getBounds().width,
-					food.getBounds().height);
-			break;
-
-		case STRAWBERRY:
-			spriteBatch.draw(strawBerryTexture, food.getBounds().x,
-					food.getBounds().y, food.getBounds().width,
-					food.getBounds().height);
-			break;
-
-		case CHILLI:
-			spriteBatch.draw(chilliTexture, food.getBounds().x,
-					food.getBounds().y, food.getBounds().width,
-					food.getBounds().height);
-			break;
-
-		case HOTDOG:
-			spriteBatch.draw(hotdogTexture, food.getBounds().x,
-					food.getBounds().y, food.getBounds().width,
-					food.getBounds().height);
-			break;
-
-		case BURGER:
-			spriteBatch.draw(burgerTexture, food.getBounds().x,
-					food.getBounds().y, food.getBounds().width,
-					food.getBounds().height);
-			break;
-
-		case LEMON:
-			spriteBatch.draw(lemonTexture, food.getBounds().x,
-					food.getBounds().y, food.getBounds().width,
-					food.getBounds().height);
-			break;
-
-		case APPLE:
-			spriteBatch.draw(appleTexture, food.getBounds().x,
-					food.getBounds().y, food.getBounds().width,
-					food.getBounds().height);
-			break;
-
-		case PIZZA:
-			spriteBatch.draw(pizzaTexture, food.getBounds().x,
-					food.getBounds().y, food.getBounds().width,
-					food.getBounds().height);
-			break;
-		}
+		food.render(spriteBatch);
 	}
 
 	public void drawDebug() {
@@ -379,11 +330,7 @@ public class WorldRenderer implements PropertyChangeListener {
 			while (it.hasNext()) {
 				Food foodItem = it.next();
 				foodBounds = foodItem.getBounds();
-				if (foodItem.getFoodType() == FoodType.COOKIE) {
-					debugRenderer.setColor(1, 0, 0, 1);
-				} else {
-					debugRenderer.setColor(new Color(0, 1, 0, 1));
-				}
+				debugRenderer.setColor(new Color(0, 1, 0, 1));
 				debugRenderer.rect(foodItem.getBounds().x,
 						foodItem.getBounds().y, foodBounds.width,
 						foodBounds.height);
@@ -396,51 +343,36 @@ public class WorldRenderer implements PropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent event) {
 		// code listens for changes to eater, called in setState in eater class
 		if (event.getPropertyName().equals("state")) {
-			State state = (State) event.getNewValue();
-			switch (state) {
-			case BLINK:
-				currentAnimation = blinkAnimation;
-				break;
-			case JUMPING:
+			String state = (String) event.getNewValue();
+			if (state == "BLINK")
+				currentAnimation = blinkAnimation;	
+			else if(state == "JUMPING")
 				idleTexture = assetManager.get("images/JellyPig_Jump48.png",
 						Texture.class);
-				break;
-			case IDLE:
+			else if(state == "IDLE")
 				idleTexture = assetManager.get("images/JellyPig48.png",
 						Texture.class);
-				break;
-			case TRANSFORMING:
+			else if(state == "TRANSFORMING")
 				currentAnimation = transformationAnimation;
-				break;
-			case FAT:
+			else if(state == "FAT")
 				idleTexture = assetManager.get("images/FatJellyPig-01.png",
 						Texture.class);
-				break;
-			case ACNE:
+			else if(state == "ACNE")
 				idleTexture = assetManager.get("images/AcneJellyPig-01.png",
 						Texture.class);
-				break;
-			case HOT:
+			else if(state == "HOT")
 				idleTexture = assetManager.get(
 						"images/EnchiladoJellyPig-01.png", Texture.class);
-				break;
-			case SOUR:
+			else if(state == "SOUR")
 				idleTexture = assetManager.get("images/LemonJellyPig-01.png",
 						Texture.class);
-				break;
-			case HAPPY:
+			else if(state == "HAPPY")
 				idleTexture = assetManager.get("images/HappyJellyPig-01.png",
 						Texture.class);
-				break;
-			case EATING:
+			else if(state == "EATING")
 				currentAnimation = eatingAnimation;
-				break;
-
-			default:
+			else
 				currentAnimation = eatingAnimation;
-				break;
 			}
-
 		}
-	}
 }

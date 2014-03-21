@@ -1,5 +1,5 @@
 
-textures.png
+food-textures.png
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
@@ -38,7 +38,7 @@ Cookie
   orig: 307, 307
   offset: 0, 0
   index: -1
-Chilli
+Chili
   rotate: false
   xy: 639, 286
   size: 137, 511

@@ -32,6 +32,10 @@ public class Main {
 					"assets-raw/loading-screen", 
 					"../jellypig-android/assets/images", 
 					"loading-screen.pack");
+			TexturePacker2.process(settings, 
+					"assets-raw/food-assets", 
+					"../jellypig-android/assets/atlas", 
+					"food-textures.pack");
 		}
 		
 		new LwjglApplication(new GdxGame(), "jellpig", 800, 480, true);
