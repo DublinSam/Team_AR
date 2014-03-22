@@ -19,44 +19,49 @@ public class Food {
 	protected float height;
 	protected TextureRegion foodTexture;
 	
-	
-	
 	float timeAlive;
 	boolean released;
 	//float stateTime = 0;
 	boolean exists = true;
 	Vector2 position = new Vector2();
 	Rectangle bounds = new Rectangle();
-	
-	public enum State {
-		IDLE, MOVING
-	}
 
 	public Food() {
-	}
-
-	public Food(Vector2 position) {
-		//generateFoodType();
 		this.timeAlive = 0;
-		this.position = position;
-		this.bounds.setPosition(this.position);
-		// this.bounds.height = this.foodType.height;
-		// this.bounds.width = this.foodType.width;
 		this.velocity = new Vector2(0, SPEED);
 	}
 
-	/*
-	public void generateFoodType() {
-		Random randomGenerator = new Random();
-		int randomInt = randomGenerator.nextInt(8);
-		this.foodType = FoodType.values()[randomInt];
-		this.bounds.height = foodType.height;
-		this.bounds.width = foodType.width;
-		this.velocity.y = -2;
-
+	public Food(Vector2 position) {
+		this.timeAlive = 0;
+		this.position = position;
+		this.bounds.setPosition(this.position);
+		this.velocity = new Vector2(0, SPEED);
 	}
-	*/
 
+	public void setPosition(float posX, float posY) {
+		this.position.x = posX;
+		this.position.y = posY;
+	}
+
+	public void update(float delta) {
+		timeAlive += delta;
+		if (timeAlive > 0) {
+			this.release();
+		}
+		if (this.isReleased()) {
+			position.add(velocity.cpy().scl(delta));
+			this.bounds.setPosition(position);
+		}
+	}
+	
+	public void render(SpriteBatch spriteBatch) {
+		spriteBatch.draw(this.foodTexture, 
+						this.getBounds().x,
+						this.getBounds().y, 
+						this.getBounds().width,
+						this.getBounds().height);
+	}
+	
 	public Vector2 getAcceleration() {
 		return this.acceleration;
 	}
@@ -69,11 +74,13 @@ public class Food {
 		return exists;
 	}
 
-	/*
-	public FoodType getFoodType() {
-		return foodType;
+	public TextureRegion getTexture() {
+		return foodTexture;		
 	}
-	*/
+
+	public String getConsequence() {
+		return consequence;
+	}
 
 	public Vector2 getPosition() {
 		return this.position;
@@ -93,36 +100,5 @@ public class Food {
 
 	public void setExists(boolean isAlive) {
 		exists = isAlive;
-	}
-	/*
-	public void setFoodType(FoodType foodType) {
-		this.foodType = foodType;
-	}
-	*/
-
-	public void setPosition(float posX, float posY) {
-		this.position.x = posX;
-		this.position.y = posY;
-	}
-
-	public void update(float delta) {
-		timeAlive += delta;
-		if (timeAlive > 0) {
-			this.release();
-		}
-		if (this.isReleased()) {
-			position.add(velocity.cpy().scl(delta));
-			this.bounds.setPosition(position);
-		}
-	}
-	
-	public void render(SpriteBatch spriteBatch) {
-		TextureRegion reg = null;
-		reg = foodTexture;
-		spriteBatch.draw(reg.getTexture(), 
-						this.getBounds().x,
-						this.getBounds().y, 
-						this.getBounds().width,
-						this.getBounds().height);
 	}
 }

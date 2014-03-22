@@ -1,30 +1,28 @@
 package com.swordbit.game.util;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.assets.AssetErrorListener;
-import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.assets.AssetDescriptor;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 
 public class Assets implements Disposable, AssetErrorListener {
-
-	public AssetFood food;
-	public AssetFonts fonts;
 	public static final Assets instance = new Assets();
 	public static final String TAG = Assets.class.getName();
-	
+	public AssetFoods foods;
+	public AssetFonts fonts;
 	private AssetManager assetManager;
 
-	// singleton: prevent instantiation from other classes
+	// Assets is a singleton
 	private Assets() {} 
 
 	public void init(AssetManager manager) {
@@ -58,17 +56,15 @@ public class Assets implements Disposable, AssetErrorListener {
 		}
 	}
 	
+	// Make the fonts and food textures available to the program,
+	// (called from the loading screen)
 	public void exposeAssetClasses() {
 		TextureAtlas foodAtlas = assetManager.get(Constants.TEXTURE_ATLAS_FOOD);
 		fonts = new AssetFonts();
-		food = new AssetFood(foodAtlas);
-	}
-
-	public AssetManager getAssetManager() {
-		return this.assetManager;
+		foods = new AssetFoods(foodAtlas);
 	}
 	
-	public class AssetFood {
+	public class AssetFoods {
 		public final AtlasRegion apple;
 		public final AtlasRegion chili;
 		public final AtlasRegion lemon;
@@ -78,7 +74,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		public final AtlasRegion hotdog;
 		public final AtlasRegion strawberry;
 		
-		public AssetFood (TextureAtlas atlas) {
+		public AssetFoods(TextureAtlas atlas) {
 			apple = atlas.findRegion("Apple");
 			chili = atlas.findRegion("Chili");
 			lemon = atlas.findRegion("Lemon");
@@ -116,7 +112,10 @@ public class Assets implements Disposable, AssetErrorListener {
 			defaultBig.getRegion().getTexture()
 					.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		}
-
+	}
+	
+	public AssetManager getAssetManager() {
+		return this.assetManager;
 	}
 
 	@Override

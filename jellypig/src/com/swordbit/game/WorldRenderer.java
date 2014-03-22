@@ -23,7 +23,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.swordbit.game.animations.ScoreAnimation;
 import com.swordbit.game.model.Eater;
 import com.swordbit.game.model.World;
-import com.swordbit.game.model.food.Cookie;
 import com.swordbit.game.model.food.Food;
 import com.swordbit.game.util.Assets;
 import com.swordbit.game.util.Constants;
@@ -36,27 +35,31 @@ public class WorldRenderer implements PropertyChangeListener {
 	private World world;
 	private Eater eater;
 	private OrthographicCamera cam;
-	float CAMERA_WIDTH = 10;
-	float CAMERA_HEIGHT = 7;
+	private float CAMERA_WIDTH = 10;
+	private float CAMERA_HEIGHT = 7;
 
 	private static final int BLINK_FRAME_COLS = 5;
 	private static final int BLINK_FRAME_ROWS = 1;
 	private static final int EATING_FRAME_COLS = 3;
 	private static final int EATING_FRAME_ROWS = 2;
 
+	Texture blinkSheet;
 	Texture idleTexture;
-	TextureRegion cookieTexture;
-	TextureRegion strawBerryTexture;
 	Texture defaultEaterTexture;
+	TextureRegion[] idleFrames;
+	TextureRegion[] blinkFrames;
+	TextureRegion currentFrame;
+	TextureRegion cookieTexture;
+	
+	TextureRegion strawBerryTexture;
+	Animation nextAnimation;
 	Animation blinkAnimation;
 	Animation eatingAnimation;
 	Animation currentAnimation;
-	Animation nextAnimation;
-	Texture blinkSheet;
-	TextureRegion[] blinkFrames;
-	TextureRegion[] idleFrames;
+	
+
 	SpriteBatch spriteBatch;
-	TextureRegion currentFrame;
+	
 	FPSLogger fpslog;
 
 	ProgressBar progressBar;
@@ -102,9 +105,7 @@ public class WorldRenderer implements PropertyChangeListener {
 		progressBar.SetTargetDimension(1, 4);
 	}
 
-	public void setSize(int width, int height) {
-
-	}
+	public void setSize(int width, int height) {}
 
 	public void loadTextures() {
 
@@ -257,7 +258,6 @@ public class WorldRenderer implements PropertyChangeListener {
 	}
 
 	public void drawEater() {
-
 		drawEaterAnimation();
 	}
 
@@ -283,6 +283,7 @@ public class WorldRenderer implements PropertyChangeListener {
 				} else if (eater.getState() == "TRANSFORMING") {
 
 					String finalState = eater.getFinalState();
+					System.out.println(finalState);
 					eater.forceState(finalState);
 					currentAnimation = null;
 				} else {
@@ -304,7 +305,6 @@ public class WorldRenderer implements PropertyChangeListener {
 				Food foodItem = it.next();
 				drawFoodItem(foodItem);
 			}
-
 		}
 	}
 

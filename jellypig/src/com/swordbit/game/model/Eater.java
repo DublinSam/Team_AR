@@ -16,7 +16,8 @@ public class Eater {
 	Vector2 velocity = new Vector2();
 	Vector2 position = new Vector2();
 	Rectangle bounds = new Rectangle();
-	Vector2 acceleration = new Vector2(); /** Acceleration not used **/
+	Vector2 acceleration = new Vector2(); 
+	
 	public boolean grounded;
 	public float timeInState;
 	public static float SPEED = 8f;
@@ -25,15 +26,6 @@ public class Eater {
 	private String state = "IDLE";
 	private String finalState;
 	private List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
-	
-	/**
-	 * State is only recorded in case we are going to be using some Movement or
-	 * Idle animations, currently its not used for anything it is only set
-	 **/
-	/*public enum State {
-		IDLE, MOVING, HUNGRY, HOT, BORED, BLINK, JUMPING, ACNE, SOUR, FAT, HAPPY, EATING, TRANSFORMING
-	}
-	*/
 
 	public Eater(Vector2 position) {
 		this.timeInState = 0;
@@ -47,13 +39,17 @@ public class Eater {
 	public void consumeFood(Food food) {
 		updateScore(food);
 		setState("EATING");
-		setFinalState(food.consequence);
+		setFinalState(food);
 		increaseFullness();
 	}
 	
 	public void updateScore(Food food) {
 		score += food.scoreValue;
-		notifyScoreListeners(this, "Score", score - 100, score);
+		notifyScoreListeners(this, "Score", score + food.scoreValue, score);
+	}
+	
+	public void setFinalState(Food food) {
+		finalState = food.consequence;
 	}
 
 	/** updates eaters position based on velocity **/
@@ -184,48 +180,7 @@ public class Eater {
 		return this.state;
 	}
 	
-	/*
-	public void setState(State newState) {
-		if (timeInState > 3) {
-			if (state == State.JUMPING) {
-				bounds.height -= 0.25;
-			}
-			notifyListeners(this, "State", state, newState);
-			timeInState = 0;
-			this.state = newState;
-		} else if (state == State.IDLE || state == State.JUMPING
-				|| state == State.BLINK) {
-			if (newState == State.JUMPING) {
-				bounds.height += 0.25;
-			} else if (state == State.JUMPING) {
-				bounds.height -= 0.25;
-			}
-			notifyListeners(this, "State", state, newState);
-			timeInState = 0;
-			this.state = newState;
-		}
-	}
-
-	public State getState() {
-		return this.state;
-	}
-	*/
-	
 	public String getFinalState() {
 		return finalState;
 	}
-
-	public void setFinalState(String state) {
-		finalState = state;
-	}
-	
-	/*
-	public State getFinalState() {
-		return finalState;
-	}
-
-	public void setFinalState(State state) {
-		finalState = state;
-	}
-	*/
 }

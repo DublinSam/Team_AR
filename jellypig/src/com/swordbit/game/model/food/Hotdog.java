@@ -1,13 +1,22 @@
 package com.swordbit.game.model.food;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.swordbit.game.util.Assets;
 
 public class Hotdog extends Food {
 
-	public float width = 0.9f;
-	public float height = 0.5f;
-	public int scoreValue = 100;
-	public String consequence = "FAT";
-	TextureRegion foodTexture = Assets.instance.food.hotdog;
+	public Hotdog() {
+		super();
+		init();
+	}
+		
+	private void init() {
+		this.width = 0.9f;
+		this.height = 0.5f;
+		this.scoreValue = 100;
+		this.consequence = "FAT";
+		this.bounds.width = width;
+		this.bounds.height = height;
+		super.foodTexture = Assets.instance.foods.hotdog;
+	}
 }
+
