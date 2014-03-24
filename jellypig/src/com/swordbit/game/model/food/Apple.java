@@ -1,6 +1,6 @@
 package com.swordbit.game.model.food;
 
-import com.swordbit.game.util.Assets;
+import com.swordbit.game.utils.Assets;
 
 public class Apple extends Food {
 

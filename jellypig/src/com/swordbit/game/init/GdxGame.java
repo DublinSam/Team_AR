@@ -1,4 +1,4 @@
-package com.swordbit.game;
+package com.swordbit.game.init;
 
 import com.badlogic.gdx.Game;
 import com.swordbit.game.view.screens.LoadingScreen;

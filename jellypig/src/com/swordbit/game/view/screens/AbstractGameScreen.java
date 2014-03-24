@@ -4,7 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.swordbit.game.model.World;
-import com.swordbit.game.util.Assets;
+import com.swordbit.game.utils.Assets;
 
 public abstract class AbstractGameScreen implements Screen {
 	protected Game game;

@@ -1,24 +1,22 @@
-package com.swordbit.game.view;
+package com.swordbit.game.view.renderers;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.swordbit.game.model.Background;
-import com.swordbit.game.util.Assets;
+import com.swordbit.game.utils.Assets;
 
 public class BackgroundRenderer {
 	
 	private Camera camera;
 	private float screenWidth;
 	private float screenHeight;
-	private TextureRegion mountainTexture;
 	private TextureRegion cloudTexture;
-	private Background mountainLayer;
+	private TextureRegion mountainTexture;
 	private Background cloudLayer;
+	private Background mountainLayer;
 	private Background[] backgroundLayers;
-	private float currentX;
-	private float currentY;
 	
 	public BackgroundRenderer(Camera camera, float screenWidth, float screenHeight) {
 		configureCamera(camera);
@@ -84,9 +82,9 @@ public class BackgroundRenderer {
 	}
 	
 	private void drawBackground(SpriteBatch batch, Background backgroundLayer) {
-		currentX = calculateCurrentX(backgroundLayer);
+		float currentX = calculateCurrentX(backgroundLayer);
 		do {
-			currentY = calculateCurrentY(backgroundLayer);		
+			float currentY = calculateCurrentY(backgroundLayer);		
 			batch.draw(backgroundLayer.region, 
 					   backgroundLayer.startPosition.x + currentX,
 					   backgroundLayer.startPosition.y + currentY,

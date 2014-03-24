@@ -20,10 +20,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.swordbit.game.controller.WorldController;
 import com.swordbit.game.model.World;
-import com.swordbit.game.util.Assets;
-import com.swordbit.game.util.ProgressBar;
-import com.swordbit.game.view.WorldRenderer;
+import com.swordbit.game.utils.Assets;
+import com.swordbit.game.utils.ProgressBar;
 import com.swordbit.game.view.animations.ScoreAnimation;
+import com.swordbit.game.view.renderers.WorldRenderer;
 import com.swordbit.game.view.ui.Score;
 
 /*

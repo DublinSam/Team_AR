@@ -1,4 +1,4 @@
-package com.swordbit.game.view;
+package com.swordbit.game.view.renderers;
 
 import java.util.List;
 import java.util.Iterator;
@@ -18,12 +18,12 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.swordbit.game.util.Assets;
-import com.swordbit.game.util.Benchmarker;
 import com.swordbit.game.model.Eater;
 import com.swordbit.game.model.World;
 import com.swordbit.game.model.food.Food;
-import com.swordbit.game.util.ProgressBar;
+import com.swordbit.game.utils.Assets;
+import com.swordbit.game.utils.Benchmarker;
+import com.swordbit.game.utils.ProgressBar;
 import com.swordbit.game.view.animations.ScoreAnimation;
 
 public class WorldRenderer implements PropertyChangeListener {
@@ -228,6 +228,7 @@ public class WorldRenderer implements PropertyChangeListener {
 		}
 	}
 
+	
 	public void drawEater() {
 		if (currentAnimation == null) 
 			drawEaterWithoutAnimation();

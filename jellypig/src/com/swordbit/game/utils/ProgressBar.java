@@ -1,4 +1,4 @@
-package com.swordbit.game.util;
+package com.swordbit.game.utils;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;

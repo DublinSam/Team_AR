@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
-import com.swordbit.game.util.Assets;
+import com.swordbit.game.utils.Assets;
 
 public class ScoreAnimation {
 	SpriteBatch spriteBatch;

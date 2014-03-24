@@ -2,7 +2,7 @@ package com.swordbit.game.view.ui;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.swordbit.game.util.Assets;
+import com.swordbit.game.utils.Assets;
 
 public class HighScore extends Actor {
 	int score = 0;

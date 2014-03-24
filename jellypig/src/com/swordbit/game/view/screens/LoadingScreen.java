@@ -11,8 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.swordbit.game.util.Assets;
-import com.swordbit.game.util.Constants;
+import com.swordbit.game.utils.Assets;
+import com.swordbit.game.utils.Constants;
 
 public class LoadingScreen extends AbstractGameScreen {
 	private Stage stage;

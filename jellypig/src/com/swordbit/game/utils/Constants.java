@@ -1,4 +1,4 @@
-package com.swordbit.game.util;
+package com.swordbit.game.utils;
 
 public class Constants {
 	

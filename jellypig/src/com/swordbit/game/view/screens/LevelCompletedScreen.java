@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.swordbit.game.model.Eater;
 import com.swordbit.game.model.World;
-import com.swordbit.game.util.PreferencesHelper;
+import com.swordbit.game.utils.PreferencesHelper;
 
 public class LevelCompletedScreen extends AbstractGameScreen {
 	private static final float CAMERA_WIDTH = 10;

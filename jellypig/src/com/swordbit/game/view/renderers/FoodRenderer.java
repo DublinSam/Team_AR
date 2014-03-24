@@ -1,4 +1,4 @@
-package com.swordbit.game.view;
+package com.swordbit.game.view.renderers;
 
 import java.util.List;
 import java.util.Iterator;

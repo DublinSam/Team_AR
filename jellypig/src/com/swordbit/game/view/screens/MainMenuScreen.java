@@ -14,7 +14,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.swordbit.game.model.World;
-import com.swordbit.game.util.Constants;
+import com.swordbit.game.utils.Constants;
 
 public class MainMenuScreen extends AbstractGameScreen {
 	int CAMERA_WIDTH;

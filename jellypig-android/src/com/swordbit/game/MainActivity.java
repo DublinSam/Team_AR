@@ -3,6 +3,7 @@ package com.swordbit.game;
 import android.os.Bundle;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.swordbit.game.init.GdxGame;
 
 public class MainActivity extends AndroidApplication {
     @Override
