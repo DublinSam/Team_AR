@@ -1,15 +1,16 @@
-package com.swordbit.game.util;
+package com.swordbit.game.model;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.swordbit.game.view.BackgroundRenderer;
 
-public class ParallaxLayer {
+public class Background {
 	public TextureRegion region;
 	public Vector2 parallaxRatio;
 	public Vector2 startPosition;
 	public Vector2 padding;
 
-	public ParallaxLayer(TextureRegion region, Vector2 parallaxRatio,
+	public Background(TextureRegion region, Vector2 parallaxRatio,
 			Vector2 padding) {
 		this(region, parallaxRatio, new Vector2(0, 0), padding);
 	}
@@ -19,13 +20,13 @@ public class ParallaxLayer {
 	 *            the TextureRegion to draw , this can be any width/height
 	 * @param parallaxRatio
 	 *            the relative speed of x,y
-	 *            {@link ParallaxBackground#ParallaxBackground(ParallaxLayer[], float, float, Vector2)}
+	 *            {@link BackgroundRenderer#ParallaxBackground(Background[], float, float, Vector2)}
 	 * @param startPosition
 	 *            the init position of x,y
 	 * @param padding
 	 *            the padding of the region at x,y
 	 */
-	public ParallaxLayer(TextureRegion region, Vector2 parallaxRatio,
+	public Background(TextureRegion region, Vector2 parallaxRatio,
 			Vector2 startPosition, Vector2 padding) {
 		this.region = region;
 		this.parallaxRatio = parallaxRatio;

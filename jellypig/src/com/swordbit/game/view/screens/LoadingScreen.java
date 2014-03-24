@@ -1,4 +1,4 @@
-package com.swordbit.game.screens;
+package com.swordbit.game.view.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Game;

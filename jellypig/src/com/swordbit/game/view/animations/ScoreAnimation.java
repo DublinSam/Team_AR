@@ -1,4 +1,4 @@
-package com.swordbit.game.animations;
+package com.swordbit.game.view.animations;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;

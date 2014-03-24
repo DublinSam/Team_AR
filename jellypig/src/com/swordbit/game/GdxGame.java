@@ -1,7 +1,7 @@
 package com.swordbit.game;
 
 import com.badlogic.gdx.Game;
-import com.swordbit.game.screens.LoadingScreen;
+import com.swordbit.game.view.screens.LoadingScreen;
 
 public class GdxGame extends Game {
 	@Override

@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.swordbit.game.model.food.Food;
 import com.swordbit.game.model.food.Strawberry;
-import com.swordbit.game.screens.GameScreen.GameStatus;
+import com.swordbit.game.view.screens.GameScreen.GameStatus;
 
 //The world where we place the eater and food.
 public class World { 

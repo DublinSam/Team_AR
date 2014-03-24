@@ -22,10 +22,10 @@ public class Main {
 		if (rebuildAtlas) {
 			Settings settings = new Settings();
 			settings.maxWidth = 2048;
-			settings.maxHeight = 1024;
+			settings.maxHeight = 2048;
 			settings.debug = drawDebugOutline;
 			TexturePacker2.process(settings, 
-					"assets-raw/images-ui", 
+					"assets-raw/ui-images", 
 					"../jellypig-android/assets/images", 
 					"jellypig-ui.pack");
 			TexturePacker2.process(settings, 
@@ -33,9 +33,13 @@ public class Main {
 					"../jellypig-android/assets/images", 
 					"loading-screen.pack");
 			TexturePacker2.process(settings, 
-					"assets-raw/food-assets", 
+					"assets-raw/food", 
 					"../jellypig-android/assets/atlas", 
 					"food-textures.pack");
+			TexturePacker2.process(settings, 
+					"assets-raw/background-layers", 
+					"../jellypig-android/assets/atlas", 
+					"background-layers.pack");
 		}
 		
 		new LwjglApplication(new GdxGame(), "jellpig", 800, 480, true);

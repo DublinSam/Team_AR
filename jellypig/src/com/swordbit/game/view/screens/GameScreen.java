@@ -1,4 +1,4 @@
-package com.swordbit.game.screens;
+package com.swordbit.game.view.screens;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -18,13 +18,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.swordbit.game.WorldRenderer;
-import com.swordbit.game.animations.ScoreAnimation;
 import com.swordbit.game.controller.WorldController;
 import com.swordbit.game.model.World;
-import com.swordbit.game.ui.Score;
 import com.swordbit.game.util.Assets;
 import com.swordbit.game.util.ProgressBar;
+import com.swordbit.game.view.WorldRenderer;
+import com.swordbit.game.view.animations.ScoreAnimation;
+import com.swordbit.game.view.ui.Score;
 
 /*
  * Game Screen is responsible for displaying all game events, and also catching

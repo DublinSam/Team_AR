@@ -1,6 +1,5 @@
 package com.swordbit.game.model.food;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Rectangle;
@@ -17,7 +16,7 @@ public class Food {
 	public int scoreValue;
 	protected float width;
 	protected float height;
-	protected TextureRegion foodTexture;
+	public TextureRegion foodTexture;
 	
 	float timeAlive;
 	boolean released;
@@ -52,14 +51,6 @@ public class Food {
 			position.add(velocity.cpy().scl(delta));
 			this.bounds.setPosition(position);
 		}
-	}
-	
-	public void render(SpriteBatch spriteBatch) {
-		spriteBatch.draw(this.foodTexture, 
-						this.getBounds().x,
-						this.getBounds().y, 
-						this.getBounds().width,
-						this.getBounds().height);
 	}
 	
 	public Vector2 getAcceleration() {

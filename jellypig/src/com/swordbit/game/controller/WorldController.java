@@ -19,8 +19,8 @@ import com.badlogic.gdx.utils.Pool;
 import com.swordbit.game.model.Eater;
 import com.swordbit.game.model.food.Food;
 import com.swordbit.game.model.World;
-import com.swordbit.game.screens.GameScreen.GameStatus;
 import com.swordbit.game.util.PreferencesHelper;
+import com.swordbit.game.view.screens.GameScreen.GameStatus;
 
 /**
  * class responsible for updating velocity and positions based on input given at

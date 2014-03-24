@@ -9,4 +9,5 @@ public class Constants {
 	public static final String TEXTURE_ATLAS_JELLYPIG_UI = "images/jellypig-ui.pack";
 	public static final String SKIN_LOADING_SCREEN = "images/loading-screen-skin.json";
 	public static final String TEXTURE_ATLAS_LOADING_SCREEN = "images/loading-screen.pack";
+	public static final String TEXTURE_ATLAS_BACKGROUND_LAYERS = "atlas/background-layers.pack";
 }
