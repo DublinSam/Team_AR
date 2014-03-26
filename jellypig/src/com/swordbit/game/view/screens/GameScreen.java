@@ -9,9 +9,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -21,9 +19,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.swordbit.game.controller.WorldController;
 import com.swordbit.game.model.World;
 import com.swordbit.game.utils.Assets;
-import com.swordbit.game.utils.ProgressBar;
-import com.swordbit.game.view.animations.ScoreAnimation;
-import com.swordbit.game.view.renderers.WorldRenderer;
+import com.swordbit.game.view.renderers.MasterRenderer;
+import com.swordbit.game.view.renderers.FloatingScoreRenderer;
 import com.swordbit.game.view.ui.Score;
 
 /*
@@ -39,16 +36,13 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	boolean touchDown;
 	boolean gamePaused = false;
 	private int width, height;
-	private TextureRegion hungerTextureRegion;
 	private int currentLevel;
-	private ProgressBar progressBar;
-	private Texture hungerTexture;
 	private OrthographicCamera cam;
 	private TextButton beginButton;
 	private boolean itemCollected;
-	private WorldRenderer renderer;
+	private MasterRenderer renderer;
 	private WorldController controller;
-	private ScoreAnimation scoreAnimation;
+	private FloatingScoreRenderer scoreAnimation;
 	private final float CAMERA_WIDTH = 480;
 	private final float CAMERA_HEIGHT = 320;
 	public enum GameStatus {
@@ -57,7 +51,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 
 	public GameScreen(Game game, World world) {
 		super(game, world);
-		renderer = new WorldRenderer(world);
+		renderer = new MasterRenderer(world);
 		controller = new WorldController(world);	
 		currentLevel = world.getCurrentLevelIndex();
 		buildUI();
@@ -102,12 +96,6 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 
 	@Override
 	public void show() {
-		hungerTexture = Assets.instance.getAssetManager().get(
-				"images/hunger.png", Texture.class);
-		hungerTextureRegion = new TextureRegion(hungerTexture);
-		progressBar = new ProgressBar(hungerTextureRegion, CAMERA_WIDTH / 2,
-				CAMERA_HEIGHT - 10);
-
 		world.getEater().addChangeListener(renderer);
 		world.getEater().addChangeListener(this);
 		world.addChangeListener(this);
@@ -117,7 +105,6 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 		multiplexer.addProcessor(this);
 
 		Gdx.input.setInputProcessor(multiplexer);
-		renderer.setSize(width, height);
 	}
 
 	private void createBeginButton() {
@@ -197,8 +184,6 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 				itemCollected = false;
 			}
 		}
-		progressBar.SetEnd(100, world.getEater().getFullness());
-		progressBar.Draw(ui.getSpriteBatch());
 		ui.getSpriteBatch().end();
 	}
 
@@ -224,7 +209,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	}
 
 	public void createScore() {
-		scoreAnimation = new ScoreAnimation();
+		scoreAnimation = new FloatingScoreRenderer();
 		Score score = new Score(world.getEater(), 75, 25, 5, CAMERA_HEIGHT - 20);
 		ui.addActor(score);
 	}

@@ -1,4 +1,4 @@
-package com.swordbit.game.view.animations;
+package com.swordbit.game.view.renderers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.swordbit.game.utils.Assets;
 
-public class ScoreAnimation {
+public class FloatingScoreRenderer {
 	SpriteBatch spriteBatch;
 	float transparency;
 	Vector3 position;
@@ -15,7 +15,7 @@ public class ScoreAnimation {
 
 	private boolean isFinished;
 
-	public ScoreAnimation() {
+	public FloatingScoreRenderer() {
 		texture = new Texture(Gdx.files.internal("images/score.png"));
 		this.position = new Vector3();
 	}
@@ -29,7 +29,7 @@ public class ScoreAnimation {
 	}
 
 	public boolean draw() {
-
+		System.out.println("How is this called?");
 		float alpha = spriteBatch.getColor().a;
 		spriteBatch.setColor(1, 0, 0, transparency);
 		// spriteBatch.draw(texture, position.x,position.y,1,1);

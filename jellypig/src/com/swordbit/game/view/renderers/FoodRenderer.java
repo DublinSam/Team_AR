@@ -6,8 +6,6 @@ import com.swordbit.game.model.World;
 import com.swordbit.game.model.food.Food;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-// Food Renderer is a helper class that is controlled entirely by WorldRenderer
-
 public class FoodRenderer {
 	private World world;
 	

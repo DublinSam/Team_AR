@@ -18,9 +18,9 @@ public class BackgroundRenderer {
 	private Background mountainLayer;
 	private Background[] backgroundLayers;
 	
-	public BackgroundRenderer(Camera camera, float screenWidth, float screenHeight) {
+	public BackgroundRenderer(Camera camera) {
 		configureCamera(camera);
-		configureScreenDimensions(screenWidth, screenHeight);	
+		configureScreenDimensions(camera.viewportWidth, camera.viewportHeight);	
 		configureBackgroundLayers();
 	}
 
@@ -68,13 +68,13 @@ public class BackgroundRenderer {
 		this.backgroundLayers = backgroundLayers;	
 	}
 
-	public void render(SpriteBatch batch, float delta) {
+	public void render(SpriteBatch batch) {
 		for (Background backgroundLayer : backgroundLayers) {
-			renderLayer(batch, delta, backgroundLayer);
+			renderLayer(batch, backgroundLayer);
 		}
 	}
 	
-	private void renderLayer(SpriteBatch batch, float delta, Background backgroundLayer) {
+	private void renderLayer(SpriteBatch batch, Background backgroundLayer) {
 		batch.setProjectionMatrix(camera.projection);
 		batch.begin();
 		drawBackground(batch, backgroundLayer);

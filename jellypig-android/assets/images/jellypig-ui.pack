@@ -1,7 +1,7 @@
 
 jellypig-ui.png
 format: RGBA8888
-filter: Nearest,Nearest
+filter: Linear,Linear
 repeat: none
 main-menu-background
   rotate: false

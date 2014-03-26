@@ -20,7 +20,11 @@ public class Assets implements Disposable, AssetErrorListener {
 	public static final String TAG = Assets.class.getName();
 	public AssetFoods foods;
 	public AssetFonts fonts;
+	public AssetJellypigStates jellypigStates;
 	public AssetBackgroundLayers backgroundLayers;
+	public AssetEatingAnimation eatingAnimation;
+	public AssetBlinkingAnimation blinkingAnimation;
+	public AssetExplosionAnimation explosionAnimation;
 	private AssetManager assetManager;
 
 	// Assets is a singleton
@@ -33,19 +37,19 @@ public class Assets implements Disposable, AssetErrorListener {
 		assetManager.load("data/textbuttons.json", Skin.class);
 		assetManager.load("images/hunger.png", Texture.class);
 		
-		
+		//Animation Textures
+		/*
 		assetManager.load("images/Eating.png", Texture.class);
-		assetManager.load("images/JellyPig48.png", Texture.class);
 		assetManager.load("images/Explosion48.png", Texture.class);
 		assetManager.load("images/JellyPigSprite.png", Texture.class);
-		assetManager.load("images/FatJellyPig-01.png", Texture.class);
-		assetManager.load("images/AcneJellyPig-01.png", Texture.class);	
-		assetManager.load("images/JellyPig_Jump48.png", Texture.class);
-		assetManager.load("images/HappyJellyPig-01.png", Texture.class);
-		assetManager.load("images/LemonJellyPig-01.png", Texture.class);
-		assetManager.load("images/EnchiladoJellyPig-01.png", Texture.class);
+		*/
+		
+		assetManager.load(Constants.TEXTURE_ATLAS_EATING_ANIMATION, TextureAtlas.class);
+		assetManager.load(Constants.TEXTURE_ATLAS_BLINKING_ANIMATION, TextureAtlas.class);
+		assetManager.load(Constants.TEXTURE_ATLAS_EXPLOSION_ANIMATION, TextureAtlas.class);
 		
 		assetManager.load(Constants.TEXTURE_ATLAS_FOOD, TextureAtlas.class);
+		assetManager.load(Constants.TEXTURE_ATLAS_JELLYPIG_STATES, TextureAtlas.class);
 		assetManager.load(Constants.TEXTURE_ATLAS_BACKGROUND_LAYERS, TextureAtlas.class);
 		assetManager.setLoader(TiledMap.class, new TmxMapLoader(
 										new InternalFileHandleResolver()));
@@ -62,20 +66,87 @@ public class Assets implements Disposable, AssetErrorListener {
 	public void exposeAssetClasses() {
 		TextureAtlas foodAtlas = 
 				assetManager.get(Constants.TEXTURE_ATLAS_FOOD);
+		TextureAtlas jellypigAtlas =
+				assetManager.get(Constants.TEXTURE_ATLAS_JELLYPIG_STATES);
 		TextureAtlas backgroundLayersAtlas = 
 				assetManager.get(Constants.TEXTURE_ATLAS_BACKGROUND_LAYERS);
+		TextureAtlas explosionAnimationAtlas = 
+				assetManager.get(Constants.TEXTURE_ATLAS_EXPLOSION_ANIMATION);
+		TextureAtlas eatingAnimationAtlas = 
+				assetManager.get(Constants.TEXTURE_ATLAS_EATING_ANIMATION);
+		TextureAtlas blinkingAnimationAtlas = 
+				assetManager.get(Constants.TEXTURE_ATLAS_BLINKING_ANIMATION);
 		
 		fonts = new AssetFonts();
 		foods = new AssetFoods(foodAtlas);
+		jellypigStates = new AssetJellypigStates(jellypigAtlas);
 		backgroundLayers = new AssetBackgroundLayers(backgroundLayersAtlas);
+		eatingAnimation = new AssetEatingAnimation(eatingAnimationAtlas);
+		blinkingAnimation = new AssetBlinkingAnimation(blinkingAnimationAtlas);
+		explosionAnimation = new AssetExplosionAnimation(explosionAnimationAtlas);
 	}
 	
-	public class AssetJellypig {
+	public class AssetJellypigStates {
+		
+		public final AtlasRegion fat;
+		public final AtlasRegion sour;
+		public final AtlasRegion acne;
+		public final AtlasRegion happy;
+		public final AtlasRegion jumping;
 		public final AtlasRegion jellypig;
-		public AssetJellypig (TextureAtlas atlas) {
-			jellypig = atlas.findRegion("jellypig");
+		public final AtlasRegion enchilado;
+		
+		
+		public AssetJellypigStates (TextureAtlas atlas) {	
+			fat = atlas.findRegion("Fatty");
+			acne = atlas.findRegion("Acne");
+			sour = atlas.findRegion("Lemon");
+			happy = atlas.findRegion("Happy");
+			jumping = atlas.findRegion("JellyPigJumping");
+			jellypig = atlas.findRegion("JellyPig48");
+			enchilado = atlas.findRegion("Enchilado");
+			
 		}
 	}
+	
+	public class AssetExplosionAnimation {
+		public final AtlasRegion[] explosionFrames;
+		
+		public AssetExplosionAnimation(TextureAtlas atlas) {
+			explosionFrames = new AtlasRegion[3];
+			explosionFrames[0] = atlas.findRegion("Explosion", 1);
+			explosionFrames[1] = atlas.findRegion("Explosion", 2);
+			explosionFrames[2] = atlas.findRegion("Explosion", 3);
+		}
+	}
+	
+	public class AssetEatingAnimation {
+		public final AtlasRegion[] eatingFrames;
+		
+		public AssetEatingAnimation(TextureAtlas atlas) {
+			eatingFrames = new AtlasRegion[6];
+			eatingFrames[0] = atlas.findRegion("Eating", 1);
+			eatingFrames[1] = atlas.findRegion("Eating", 2);
+			eatingFrames[2] = atlas.findRegion("Eating", 3);
+			eatingFrames[3] = atlas.findRegion("Eating", 4);
+			eatingFrames[4] = atlas.findRegion("Eating", 5);
+			eatingFrames[5] = atlas.findRegion("Eating", 6);
+		}
+	}
+	
+	public class AssetBlinkingAnimation {
+		public final AtlasRegion[] blinkingFrames;
+		
+		public AssetBlinkingAnimation(TextureAtlas atlas) {
+			blinkingFrames = new AtlasRegion[5];
+			blinkingFrames[0] = atlas.findRegion("Blinking", 1);
+			blinkingFrames[1] = atlas.findRegion("Blinking", 2);
+			blinkingFrames[2] = atlas.findRegion("Blinking", 3);
+			blinkingFrames[3] = atlas.findRegion("Blinking", 4);
+			blinkingFrames[4] = atlas.findRegion("Blinking", 5);
+		}
+	}
+	
 	
 	public class AssetFoods {
 		public final AtlasRegion apple;
