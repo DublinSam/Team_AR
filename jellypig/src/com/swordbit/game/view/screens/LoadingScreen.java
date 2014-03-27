@@ -2,14 +2,14 @@ package com.swordbit.game.view.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.swordbit.game.utils.Assets;
 import com.swordbit.game.utils.Constants;
@@ -35,19 +35,24 @@ public class LoadingScreen extends AbstractGameScreen {
 	}
 	
 	private void initializeStage() {
-		stage = new Stage();
+		stage = new Stage(new ExtendViewport(Constants.VIEWPORT_GUI_WIDTH, 
+											 Constants.VIEWPORT_GUI_HEIGHT));
 	}
 	
 	@Override
 	public void render(float delta) {
 		clearScreen();
 		rebuildStage();
-		moveAndDrawStageActors(delta);
+		moveActors(delta);
+		drawActors();
 		switchToMainMenu();
 	}
 	
-	private void moveAndDrawStageActors(float delta) {
+	private void moveActors(float delta) {
 		stage.act(delta);
+	}
+	
+	private void drawActors() {
 		stage.draw();
 	}
 	
@@ -126,7 +131,6 @@ public class LoadingScreen extends AbstractGameScreen {
 	}
 	
 	private void loadResources() {
-		Texture.setEnforcePotImages(false);
 		loadingSkin = new Skin(Gdx.files.internal(Constants.SKIN_LOADING_SCREEN),
 				new TextureAtlas(Constants.TEXTURE_ATLAS_LOADING_SCREEN));
 		firstLoadingBall = new Image(loadingSkin, "ball");
@@ -138,13 +142,12 @@ public class LoadingScreen extends AbstractGameScreen {
 
 	@Override
 	public void resize(int width, int height) {
-		stage.setViewport(Constants.VIEWPORT_GUI_WIDTH, 
-				Constants.VIEWPORT_GUI_HEIGHT, true);
+		stage.getViewport().update(width, height, true);
 	}
 	
 	private void clearScreen() {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
 	@Override public void pause() {}

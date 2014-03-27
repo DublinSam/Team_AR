@@ -23,7 +23,6 @@ public class Score extends Actor {
 		setPosition(posX, posY);
 	}
 
-	@Override
 	public void draw(SpriteBatch batch, float parentAlpha) {
 
 		batch.end();

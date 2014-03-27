@@ -16,7 +16,6 @@ public class Main {
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "jellypig";
-		cfg.useGL20 = false;
 		cfg.width = 320;
 		cfg.height = 480;
 			
@@ -64,6 +63,6 @@ public class Main {
 					"animation-eating.pack");
 		}
 		
-		new LwjglApplication(new GdxGame(), "jellpig", 800, 480, true);
+		new LwjglApplication(new GdxGame(), "jellpig", 800, 480);
 	}
 }

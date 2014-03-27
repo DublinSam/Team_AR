@@ -7,8 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -16,9 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.swordbit.game.controller.WorldController;
 import com.swordbit.game.model.World;
 import com.swordbit.game.utils.Assets;
+import com.swordbit.game.utils.Constants;
 import com.swordbit.game.view.renderers.MasterRenderer;
 import com.swordbit.game.view.renderers.FloatingScoreRenderer;
 import com.swordbit.game.view.ui.Score;
@@ -30,62 +31,63 @@ import com.swordbit.game.view.ui.Score;
 
 public class GameScreen extends AbstractGameScreen implements InputProcessor,
 		PropertyChangeListener {
-	Stage ui;
-	Skin skin;
-	PauseTable pauseTable;
-	boolean touchDown;
-	boolean gamePaused = false;
-	private int width, height;
+	private int width;
+	private int height;
+	private Skin skin;
+	private Stage stage;
 	private int currentLevel;
-	private OrthographicCamera cam;
-	private TextButton beginButton;
+	private boolean gamePaused;
 	private boolean itemCollected;
-	private MasterRenderer renderer;
+	private PauseTable pauseTable;
+	private TextButton beginButton;
+	private SpriteBatch spriteBatch;
 	private WorldController controller;
+	private MasterRenderer masterRenderer;
+	private final float CAMERA_WIDTH = 800;
+	private final float CAMERA_HEIGHT = 480;
 	private FloatingScoreRenderer scoreAnimation;
-	private final float CAMERA_WIDTH = 480;
-	private final float CAMERA_HEIGHT = 320;
+	
 	public enum GameStatus {
 		INPROGRESS, GAMEOVER, LEVELCOMPLETED
 	}
 
 	public GameScreen(Game game, World world) {
 		super(game, world);
-		renderer = new MasterRenderer(world);
+		init(world);
+	}
+	
+	private void init(World world) {
+		masterRenderer = new MasterRenderer(world);
 		controller = new WorldController(world);	
-		currentLevel = world.getCurrentLevelIndex();
-		buildUI();
+		spriteBatch = new SpriteBatch();
+		gamePaused = false;
+		buildOverlayUI();
 		createScore();
 	}
 	
-	private void buildUI() {
-		ui = new Stage();
-		setUpCamera();
-		ui.setCamera(cam);
-		skin = Assets.instance.getAssetManager().get("data/textbuttons.json",
-				Skin.class);	
+	private void buildOverlayUI() {
+		stage = new Stage(new ExtendViewport(Constants.VIEWPORT_GUI_WIDTH, 
+											 Constants.VIEWPORT_GUI_HEIGHT));
+		skin = Assets.instance.getAssetManager().get("data/textbuttons.json",Skin.class);	
 		createBeginButton();
 		createPauseButton();
 		createPauseTable();
 	}
-	
-	private void setUpCamera() {
-		this.cam = new OrthographicCamera(); 
-		this.cam.setToOrtho(false);//, CAMERA_WIDTH, CAMERA_HEIGHT);
-		this.cam.update();	
-	}
 
 	@Override
 	public void render(float delta) {
-		// Background color blue
-		Gdx.gl.glClearColor(0.16f, 0.67f, 0.95f, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		glClearScreenToBlue();
 		if (!(gamePaused)) {
 			controller.update(delta);
 		}
-		renderer.render();
-		renderGui(ui.getSpriteBatch());
-		ui.act();
+		masterRenderer.render();
+		stage.act();
+		renderGui();
+	}
+	
+	private void glClearScreenToBlue() {
+		Gdx.gl.glClearColor(0.16f, 0.67f, 0.95f, 1); // Background colour blue
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
 	@Override
@@ -96,19 +98,17 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 
 	@Override
 	public void show() {
-		world.getEater().addChangeListener(renderer);
+		world.getEater().addChangeListener(masterRenderer);
 		world.getEater().addChangeListener(this);
 		world.addChangeListener(this);
 
 		InputMultiplexer multiplexer = new InputMultiplexer();
-		multiplexer.addProcessor(ui);
+		multiplexer.addProcessor(stage);
 		multiplexer.addProcessor(this);
-
 		Gdx.input.setInputProcessor(multiplexer);
 	}
 
 	private void createBeginButton() {
-
 		beginButton = new TextButton("Begin", skin);
 		beginButton.addListener(new ClickListener() {
 			@Override
@@ -116,16 +116,13 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 				super.clicked(event, x, y);
 				controller.beginTouched();
 				beginButton.remove();
-
 			}
-
 		});
 		beginButton.setPosition(CAMERA_WIDTH / 2, CAMERA_HEIGHT / 2);
-		ui.addActor(beginButton);
+		stage.addActor(beginButton);
 	}
 
-	public void createPauseTable() {
-		
+	public void createPauseTable() {	
 		pauseTable = new PauseTable();
 		pauseTable.setPosition(CAMERA_WIDTH / 2, -CAMERA_HEIGHT / 2);
 		TextButton resumeButton = new TextButton("Resume", skin);
@@ -135,16 +132,14 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 				super.clicked(event, x, y);
 				resumeGame();
 			}
-
 			private void resumeGame() {
 				gamePaused = false;
 				pauseTable.remove();
 				pauseTable.setVelocity();
 				pauseTable.setPosition(CAMERA_WIDTH / 2, -CAMERA_HEIGHT / 2);
-
 			}
-
 		});
+		
 		pauseTable.add(resumeButton).padBottom(10).width(CAMERA_WIDTH / 3);
 		pauseTable.row();
 		TextButton restartButton = new TextButton("Restart", skin);
@@ -175,24 +170,22 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	}
 
 	/** renders the GUI, pause screen, pause button and score **/
-	private void renderGui(SpriteBatch batch) {
-		ui.draw();
-		ui.getSpriteBatch().begin();
+	private void renderGui() {
+		stage.draw();
+		spriteBatch.begin();
 		if (itemCollected) {
 			boolean result = scoreAnimation.draw();
 			if (result) {
 				itemCollected = false;
 			}
 		}
-		ui.getSpriteBatch().end();
+		spriteBatch.end();
 	}
 
 	public void createPauseButton() {
-
 		TextButton pb = new TextButton("Pause", skin);
 		pb.setPosition(CAMERA_WIDTH - pb.getWidth(),
 				CAMERA_HEIGHT - pb.getHeight());
-		;
 		pb.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -203,30 +196,28 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 				}
 				super.clicked(event, x, y);
 			}
-
 		});
-		ui.addActor(pb);
+		stage.addActor(pb);
 	}
 
 	public void createScore() {
 		scoreAnimation = new FloatingScoreRenderer();
 		Score score = new Score(world.getEater(), 75, 25, 5, CAMERA_HEIGHT - 20);
-		ui.addActor(score);
-	}
-
-	public void pauseGame() {
-		gamePaused = true;
-		ui.addActor(pauseTable);
+		stage.addActor(score);
 	}
 
 	@Override
 	public void pause() {
 		pauseGame();
 	}
+	
+	public void pauseGame() {
+		gamePaused = true;
+		stage.addActor(pauseTable);
+	}
 
 	@Override
 	public boolean keyDown(int keycode) {
-
 		if (keycode == Keys.Z) {
 			controller.jumpPressed();
 		}
@@ -235,24 +226,19 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 
 	@Override
 	public boolean keyUp(int keycode) {
-
 		return true;
 	}
 
 	@Override
 	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
-
 		if (x < width / 2 && y > height / 2) {
 			controller.jumpPressed();
-
 		}
-
 		return true;
 	}
 
@@ -260,26 +246,22 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	public boolean touchUp(int x, int y, int pointer, int button) {
 		if (x < width / 2 && y > height / 2) {
 			controller.jumpReleased();
-
 		}
 		return true;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -291,7 +273,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 			int newScore = (Integer) evt.getNewValue();
 			int oldScore = (Integer) evt.getOldValue();
 			int difference = newScore - oldScore;
-			scoreAnimation.init(ui.getSpriteBatch(), ui.getCamera().position,
+			scoreAnimation.init(spriteBatch, stage.getViewport().getCamera().position,
 					String.valueOf(difference));
 		} else if (evt.getPropertyName().equals("world")) {
 			GameStatus gameStatus = (GameStatus) evt.getNewValue();

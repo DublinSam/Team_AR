@@ -42,19 +42,19 @@ public class EaterRenderer implements PropertyChangeListener{
 	private void constructTransformationAnimation() {
 		AtlasRegion[] explosionFrames = Assets.instance.explosionAnimation.explosionFrames;
 		explosionAnimation = new Animation(0.1f, explosionFrames);
-		explosionAnimation.setPlayMode(Animation.NORMAL);
+		explosionAnimation.setPlayMode(Animation.PlayMode.NORMAL);
 	}
 
 	private void constructEatingAnimation() {
 		AtlasRegion[] eatingFrames = Assets.instance.eatingAnimation.eatingFrames;
 		eatingAnimation = new Animation(0.1f, eatingFrames);
-		eatingAnimation.setPlayMode(Animation.NORMAL);
+		eatingAnimation.setPlayMode(Animation.PlayMode.NORMAL);
 	}
 
 	private void constructBlinkAnimation() {
 		AtlasRegion[] blinkingFrames = Assets.instance.blinkingAnimation.blinkingFrames;
 		blinkingAnimation = new Animation(0.1f, blinkingFrames);
-		blinkingAnimation.setPlayMode(Animation.LOOP_PINGPONG);
+		blinkingAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 	}
 
 	public void drawEater(SpriteBatch spriteBatch) {

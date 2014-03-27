@@ -2,7 +2,7 @@ package com.swordbit.game.view.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -13,12 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.swordbit.game.model.World;
 import com.swordbit.game.utils.Constants;
 
 public class MainMenuScreen extends AbstractGameScreen {
-	int CAMERA_WIDTH;
-	int CAMERA_HEIGHT;
 	SpriteBatch spriteBatch;
 	private Stage stage;
 	private Skin menuSkin;
@@ -41,20 +40,30 @@ public class MainMenuScreen extends AbstractGameScreen {
 	}
 	
 	private void initializeStage() {
-		stage = new Stage();
+		stage = new Stage(new ExtendViewport(Constants.VIEWPORT_GUI_WIDTH, 
+											Constants.VIEWPORT_GUI_HEIGHT,
+											800.0f, 600.0f ));
 		Gdx.input.setInputProcessor(stage);
 	}
 	
-	@Override
-	public void render(float delta) {
-		clearScreen();	
-		if (debugEnabled) {
-			debugRebuild(delta);
-		}
-		stage.act(delta);
-		stage.draw();
-		Table.drawDebug(stage);
+	private void rebuildStage() {
+		menuSkin = new Skin(Gdx.files.internal(Constants.SKIN_JELLYPIG_UI),
+				new TextureAtlas(Constants.TEXTURE_ATLAS_JELLYPIG_UI));
+		
+		Table layerBackground = buildBackgroundLayer();
+		Table layerControls = buildControlsLayer();
+		
+		// assemble stage for menu screen
+		stage.clear();
+		Stack stack = new Stack();
+		stage.addActor(stack);
+		stack.setSize(Constants.VIEWPORT_GUI_WIDTH, 
+					  Constants.VIEWPORT_GUI_HEIGHT);
+		stack.add(layerBackground);
+		stack.add(layerControls);
 	}
+	
+
 	
 	private void debugRebuild(float deltaTime) {
 		debugRebuildStageTimer -= deltaTime;
@@ -94,32 +103,25 @@ public class MainMenuScreen extends AbstractGameScreen {
 		game.setScreen(new GameScreen(game, new World(4)));
 	}
 	
-	void rebuildStage() {
-		menuSkin = new Skin(Gdx.files.internal(Constants.SKIN_JELLYPIG_UI),
-				new TextureAtlas(Constants.TEXTURE_ATLAS_JELLYPIG_UI));
-		
-		Table layerBackground = buildBackgroundLayer();
-		Table layerControls = buildControlsLayer();
-		
-		// assemble stage for menu screen
-		stage.clear();
-		Stack stack = new Stack();
-		stage.addActor(stack);
-		stack.setSize(Constants.VIEWPORT_GUI_WIDTH, 
-					  Constants.VIEWPORT_GUI_HEIGHT);
-		stack.add(layerBackground);
-		stack.add(layerControls);
+	@Override
+	public void render(float delta) {
+		clearScreen();	
+		if (debugEnabled) {
+			debugRebuild(delta);
+		}
+		stage.act(delta);
+		stage.draw();
+		Table.drawDebug(stage);
 	}
 	
 	private void clearScreen() {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glClearColor(1.0f, 1.0f, 1.0f, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 	
 	@Override
 	public void resize(int width, int height) {
-		stage.setViewport(Constants.VIEWPORT_GUI_WIDTH, 
-				Constants.VIEWPORT_GUI_HEIGHT, true);
+		stage.getViewport().update(width, height, true);
 	}
 	
 	@Override

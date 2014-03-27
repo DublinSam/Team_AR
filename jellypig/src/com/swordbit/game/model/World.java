@@ -53,7 +53,6 @@ public class World {
 		for (int j = 0; j < noOfLevels; j++) {
 			levelLocations[j] = "maps/level" + j + ".tmx";
 		}
-		Texture.setEnforcePotImages(false);
 		foodInWorld = new ArrayList<Food>();
 
 		setLevel(levelLocations[i]);
