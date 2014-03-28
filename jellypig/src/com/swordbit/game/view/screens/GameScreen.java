@@ -67,7 +67,8 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	
 	private void buildOverlayUI() {
 		stage = new Stage(new ExtendViewport(Constants.VIEWPORT_GUI_WIDTH, 
-											 Constants.VIEWPORT_GUI_HEIGHT));
+											 Constants.VIEWPORT_GUI_HEIGHT,800,600));
+		
 		skin = Assets.instance.getAssetManager().get("data/textbuttons.json",Skin.class);	
 		createBeginButton();
 		createPauseButton();
@@ -94,6 +95,9 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	public void resize(int width, int height) {
 		this.height = height;
 		this.width = width;
+	
+		stage.getViewport().update(width, height, true);
+		
 	}
 
 	@Override
@@ -118,8 +122,10 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 				beginButton.remove();
 			}
 		});
-		beginButton.setPosition(CAMERA_WIDTH / 2, CAMERA_HEIGHT / 2);
+		
 		stage.addActor(beginButton);
+		//beginButton.setSize(200, 200);
+		beginButton.setPosition(CAMERA_WIDTH / 2, CAMERA_HEIGHT / 2);
 	}
 
 	public void createPauseTable() {	
