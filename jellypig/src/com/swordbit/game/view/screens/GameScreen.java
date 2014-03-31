@@ -61,6 +61,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 		controller = new WorldController(world);	
 		spriteBatch = new SpriteBatch();
 		gamePaused = false;
+		currentLevel = world.getCurrentLevelIndex();
 		buildOverlayUI();
 		createScore();
 	}
