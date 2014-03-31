@@ -41,7 +41,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	private PauseTable pauseTable;
 	private TextButton beginButton;
 	private SpriteBatch spriteBatch;
-	private WorldController controller;
+	private WorldController worldController;
 	private MasterRenderer masterRenderer;
 	private final float CAMERA_WIDTH = 800;
 	private final float CAMERA_HEIGHT = 480;
@@ -58,7 +58,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	
 	private void init(World world) {
 		masterRenderer = new MasterRenderer(world);
-		controller = new WorldController(world);	
+		worldController = new WorldController(world);	
 		spriteBatch = new SpriteBatch();
 		gamePaused = false;
 		buildOverlayUI();
@@ -78,7 +78,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	public void render(float delta) {
 		glClearScreenToBlue();
 		if (!(gamePaused)) {
-			controller.update(delta);
+			worldController.update(delta);
 		}
 		masterRenderer.render();
 		stage.act();
@@ -114,7 +114,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				controller.beginTouched();
+				worldController.beginTouched();
 				beginButton.remove();
 			}
 		});
@@ -219,7 +219,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	@Override
 	public boolean keyDown(int keycode) {
 		if (keycode == Keys.Z) {
-			controller.jumpPressed();
+			worldController.jumpPressed();
 		}
 		return true;
 	}
@@ -237,7 +237,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
 		if (x < width / 2 && y > height / 2) {
-			controller.jumpPressed();
+			worldController.jumpPressed();
 		}
 		return true;
 	}
@@ -245,7 +245,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
 		if (x < width / 2 && y > height / 2) {
-			controller.jumpReleased();
+			worldController.jumpReleased();
 		}
 		return true;
 	}
