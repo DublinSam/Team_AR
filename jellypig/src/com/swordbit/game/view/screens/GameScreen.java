@@ -41,7 +41,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	private PauseTable pauseTable;
 	private TextButton beginButton;
 	private SpriteBatch spriteBatch;
-	private WorldController worldController;
+	private WorldController controller;
 	private MasterRenderer masterRenderer;
 	private final float CAMERA_WIDTH = 800;
 	private final float CAMERA_HEIGHT = 480;
@@ -58,7 +58,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	
 	private void init(World world) {
 		masterRenderer = new MasterRenderer(world);
-		worldController = new WorldController(world);	
+		controller = new WorldController(world);	
 		spriteBatch = new SpriteBatch();
 		gamePaused = false;
 		buildOverlayUI();
@@ -67,7 +67,8 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	
 	private void buildOverlayUI() {
 		stage = new Stage(new ExtendViewport(Constants.VIEWPORT_GUI_WIDTH, 
-											 Constants.VIEWPORT_GUI_HEIGHT));
+											 Constants.VIEWPORT_GUI_HEIGHT,800,600));
+		
 		skin = Assets.instance.getAssetManager().get("data/textbuttons.json",Skin.class);	
 		createBeginButton();
 		createPauseButton();
@@ -78,7 +79,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	public void render(float delta) {
 		glClearScreenToBlue();
 		if (!(gamePaused)) {
-			worldController.update(delta);
+			controller.update(delta);
 		}
 		masterRenderer.render();
 		stage.act();
@@ -94,6 +95,9 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	public void resize(int width, int height) {
 		this.height = height;
 		this.width = width;
+	
+		stage.getViewport().update(width, height, true);
+		
 	}
 
 	@Override
@@ -114,12 +118,14 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				worldController.beginTouched();
+				controller.beginTouched();
 				beginButton.remove();
 			}
 		});
-		beginButton.setPosition(CAMERA_WIDTH / 2, CAMERA_HEIGHT / 2);
+		
 		stage.addActor(beginButton);
+		//beginButton.setSize(200, 200);
+		beginButton.setPosition(CAMERA_WIDTH / 2, CAMERA_HEIGHT / 2);
 	}
 
 	public void createPauseTable() {	
@@ -219,7 +225,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	@Override
 	public boolean keyDown(int keycode) {
 		if (keycode == Keys.Z) {
-			worldController.jumpPressed();
+			controller.jumpPressed();
 		}
 		return true;
 	}
@@ -237,7 +243,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
 		if (x < width / 2 && y > height / 2) {
-			worldController.jumpPressed();
+			controller.jumpPressed();
 		}
 		return true;
 	}
@@ -245,7 +251,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
 		if (x < width / 2 && y > height / 2) {
-			worldController.jumpReleased();
+			controller.jumpReleased();
 		}
 		return true;
 	}

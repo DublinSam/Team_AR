@@ -88,7 +88,7 @@ public class Eater {
 	public void addChangeListener(PropertyChangeListener newListener) {
 		listener.add(newListener);
 	}
-
+//This method is going to cause eater to change size over time
 	public void setGrounded(boolean b) {
 		grounded = b;
 		if (b && (state == "JUMPING")) {
