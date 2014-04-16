@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.swordbit.game.model.World;
 import com.swordbit.game.utils.Assets;
 
 public class FloatingScoreRenderer {
@@ -15,7 +16,7 @@ public class FloatingScoreRenderer {
 
 	private boolean isFinished;
 
-	public FloatingScoreRenderer() {
+	public FloatingScoreRenderer(World world) {
 		texture = new Texture(Gdx.files.internal("images/score.png"));
 		this.position = new Vector3();
 	}

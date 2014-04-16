@@ -29,8 +29,7 @@ import com.swordbit.game.view.ui.Score;
  * relevant input commands
  */
 
-public class GameScreen extends AbstractGameScreen implements InputProcessor,
-		PropertyChangeListener {
+public class GameScreen extends AbstractGameScreen implements InputProcessor, PropertyChangeListener {
 	private int width;
 	private int height;
 	private Skin skin;
@@ -61,6 +60,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 		controller = new WorldController(world);	
 		spriteBatch = new SpriteBatch();
 		gamePaused = false;
+		currentLevel = world.getCurrentLevelIndex();
 		buildOverlayUI();
 		createScore();
 	}
@@ -102,14 +102,16 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 
 	@Override
 	public void show() {
-		world.getEater().addChangeListener(masterRenderer);
-		world.getEater().addChangeListener(this);
-		world.addChangeListener(this);
-
+		setUpListeners();
 		InputMultiplexer multiplexer = new InputMultiplexer();
 		multiplexer.addProcessor(stage);
 		multiplexer.addProcessor(this);
 		Gdx.input.setInputProcessor(multiplexer);
+	}
+	
+	private void setUpListeners() {
+		world.addLevelStatusListener(this);
+		world.getEater().addScoreListener(this);
 	}
 
 	private void createBeginButton() {
@@ -124,7 +126,6 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 		});
 		
 		stage.addActor(beginButton);
-		//beginButton.setSize(200, 200);
 		beginButton.setPosition(CAMERA_WIDTH / 2, CAMERA_HEIGHT / 2);
 	}
 
@@ -207,7 +208,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	}
 
 	public void createScore() {
-		scoreAnimation = new FloatingScoreRenderer();
+		scoreAnimation = new FloatingScoreRenderer(world);
 		Score score = new Score(world.getEater(), 75, 25, 5, CAMERA_HEIGHT - 20);
 		stage.addActor(score);
 	}
@@ -275,6 +276,7 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 	public void propertyChange(PropertyChangeEvent evt) {
 		// listens to world controller, waiting for a game over to change screen
 		if (evt.getPropertyName().equals("score")) {
+			System.out.println("score event fired");
 			itemCollected = true;
 			int newScore = (Integer) evt.getNewValue();
 			int oldScore = (Integer) evt.getOldValue();

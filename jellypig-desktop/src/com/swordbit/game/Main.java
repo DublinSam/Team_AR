@@ -10,7 +10,7 @@ import com.swordbit.game.init.GdxGame;
 public class Main {
 	
 	//Texture packing variables
-	private static boolean rebuildAtlas = true;
+	private static boolean rebuildAtlas = false;
 	private static boolean drawDebugOutline = false;
 			
 	public static void main(String[] args) {
@@ -29,7 +29,7 @@ public class Main {
 			settings.debug = drawDebugOutline;
 			TexturePacker2.process(settings, 
 					"assets-raw/ui-images", 
-					"../jellypig-android/assets/images", 
+					"images", 
 					"jellypig-ui.pack");
 			TexturePacker2.process(settings, 
 					"assets-raw/loading-screen", 

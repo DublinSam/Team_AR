@@ -1,0 +1,54 @@
+
+jellypig-states.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Acne
+  rotate: false
+  xy: 292, 13
+  size: 263, 214
+  orig: 263, 214
+  offset: 0, 0
+  index: -1
+Enchilado
+  rotate: false
+  xy: 557, 13
+  size: 263, 214
+  orig: 263, 214
+  offset: 0, 0
+  index: -1
+Fatty
+  rotate: false
+  xy: 2, 13
+  size: 288, 214
+  orig: 288, 214
+  offset: 0, 0
+  index: -1
+Happy
+  rotate: false
+  xy: 822, 13
+  size: 263, 214
+  orig: 263, 214
+  offset: 0, 0
+  index: -1
+JellyPig48
+  rotate: false
+  xy: 1532, 179
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+JellyPigJumping
+  rotate: false
+  xy: 1351, 2
+  size: 179, 225
+  orig: 179, 225
+  offset: 0, 0
+  index: -1
+Lemon
+  rotate: false
+  xy: 1087, 14
+  size: 262, 213
+  orig: 262, 213
+  offset: 0, 0
+  index: -1

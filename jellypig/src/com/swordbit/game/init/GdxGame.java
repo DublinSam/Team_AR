@@ -6,6 +6,7 @@ import com.swordbit.game.view.screens.LoadingScreen;
 public class GdxGame extends Game {
 	@Override
 	public void create() {
-		setScreen(new LoadingScreen(this));
+		LoadingScreen loadingScreen = new LoadingScreen(this);
+		setScreen(loadingScreen);
 	}
 }

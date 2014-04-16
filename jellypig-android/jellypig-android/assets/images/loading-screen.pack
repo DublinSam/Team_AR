@@ -1,0 +1,19 @@
+
+loading-screen.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+ball
+  rotate: false
+  xy: 2, 2
+  size: 34, 29
+  orig: 34, 29
+  offset: 0, 0
+  index: -1
+loading
+  rotate: false
+  xy: 2, 33
+  size: 480, 320
+  orig: 480, 320
+  offset: 0, 0
+  index: -1

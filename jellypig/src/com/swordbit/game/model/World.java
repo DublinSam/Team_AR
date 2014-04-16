@@ -23,8 +23,7 @@ public class World {
 	private int noOfLevels = 6; // total number of levels 
 	private List<Food> foodInWorld;
 	private String[] levelLocations; // array of all map file locations
-	private List<PropertyChangeListener> listener =
-				new ArrayList<PropertyChangeListener>();
+	private List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
 	
 	
 	private Pool<Food> foodPool = new Pool<Food>() {
@@ -69,9 +68,9 @@ public class World {
 	 **/
 	public void spawnFood(float posX, float posY) {
 		Food food = foodPool.obtain();
-		food.setPosition(posX, posY);
+		food.setPosition(new Vector2(posX, posY));
 		// food.generateFoodType();
-
+		System.out.println("spawned food");
 		foodInWorld.add(food);
 
 	}
@@ -82,18 +81,6 @@ public class World {
 			result = true;
 		}
 		return result;
-	}
-
-	private void notifyListeners(Object object, String property,
-			GameStatus oldValue, GameStatus newValue) {
-		for (PropertyChangeListener name : listener) {
-			name.propertyChange(new PropertyChangeEvent(this, "world",
-					oldValue, newValue));
-		}
-	}
-
-	public void addChangeListener(PropertyChangeListener newListener) {
-		listener.add(newListener);
 	}
 	
 	/** Returns eater from world **/
@@ -160,14 +147,24 @@ public class World {
 
 	public void levelCompleted() {
 		this.level.levelCompleted();
-		notifyListeners(this.level, "levelCompleted", GameStatus.INPROGRESS,
+		notifyLevelStatusListeners(this.level, "levelCompleted", GameStatus.INPROGRESS,
 				GameStatus.LEVELCOMPLETED);
 	}
 
 	public void levelFailed() {
 		this.level.levelFailed();
-		notifyListeners(this.level, "levelCompleted", GameStatus.INPROGRESS,
+		notifyLevelStatusListeners(this.level, "levelCompleted", GameStatus.INPROGRESS,
 				GameStatus.GAMEOVER);
+	}
+	
+	public void addLevelStatusListener(PropertyChangeListener newListener) {
+		listener.add(newListener);
+	}
+	
+	private void notifyLevelStatusListeners(Object object, String property, GameStatus oldValue, GameStatus newValue) {
+		for (PropertyChangeListener name : listener) {
+			name.propertyChange(new PropertyChangeEvent(this, "world", oldValue, newValue));
+		}
 	}
 
 }

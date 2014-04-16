@@ -36,14 +36,7 @@ public class Assets implements Disposable, AssetErrorListener {
 		
 		assetManager.load("data/textbuttons.json", Skin.class);
 		assetManager.load("images/hunger.png", Texture.class);
-		
-		//Animation Textures
-		/*
-		assetManager.load("images/Eating.png", Texture.class);
-		assetManager.load("images/Explosion48.png", Texture.class);
-		assetManager.load("images/JellyPigSprite.png", Texture.class);
-		*/
-		
+				
 		assetManager.load(Constants.TEXTURE_ATLAS_EATING_ANIMATION, TextureAtlas.class);
 		assetManager.load(Constants.TEXTURE_ATLAS_BLINKING_ANIMATION, TextureAtlas.class);
 		assetManager.load(Constants.TEXTURE_ATLAS_EXPLOSION_ANIMATION, TextureAtlas.class);

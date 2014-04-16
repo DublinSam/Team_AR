@@ -43,8 +43,7 @@ public class BackgroundRenderer {
 		mountainTexture = Assets.instance.backgroundLayers.mountains;
 		Vector2 mountainRatio = new Vector2(0.02f, 0);
 		Vector2 startCoordinates = configureLayerPosition();
-		Vector2 padding = new Vector2(0,0);
-		mountainLayer =  new Background(mountainTexture, mountainRatio, startCoordinates, padding);
+		mountainLayer =  new Background(mountainTexture, mountainRatio, startCoordinates);
 		return mountainLayer;
 	}
 	
@@ -52,8 +51,7 @@ public class BackgroundRenderer {
 		cloudTexture = Assets.instance.backgroundLayers.clouds;
 		Vector2 cloudRatio = new Vector2(0.00f, 0);
 		Vector2 startCoordinates = configureLayerPosition();
-		Vector2 padding = new Vector2(0,0);
-		Background cloudLayer = new Background(cloudTexture, cloudRatio, startCoordinates, padding);
+		Background cloudLayer = new Background(cloudTexture, cloudRatio, startCoordinates);
 		return cloudLayer;
 	}
 	
@@ -89,20 +87,18 @@ public class BackgroundRenderer {
 					   backgroundLayer.startPosition.x + currentX,
 					   backgroundLayer.startPosition.y + currentY,
 					   screenWidth, screenHeight);
-			currentX += (screenWidth + backgroundLayer.padding.x);
+			currentX += screenWidth;
 			
 		} while (currentX < camera.viewportWidth);
 	}
 	
 	private float calculateCurrentX (Background backgroundLayer) {
 		return -camera.position.x * 
-				backgroundLayer.parallaxRatio.x
-				% (screenWidth + backgroundLayer.padding.x);	
+				backgroundLayer.parallaxRatio.x % screenWidth;	
 	}
 	
 	private float calculateCurrentY(Background backgroundLayer) {
 		return -camera.position.y * 
-				backgroundLayer.parallaxRatio.y
-				% (screenHeight + backgroundLayer.padding.y);
+				backgroundLayer.parallaxRatio.y % screenHeight;
 	}
 }

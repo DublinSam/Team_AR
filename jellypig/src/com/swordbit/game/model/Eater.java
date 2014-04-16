@@ -15,24 +15,26 @@ public class Eater {
 	float fullness = 0;
 	Vector2 velocity = new Vector2();
 	Vector2 position = new Vector2();
-	Rectangle bounds = new Rectangle();
 	Vector2 acceleration = new Vector2(); 
 	
+	public Rectangle bounds = new Rectangle();
 	public boolean grounded;
 	public float timeInState;
 	public static float SPEED = 8f;
-	public static final float SIZE = 1f;
 	public static final float DAMPING = 0.8f;
-	private String state = "IDLE";
 	private String finalState;
-	private List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
-
+	private String state = "IDLE";
+	public static final Vector2 SIZE = new Vector2(1, 1);
+	public static final Vector2 ACCELERATION = new Vector2(0, -30);
+	private List<PropertyChangeListener> scoreListeners =  new ArrayList<PropertyChangeListener>();
+	private List<PropertyChangeListener> stateListeners =  new ArrayList<PropertyChangeListener>();
+	
+	
 	public Eater(Vector2 position) {
 		this.timeInState = 0;
 		this.position = position;
-		this.bounds.width = SIZE;
-		this.bounds.height = SIZE;
-		this.acceleration.y = -30;
+		this.acceleration = ACCELERATION;
+		this.bounds.setSize(SIZE.x, SIZE.y);
 		this.bounds.setPosition(position);
 	}
 	
@@ -40,11 +42,11 @@ public class Eater {
 		updateScore(food);
 		setState("EATING");
 		setFinalState(food);
-		increaseFullness();
 	}
 	
 	public void updateScore(Food food) {
 		score += food.scoreValue;
+		System.out.println("updating score");
 		notifyScoreListeners(this, "Score", score + food.scoreValue, score);
 	}
 	
@@ -69,25 +71,27 @@ public class Eater {
 		}
 	}
 
-	private void notifyListeners(Object object, String property,
-			String oldValue, String newValue) {
-		for (PropertyChangeListener name : listener) {
-			name.propertyChange(new PropertyChangeEvent(this, "state",
-					oldValue, newValue));
+	public void setState(String newState) {
+		if (timeInState > 3) {
+			if (state == "JUMPING") {
+				bounds.height -= 0.25;
+			}
+			notifyStateListeners(this, "State", state, newState);
+			timeInState = 0;
+			this.state = newState;
+		} else if (state == "IDLE" || state == "JUMPING"
+				|| state == "BLINK") {
+			if (newState == "JUMPING") {
+				bounds.height += 0.25;
+			} else if (state == "JUMPING") {
+				bounds.height -= 0.25;
+			}
+			notifyStateListeners(this, "State", state, newState);
+			timeInState = 0;
+			this.state = newState;
 		}
 	}
 	
-	private void notifyScoreListeners(Object object, String property,
-			int oldScore, int newScore) {
-		for (PropertyChangeListener name : listener) {
-			name.propertyChange(new PropertyChangeEvent(this, "score",
-					oldScore, newScore));
-		}
-	}
-
-	public void addChangeListener(PropertyChangeListener newListener) {
-		listener.add(newListener);
-	}
 //This method is going to cause eater to change size over time
 	public void setGrounded(boolean b) {
 		grounded = b;
@@ -103,25 +107,14 @@ public class Eater {
 		if (state == "JUMPING") {
 			bounds.height -= 0.25;
 		}
-		notifyListeners(this, "State", state, newState);
+		notifyStateListeners(this, "State", state, newState);
 		this.state = newState;
 		timeInState = 0;
-	}
-	
-	public void increaseScore() {
-		score += 100;
-		notifyScoreListeners(this, "Score", score - 100, score);
-	}
-	public void decreaseScore() {
-		score -= 100;
-		notifyScoreListeners(this, "Score", score + 100, score);
 	}
 	
 	public int getScore() {
 		return score;
 	}
-
-	
 
 	public float getTimeInState() {
 		return this.timeInState;
@@ -150,31 +143,6 @@ public class Eater {
 	public boolean isColliding(Food food) {
 		return this.bounds.overlaps(food.getBounds());
 	}
-
-	private void increaseFullness() {
-		this.fullness += 1;
-	}
-	
-	public void setState(String newState) {
-		if (timeInState > 3) {
-			if (state == "JUMPING") {
-				bounds.height -= 0.25;
-			}
-			notifyListeners(this, "State", state, newState);
-			timeInState = 0;
-			this.state = newState;
-		} else if (state == "IDLE" || state == "JUMPING"
-				|| state == "BLINK") {
-			if (newState == "JUMPING") {
-				bounds.height += 0.25;
-			} else if (state == "JUMPING") {
-				bounds.height -= 0.25;
-			}
-			notifyListeners(this, "State", state, newState);
-			timeInState = 0;
-			this.state = newState;
-		}
-	}
 	
 	public String getState() {
 		return this.state;
@@ -182,5 +150,25 @@ public class Eater {
 	
 	public String getFinalState() {
 		return finalState;
+	}
+	
+	public void addStateListener(PropertyChangeListener newListener) {
+		stateListeners.add(newListener);
+	}
+	
+	public void addScoreListener(PropertyChangeListener newListener) {
+		scoreListeners.add(newListener);
+	}
+
+	private void notifyStateListeners(Object object, String property, String oldValue, String newValue) {
+		for (PropertyChangeListener listener : stateListeners) {
+			listener.propertyChange(new PropertyChangeEvent(this, "state", oldValue, newValue));
+		}
+	}
+	
+	private void notifyScoreListeners(Object object, String property,int oldScore, int newScore) {
+		for (PropertyChangeListener listener : scoreListeners) {
+			listener.propertyChange(new PropertyChangeEvent(this, "score", oldScore, newScore));
+		}
 	}
 }

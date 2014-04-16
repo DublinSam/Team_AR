@@ -32,6 +32,7 @@ public class MasterRenderer implements PropertyChangeListener{
 		configureScrollingCamera();
 		configureSlaveRenderers();
 		configureFrameRateLogger();
+		startListeningToEaterStateChanges();
 	}
 		
 	private void init(World world) {
@@ -66,6 +67,10 @@ public class MasterRenderer implements PropertyChangeListener{
 		framesPerSecondlogger = new FPSLogger();
 	}
 	
+	private void startListeningToEaterStateChanges() {
+		eater.addStateListener(this);
+	}
+	
 	public void render() {
 		renderBackground();
 		renderForeground();
@@ -97,7 +102,7 @@ public class MasterRenderer implements PropertyChangeListener{
 	}
 	
 	private void moveCameraToEaterPosition() {
-		scrollingCamera.position.x = eater.getPosition().x + CAMERA_WIDTH / 2 - eater.SIZE;
+		scrollingCamera.position.x = eater.getPosition().x + CAMERA_WIDTH / 2 - eater.bounds.width;
 	}
 	
 	private boolean eaterRising() {
