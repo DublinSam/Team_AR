@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="300" height="12" tilewidth="48" tileheight="48">
+ <tileset firstgid="1" name="Assets_48" tilewidth="48" tileheight="48">
+  <image source="Assets_48.png" trans="ff00ff" width="720" height="432"/>
+    <tile id="51">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </tile>
+  <tile id="53">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </tile>
+  <tile id="55">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </tile>
+  <tile id="57">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </tile>
+  <tile id="105">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </tile>
+  <tile id="107">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </tile>
+  <tile id="109">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Terrain" width="300" height="12">
+  <data encoding="base64" compression="zlib">
+   eJzt1D0KgDAMBtAuvZEU73+yriI4FBub4nvwjSE/Q0oBAAAAAAAAAAAAAIB86uoBLjLN8rU/776Ce8/19p5P9S0g563HEdRHRPbPyL/oDpE+Iw==
+  </data>
+ </layer>
+ <objectgroup name="Food Items" width="300" height="12">
+  <object name="FoodItem" x="337" y="482" width="46" height="45">
+   <properties>
+    <property name="activated" value="true"/>
+    <property name="collision" value="false"/>
+   </properties>
+  </object>
+  <object name="FoodItem" x="5858" y="480" width="46" height="45">
+   <properties>
+    <property name="activated" value="true"/>
+    <property name="collision" value="false"/>
+   </properties>
+  </object>
+  <object name="FoodItem" x="1778" y="478" width="46" height="45">
+   <properties>
+    <property name="activated" value="true"/>
+    <property name="collision" value="false"/>
+   </properties>
+  </object>
+  <object name="FoodItem" x="3314" y="432" width="46" height="45">
+   <properties>
+    <property name="activated" value="true"/>
+    <property name="collision" value="false"/>
+   </properties>
+  </object>
+  <object name="FoodItem" x="961" y="384" width="46" height="45">
+   <properties>
+    <property name="activated" value="true"/>
+    <property name="collision" value="false"/>
+   </properties>
+  </object>
+  <object name="FoodItem" x="7106" y="383" width="46" height="45">
+   <properties>
+    <property name="activated" value="true"/>
+    <property name="collision" value="false"/>
+   </properties>
+  </object>
+  <object name="FoodItem" x="8499" y="479" width="46" height="45">
+   <properties>
+    <property name="activated" value="true"/>
+    <property name="collision" value="false"/>
+   </properties>
+  </object>
+  <object name="FoodItem" x="9411" y="433" width="46" height="45">
+   <properties>
+    <property name="activated" value="true"/>
+    <property name="collision" value="false"/>
+   </properties>
+  </object>
+  <object name="FoodItem" x="11091" y="480" width="46" height="45">
+   <properties>
+    <property name="activated" value="true"/>
+    <property name="collision" value="false"/>
+   </properties>
+  </object>
+  <object name="FoodItem" x="13441" y="481" width="46" height="45">
+   <properties>
+    <property name="activated" value="true"/>
+    <property name="collision" value="false"/>
+   </properties>
+  </object>
+  <object name="FoodItem" x="14211" y="481" width="46" height="45">
+   <properties>
+    <property name="activated" value="true"/>
+    <property name="collision" value="false"/>
+   </properties>
+  </object>
+  <object name="FoodItem" x="13872" y="384" width="46" height="45">
+   <properties>
+    <property name="activated" value="true"/>
+    <property name="collision" value="false"/>
+   </properties>
+  </object>
+  <object name="FoodItem" x="4227" y="480" width="46" height="45">
+   <properties>
+    <property name="activated" value="true"/>
+    <property name="collision" value="false"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="Collision" width="300" height="12">
+  <object x="4666" y="474" width="76" height="51"/>
+  <object x="5481" y="475" width="76" height="51"/>
+ </objectgroup>
+ <layer name="Crystal" width="300" height="12">
+  <data encoding="base64" compression="zlib">
+   eJztzLENACAIAEE20wlw/21kAxtJKO6Sbz8CAAAAAAAAAAAAAOi0qj3gAfCS1RnwAAD+uABiAjk=
+  </data>
+ </layer>
+</map>

@@ -1,0 +1,89 @@
+
+jellypig-ui.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+fart-button
+  rotate: false
+  xy: 2, 2
+  size: 49, 49
+  orig: 49, 49
+  offset: 0, 0
+  index: -1
+jump-button
+  rotate: false
+  xy: 1724, 956
+  size: 49, 49
+  orig: 49, 49
+  offset: 0, 0
+  index: -1
+main-menu-background
+  rotate: false
+  xy: 2, 237
+  size: 1366, 768
+  orig: 1366, 768
+  offset: 0, 0
+  index: -1
+menu-button
+  rotate: false
+  xy: 1370, 641
+  size: 350, 180
+  orig: 350, 180
+  offset: 0, 0
+  index: -1
+menu-button-pressed
+  rotate: false
+  xy: 356, 55
+  size: 350, 180
+  orig: 350, 180
+  offset: 0, 0
+  index: -1
+pause-button
+  rotate: false
+  xy: 53, 2
+  size: 49, 49
+  orig: 49, 49
+  offset: 0, 0
+  index: -1
+play-button
+  rotate: false
+  xy: 1370, 823
+  size: 352, 182
+  orig: 352, 182
+  offset: 0, 0
+  index: -1
+play-button-pressed
+  rotate: false
+  xy: 2, 53
+  size: 352, 182
+  orig: 352, 182
+  offset: 0, 0
+  index: -1
+restart-button
+  rotate: false
+  xy: 1370, 459
+  size: 350, 180
+  orig: 350, 180
+  offset: 0, 0
+  index: -1
+restart-button-pressed
+  rotate: false
+  xy: 708, 55
+  size: 350, 180
+  orig: 350, 180
+  offset: 0, 0
+  index: -1
+resume-button
+  rotate: false
+  xy: 1060, 55
+  size: 350, 180
+  orig: 350, 180
+  offset: 0, 0
+  index: -1
+resume-button-pressed
+  rotate: false
+  xy: 1370, 277
+  size: 350, 180
+  orig: 350, 180
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="1000" height="12" tilewidth="48" tileheight="48">
+ <tileset firstgid="1" name="Assets_48" tilewidth="48" tileheight="48">
+  <image source="../Assets_48.png" trans="ff00ff" width="720" height="432"/>
+ </tileset>
+ <layer name="Terrain" width="1000" height="12">
+  <data encoding="base64" compression="zlib">
+   eJzt292K1DAUAOD6BwqzoFd6pw8hsiwL+gQKIov4CLIXi4jPbxYMZErTNt2mmanfB4dpZ3aT087cnJ6k6wAAAAAAAAAAAAAAAAAAAGA7j0I8bp0EAAAA/OdehngV4nmIF41zgVP3McSn1kkAAAC79DbEuxCvQ7zZYL4f/16fbTBXLe9DfEjism06u3LVOoEJn0N8aZ0EAACwS2mtuUWdGecbm2vrnEp9DfEtiZu26axuqkYu/bz0vJarzPHUeXp8/9s8xd8kAACwnbX3iR9CXHTHteZN8n4tcb5TqWmX1IZ3IX4l8bvyfGPWeJaxdj1e05znO6lT78cDAADnJ+4TX0t/jfZD12tfz/y7WNvmatqhvNboV+bquu8LxkqfafzsxnOtXR/2n6/knPua/Jj/bTd+rVP3O90/Xno8NAYAALB/sY8dX+M+8Xj+JMTT7ngf95waOe7/7q/R7q/XHhrr0OX760N1UX+MQ3fcP6/Rp8/V4bm+/Z8Fc6T989Zr3dNcxvr4rfNcaqguL12zkEr3j5ceD40BAADs31h/uyT6dWrJuLn/nft+v2af6uGW9PRL6/Bc377fP5+6xjVj7H7NuadpTrfJNdfI9aHXM+d87bxrfofntv4AAABY7i859Vr1
+  </data>
+ </layer>
+ <layer name="Crystal" width="1000" height="12" visible="0">
+  <data encoding="base64" compression="zlib">
+   eJzt200KwjAQBtCuvYHL3kBwrRXX/tAb9P6ncBYJSKBWuzCQvgcfQ5tMmH1I1wEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUNOx9gAAAACwYUPkErlWngMAAAC27BF51h4CAAAAGnKKnD+s57vyGpZmAwAAgFbcIve37zHVXaq/3JXn9+h98X8sNy7I/XOzAQAAQOumVPcrevN79MPMmd8q+9eeAwAAAP/0Amb5CCM=
+  </data>
+ </layer>
+ <objectgroup name="Collision" width="1000" height="12" visible="0">
+  <object name="crystal" x="1444" y="327" width="26" height="39">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </object>
+  <object name="crystal" x="744" y="486" width="50" height="41">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </object>
+  <object name="crystal" x="1129" y="485" width="50" height="41">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </object>
+  <object name="crystal" x="1364" y="386" width="58" height="45">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </object>
+  <object name="crystal" x="2613" y="480" width="57" height="45">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

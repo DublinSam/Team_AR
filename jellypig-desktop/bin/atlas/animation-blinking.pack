@@ -1,0 +1,40 @@
+
+animation-blinking.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Blinking
+  rotate: false
+  xy: 2, 2
+  size: 261, 214
+  orig: 261, 214
+  offset: 0, 0
+  index: 1
+Blinking
+  rotate: false
+  xy: 265, 2
+  size: 261, 214
+  orig: 261, 214
+  offset: 0, 0
+  index: 2
+Blinking
+  rotate: false
+  xy: 528, 2
+  size: 261, 214
+  orig: 261, 214
+  offset: 0, 0
+  index: 3
+Blinking
+  rotate: false
+  xy: 791, 2
+  size: 261, 214
+  orig: 261, 214
+  offset: 0, 0
+  index: 4
+Blinking
+  rotate: false
+  xy: 1054, 2
+  size: 261, 214
+  orig: 261, 214
+  offset: 0, 0
+  index: 5

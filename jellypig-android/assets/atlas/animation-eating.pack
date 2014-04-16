@@ -1,0 +1,47 @@
+
+animation-eating.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Eating
+  rotate: false
+  xy: 2, 2
+  size: 263, 214
+  orig: 263, 214
+  offset: 0, 0
+  index: 1
+Eating
+  rotate: false
+  xy: 267, 2
+  size: 263, 214
+  orig: 263, 214
+  offset: 0, 0
+  index: 2
+Eating
+  rotate: false
+  xy: 532, 2
+  size: 263, 214
+  orig: 263, 214
+  offset: 0, 0
+  index: 3
+Eating
+  rotate: false
+  xy: 797, 2
+  size: 263, 214
+  orig: 263, 214
+  offset: 0, 0
+  index: 4
+Eating
+  rotate: false
+  xy: 1062, 2
+  size: 263, 214
+  orig: 263, 214
+  offset: 0, 0
+  index: 5
+Eating
+  rotate: false
+  xy: 1327, 2
+  size: 263, 214
+  orig: 263, 214
+  offset: 0, 0
+  index: 6

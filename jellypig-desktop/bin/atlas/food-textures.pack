@@ -1,0 +1,61 @@
+
+food-textures.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Apple
+  rotate: false
+  xy: 319, 23
+  size: 274, 283
+  orig: 274, 283
+  offset: 0, 0
+  index: -1
+Chili
+  rotate: false
+  xy: 640, 118
+  size: 137, 511
+  orig: 137, 511
+  offset: 0, 0
+  index: -1
+Cookie
+  rotate: false
+  xy: 331, 322
+  size: 307, 307
+  orig: 307, 307
+  offset: 0, 0
+  index: -1
+Hamburger
+  rotate: false
+  xy: 2, 2
+  size: 315, 304
+  orig: 315, 304
+  offset: 0, 0
+  index: -1
+Hotdog
+  rotate: false
+  xy: 2, 632
+  size: 455, 218
+  orig: 455, 218
+  offset: 0, 0
+  index: -1
+Lemon
+  rotate: false
+  xy: 2, 308
+  size: 327, 322
+  orig: 327, 322
+  offset: 0, 0
+  index: -1
+Pizza
+  rotate: false
+  xy: 459, 631
+  size: 322, 219
+  orig: 322, 219
+  offset: 0, 0
+  index: -1
+Strawberry
+  rotate: false
+  xy: 779, 333
+  size: 243, 296
+  orig: 243, 296
+  offset: 0, 0
+  index: -1
