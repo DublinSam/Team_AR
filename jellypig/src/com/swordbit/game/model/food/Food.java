@@ -5,8 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Food {
-	protected static final float SIZE = 0.5f; // half a unit
-	
+	protected static final float SIZE = 0.5f; // half a unit	
 	protected Vector2 velocity = new Vector2();
 	protected Vector2 acceleration = new Vector2();
 	protected float width;

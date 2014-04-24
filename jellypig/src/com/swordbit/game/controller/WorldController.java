@@ -237,11 +237,10 @@ public class WorldController {
 		} else {
 			timeSinceFoodSpawn += Gdx.graphics.getDeltaTime();
 		}
-
 	}
 
 	public void spawnFoodInWorld(float xSpawnPos) {
-		world.spawnFood(xSpawnPos, 6.75f);
+		world.spawnFood(xSpawnPos, 3f);
 		timeSinceFoodSpawn = 0;
 	}
 
