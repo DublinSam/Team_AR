@@ -15,6 +15,5 @@ public class Constants {
 	public static final String TEXTURE_ATLAS_EATING_ANIMATION = "atlas/animation-eating.pack";
 	public static final String TEXTURE_ATLAS_BLINKING_ANIMATION = "atlas/animation-blinking.pack";
 	public static final String TEXTURE_ATLAS_EXPLOSION_ANIMATION = "atlas/animation-explosion.pack";
-	
 	public static final String TEXTURE_ATLAS_GAS_METER = "atlas/gas-meter.pack";
 }

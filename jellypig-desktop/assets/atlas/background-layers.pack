@@ -1,0 +1,50 @@
+
+background-layers.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Clouds
+  rotate: false
+  xy: 2, 1206
+  size: 800, 600
+  orig: 800, 600
+  offset: 0, 0
+  index: -1
+Fog
+  rotate: false
+  xy: 2, 604
+  size: 800, 600
+  orig: 800, 600
+  offset: 0, 0
+  index: -1
+<<<<<<< HEAD
+Hills
+  rotate: false
+  xy: 804, 1206
+  size: 800, 600
+  orig: 800, 600
+  offset: 0, 0
+  index: -1
+Mountains
+  rotate: false
+  xy: 2, 2
+=======
+Mountains
+  rotate: false
+  xy: 804, 1206
+>>>>>>> master
+  size: 800, 600
+  orig: 800, 600
+  offset: 0, 0
+  index: -1
+Sky
+  rotate: false
+<<<<<<< HEAD
+  xy: 804, 604
+=======
+  xy: 2, 2
+>>>>>>> master
+  size: 800, 600
+  orig: 800, 600
+  offset: 0, 0
+  index: -1

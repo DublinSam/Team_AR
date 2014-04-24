@@ -192,5 +192,4 @@ public class World {
 		notifyListeners(this.level, "levelCompleted", GameStatus.INPROGRESS,
 				GameStatus.GAMEOVER);
 	}
-
 }

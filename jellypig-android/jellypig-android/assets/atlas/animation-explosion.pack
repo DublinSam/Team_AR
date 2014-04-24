@@ -1,0 +1,26 @@
+
+animation-explosion.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Explosion
+  rotate: false
+  xy: 2, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: 1
+Explosion
+  rotate: false
+  xy: 52, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: 2
+Explosion
+  rotate: false
+  xy: 102, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: 3

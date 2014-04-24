@@ -130,7 +130,6 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 		world.getEater().addChangeListener(masterRenderer);
 		world.getEater().addChangeListener(this);
 		world.addChangeListener(this);
-
 		InputMultiplexer multiplexer = new InputMultiplexer();
 		multiplexer.addProcessor(stage);
 		multiplexer.addProcessor(this);

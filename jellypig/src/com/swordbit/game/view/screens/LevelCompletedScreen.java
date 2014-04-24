@@ -72,6 +72,7 @@ public class LevelCompletedScreen extends AbstractGameScreen {
 //
 //			table.add(nextLevelButton).pad(10);
 //		}
+
 		TextButton mainMenuButton = new TextButton("Main Menu", skin);
 		mainMenuButton.addListener(new ClickListener() {
 			@Override

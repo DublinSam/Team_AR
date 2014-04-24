@@ -1,0 +1,26 @@
+
+jellypig-ui.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+main-menu-background
+  rotate: false
+  xy: 2, 186
+  size: 1366, 768
+  orig: 1366, 768
+  offset: 0, 0
+  index: -1
+play-button
+  rotate: false
+  xy: 1370, 772
+  size: 352, 182
+  orig: 352, 182
+  offset: 0, 0
+  index: -1
+play-button-pressed
+  rotate: false
+  xy: 2, 2
+  size: 352, 182
+  orig: 352, 182
+  offset: 0, 0
+  index: -1

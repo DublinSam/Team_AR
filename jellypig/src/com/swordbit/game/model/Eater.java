@@ -115,6 +115,7 @@ public class Eater {
 	public void addChangeListener(PropertyChangeListener newListener) {
 		listener.add(newListener);
 	}
+
 //This method is going to cause eater to change size over time
 	public void setGrounded(boolean b) {
 		grounded = b;
@@ -135,6 +136,7 @@ public class Eater {
 		timeInState = 0;
 	}
 	
+
 	public void increaseScore() {
 		score += 100;
 		notifyScoreListeners(this, "Score", score + 100, score);
@@ -147,8 +149,6 @@ public class Eater {
 	public int getScore() {
 		return score;
 	}
-
-	
 
 	public float getTimeInState() {
 		return this.timeInState;
@@ -230,5 +230,4 @@ public class Eater {
 	public void setFarting(boolean farting) {
 		this.farting = farting;
 	}
-
 }

@@ -10,7 +10,7 @@ import com.swordbit.game.init.GdxGame;
 public class Main {
 	
 	//Texture packing variables
-	private static boolean rebuildAtlas = false;
+	private static boolean rebuildAtlas = true;
 	private static boolean drawDebugOutline = false;
 			
 	public static void main(String[] args) {

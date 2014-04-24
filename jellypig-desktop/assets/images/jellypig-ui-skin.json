@@ -1,0 +1,44 @@
+{
+   com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+<<<<<<< HEAD
+     play:	{ 
+     			down: play-button-pressed, 
+     			up: play-button 
+     	    },
+	jump:	{
+				down: jump-button, 
+     			up: jump-button
+			},
+	fart:	{
+				down: fart-button, 
+     			up: fart-button
+			},
+	pause:	{
+				down: pause-button,
+				up: pause-button
+			},
+	resume: {
+				down: resume-button-pressed,
+				up: resume-button
+			},
+	restart: {
+				down: restart-button-pressed,
+				up: restart-button
+			},
+	menu:   {
+				down: menu-button-pressed,
+				up: menu-button
+			},
+=======
+     play: { 
+     			down: play-button-pressed, 
+     			up: play-button 
+     	    },
+>>>>>>> master
+   },
+   com.badlogic.gdx.scenes.scene2d.ui.Image: {
+     background: { 
+     			drawable: main-menu-background
+     		},
+   	},
+}
