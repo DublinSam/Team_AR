@@ -88,7 +88,7 @@ public class World {
 	 **/
 	public void spawnFood(float posX, float posY) {
 		Food food = foodPool.obtain();
-		food.setPosition(posX, posY);
+		food.setPosition(new Vector2(posX, posY));
 		// food.generateFoodType();
 
 		foodInWorld.add(food);

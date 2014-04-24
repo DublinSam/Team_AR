@@ -98,7 +98,6 @@ public class WorldController {
 			checkObjectCollisions(delta);
 			eater.update(delta);
 			runFoodGenerator();
-			updateFoodPosition();
 			updateFoodCollision(delta);
 		}
 
@@ -241,16 +240,6 @@ public class WorldController {
 
 	}
 
-	public void updateFoodPosition() {
-		if (!(foodList == null)) {
-			Iterator<Food> it = foodList.iterator();
-			while (it.hasNext()) {
-				Food currentFoodItem = it.next();
-				(currentFoodItem).update(Gdx.graphics.getDeltaTime());
-			}
-		}
-	}
-
 	public void spawnFoodInWorld(float xSpawnPos) {
 		world.spawnFood(xSpawnPos, 6.75f);
 		timeSinceFoodSpawn = 0;
@@ -302,7 +291,6 @@ public class WorldController {
 		Iterator<Food> foodItemIterator = world.getFood().iterator();
 		while (foodItemIterator.hasNext()) {
 			Food currentFoodItem = foodItemIterator.next();
-			releaseFoodOnClick(currentFoodItem);
 			checkCollision(currentFoodItem);
 			if (currentFoodItem.getExists() == false) {
 				foodItemIterator.remove();
@@ -310,12 +298,6 @@ public class WorldController {
 		}
 	}
 
-	private void releaseFoodOnClick(Food currentFoodItem) {
-		if (Gdx.input.justTouched()) {
-			releaseFood(currentFoodItem);
-		}
-
-	}
 
 	/**
 	 * checks for collisions between food items + eater and for food that goes
@@ -346,20 +328,7 @@ public class WorldController {
 
 		}
 	}
-
-	/** checks if food item has been clicked **/
-	public void releaseFood(Food food) {
-		int x = Gdx.input.getX();
-		int y = Gdx.input.getY();
-		Vector3 touchVec = new Vector3(x, y, 0);
-		cam.unproject(touchVec);
-		Vector2 touchVec2d = new Vector2(touchVec.x, touchVec.y);
-		if (food.getBounds().contains(touchVec2d)) {
-			System.out.println("touched");
-			food.release();
-		}
-	}
-
+	
 	public void processFood(Food food) {
 
 		eater.consumeFood(food);

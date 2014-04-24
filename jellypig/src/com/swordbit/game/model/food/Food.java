@@ -5,53 +5,28 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Food {
-	// Fixed properties for every food item
 	protected static final float SIZE = 0.5f; // half a unit
-	protected static final float SPEED = -2f; // unit per second
+	
 	protected Vector2 velocity = new Vector2();
 	protected Vector2 acceleration = new Vector2();
-	
-	// Properties that are defined in the food subtype
-	public String consequence;
-	public String type;
-	public int scoreValue;
 	protected float width;
 	protected float height;
+	public int scoreValue;
+	public String type;
+	public String consequence;
 	public TextureRegion foodTexture;
-	
 	float timeAlive;
-	boolean released;
-	//float stateTime = 0;
 	boolean exists = true;
 	Vector2 position = new Vector2();
 	Rectangle bounds = new Rectangle();
 
 	public Food() {
 		this.timeAlive = 0;
-		this.velocity = new Vector2(0, SPEED);
 	}
 
-	public Food(Vector2 position) {
-		this.timeAlive = 0;
+	public void setPosition(Vector2 position) {
 		this.position = position;
-		this.bounds.setPosition(this.position);
-		this.velocity = new Vector2(0, SPEED);
-	}
-
-	public void setPosition(float posX, float posY) {
-		this.position.x = posX;
-		this.position.y = posY;
-	}
-
-	public void update(float delta) {
-		timeAlive += delta;
-		if (timeAlive > 0) {
-			this.release();
-		}
-		if (this.isReleased()) {
-			position.add(velocity.cpy().scl(delta));
-			this.bounds.setPosition(position);
-		}
+		this.bounds.setPosition(position);
 	}
 	
 	public Vector2 getAcceleration() {
@@ -80,14 +55,6 @@ public class Food {
 
 	public Vector2 getVelocity() {
 		return this.velocity;
-	}
-
-	public boolean isReleased() {
-		return released;
-	}
-
-	public void release() {
-		this.released = true;
 	}
 
 	public void setExists(boolean isAlive) {
