@@ -12,8 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.swordbit.game.model.Eater;
 import com.swordbit.game.model.World;
+import com.swordbit.game.model.eater.Eater;
 import com.swordbit.game.utils.PreferencesHelper;
 
 public class LevelCompletedScreen extends AbstractGameScreen {

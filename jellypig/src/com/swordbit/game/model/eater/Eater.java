@@ -1,4 +1,4 @@
-package com.swordbit.game.model;
+package com.swordbit.game.model.eater;
 
 import com.swordbit.game.utils.Constants;
 import java.util.List;
@@ -8,6 +8,7 @@ import java.beans.PropertyChangeListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Rectangle;
 import com.swordbit.game.controller.WorldController.Input;
+import com.swordbit.game.model.SoundEffects;
 import com.swordbit.game.model.food.Food;
 import com.swordbit.game.utils.Assets;
 
@@ -20,21 +21,20 @@ public class Eater {
 	Vector2 position = new Vector2();
 	Rectangle bounds = new Rectangle();
 	Vector2 acceleration = new Vector2(); 
+	ActionState actionState = ActionState.IDLE;
+	HealthState healthState = HealthState.NEUTRAL;
 	
 	public boolean grounded;
-	public float jumpTimer;
 	public float healthTimer;
 	public static float SPEED = 6f;//8f
 	public static final float SIZE = 1f;
 	public static final float DAMPING = 0.8f;
-	private ActionState finalState;
 	private int gas;
 	private int maximumGas = 10;
 	private int minimumGas = 0;
 	private String typeFood = "";
 	private boolean farting = false;
-	private ActionState actionState = ActionState.IDLE;
-	private HealthState healthState = HealthState.NEUTRAL;
+	
 	private List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
 	
 	public enum ActionState {
@@ -92,7 +92,6 @@ public class Eater {
 			case IDLE:
 				if (input == Input.PRESS_JUMP) {
 					SoundEffects.instance.play(Assets.instance.sounds.jump);
-					jumpTimer = 0;
 					velocity.y = 12;
 					actionState = ActionState.JUMPING;
 					grounded = false;
@@ -119,69 +118,14 @@ public class Eater {
 	public void consumeFood(Food food) {
 		updateScore(food);
 		incrementGas();
-		switch(healthState) {
-			case NEUTRAL:
-				if (food.consequence == "HAPPY")
-					healthState = HealthState.HAPPY;
+		// NEUTRAL is the only state that can change to non-NEUTRAL
+		if (healthState == HealthState.NEUTRAL) {
 				if (food.consequence == "FAT")
 					healthState = HealthState.FAT;
-				if (food.consequence == "SOUR")
-					healthState = HealthState.SOUR;
-				if (food.consequence == "ACNE")
-					healthState = HealthState.ACNE;
-				break;
-				
-			case HAPPY:
-				healthTimer = 0;
-				if (food.consequence == "HAPPY")
-					healthState = HealthState.HAPPY;
-				if (food.consequence == "FAT")
-					healthState = HealthState.FAT;
-				if (food.consequence == "SOUR")
-					healthState = HealthState.SOUR;
-				if (food.consequence == "ACNE")
-					healthState = HealthState.ACNE;
-				break;
-				
-			case FAT:
-				healthTimer = 0;
-				if (food.consequence == "HAPPY")
-					healthState = HealthState.HAPPY;
-				if (food.consequence == "FAT")
-					healthState = HealthState.FAT;
-				if (food.consequence == "SOUR")
-					healthState = HealthState.SOUR;
-				if (food.consequence == "ACNE")
-					healthState = HealthState.ACNE;
-				break;
-				
-			case SOUR:
-				healthTimer = 0;
-				if (food.consequence == "HAPPY")
-					healthState = HealthState.HAPPY;
-				if (food.consequence == "FAT")
-					healthState = HealthState.FAT;
-				if (food.consequence == "SOUR")
-					healthState = HealthState.SOUR;
-				if (food.consequence == "ACNE")
-					healthState = HealthState.ACNE;
-				break;
-				
-			case ACNE:
-				healthTimer = 0;
-				if (food.consequence == "HAPPY")
-					healthState = HealthState.HAPPY;
-				if (food.consequence == "FAT")
-					healthState = HealthState.FAT;
-				if (food.consequence == "SOUR")
-					healthState = HealthState.SOUR;
-				if (food.consequence == "ACNE")
-					healthState = HealthState.ACNE;
-				break;
+				if (food.consequence == "");
 		}
 		System.out.println("Current health state:"+ healthState);
 	}
-	/* END OF STATE MACHINE SECTION */
 	
 	public void updateScore(Food food) {
 		score += food.scoreValue;
@@ -208,14 +152,14 @@ public class Eater {
 		System.out.println("Decrement Gas Eater: "+ gas);
 	}
 
-	private void notifyListeners(Object object, String property, ActionState oldValue, ActionState newValue) {
+	void notifyListeners(Object object, String property, ActionState oldValue, ActionState newValue) {
 		for (PropertyChangeListener name : listener) {
 			name.propertyChange(new PropertyChangeEvent(this, "state",
 					oldValue, newValue));
 		}
 	}
 	
-	private void notifyScoreListeners(Object object, String property, int oldScore, int newScore) {
+	void notifyScoreListeners(Object object, String property, int oldScore, int newScore) {
 		for (PropertyChangeListener name : listener) {
 			name.propertyChange(new PropertyChangeEvent(this, "score",
 					oldScore, newScore));
@@ -260,10 +204,6 @@ public class Eater {
 
 	public ActionState getActionState() {
 		return this.actionState;
-	}
-	
-	public ActionState getFinalState() {
-		return finalState;
 	}
 	
 	public int getGas() {

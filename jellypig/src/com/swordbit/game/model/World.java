@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.swordbit.game.model.eater.Eater;
 import com.swordbit.game.model.food.Apple;
 import com.swordbit.game.model.food.Burger;
 import com.swordbit.game.model.food.Food;

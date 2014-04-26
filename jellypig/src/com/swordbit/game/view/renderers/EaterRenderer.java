@@ -8,11 +8,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import com.swordbit.game.model.Eater;
-import com.swordbit.game.model.Eater.HealthState;
 import com.swordbit.game.model.SoundEffects;
 import com.swordbit.game.model.World;
-import com.swordbit.game.model.Eater.ActionState;
+import com.swordbit.game.model.eater.Eater;
+import com.swordbit.game.model.eater.Eater.ActionState;
+import com.swordbit.game.model.eater.Eater.HealthState;
 import com.swordbit.game.utils.Assets;
 
 public class EaterRenderer implements PropertyChangeListener{

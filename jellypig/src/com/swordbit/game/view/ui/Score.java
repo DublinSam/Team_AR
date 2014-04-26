@@ -2,7 +2,7 @@ package com.swordbit.game.view.ui;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.swordbit.game.model.Eater;
+import com.swordbit.game.model.eater.Eater;
 import com.swordbit.game.utils.Assets;
 
 public class Score extends Actor {

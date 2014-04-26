@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.swordbit.game.model.Eater;
 import com.swordbit.game.model.World;
+import com.swordbit.game.model.eater.Eater;
 
 // The MasterRenderer coordinates all other renderers. It implements the
 // PropertyChangeListener interface to allow it to react to state changes

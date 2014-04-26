@@ -1,4 +1,4 @@
-package com.swordbit.game.model;
+package com.swordbit.game.model.eater;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.math.Vector2;
+import com.swordbit.game.model.eater.Eater;
 import com.swordbit.game.model.food.Apple;
 import com.swordbit.game.model.food.Pizza;
 import com.swordbit.game.view.screens.GameScreen;

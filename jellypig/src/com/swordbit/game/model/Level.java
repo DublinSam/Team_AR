@@ -1,6 +1,7 @@
 package com.swordbit.game.model;
 
 import com.badlogic.gdx.math.Vector2;
+import com.swordbit.game.model.eater.Eater;
 import com.swordbit.game.utils.Assets;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 
