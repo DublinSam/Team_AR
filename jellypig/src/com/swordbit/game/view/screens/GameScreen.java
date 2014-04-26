@@ -328,13 +328,15 @@ public class GameScreen extends AbstractGameScreen implements InputProcessor,
 		return true;
 	}
 
+	
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
-		if (x < width / 2 && y > height / 2) {
-			controller.jumpReleased();
-		}
+		//if (x < width / 2 && y > height / 2) {
+		//	controller.jumpReleased();
+		//}
 		return true;
 	}
+	
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {

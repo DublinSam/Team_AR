@@ -19,14 +19,12 @@ public class EaterTest {
 
 	@Test
 	public void testEaterConstructor() {
-		float expectedTimeInState = 0;
 		Vector2 samplePosition = new Vector2(0,0);
 		Vector2 presetAcceleration = new Vector2(0, -30);
 		Vector2 sampleSize = new Vector2(1,1);
 		
 		Eater eater = new Eater(samplePosition);
 		
-		assertEquals("Matches time in state", expectedTimeInState, eater.timeInState, 0);
 		assertEquals("Matches position", samplePosition, eater.position);
 		assertEquals("Matches acceleration", presetAcceleration, eater.acceleration);
 		assertEquals("Matches size", new Vector2(sampleSize.x, sampleSize.y), 

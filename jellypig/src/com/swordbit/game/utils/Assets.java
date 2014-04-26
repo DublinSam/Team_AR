@@ -30,7 +30,6 @@ public class Assets implements Disposable, AssetErrorListener {
 	public AssetExplosionAnimation explosionAnimation;
 	
 	public AssetGasMeter gasmeter;
-	
 	public AssetSounds sounds;
 	public AssetMusic music;
 	private AssetManager assetManager;
@@ -221,7 +220,7 @@ public class Assets implements Disposable, AssetErrorListener {
 			chili = atlas.findRegion("Chili");
 			lemon = atlas.findRegion("Lemon");
 			pizza = atlas.findRegion("Pizza");
-			burger = atlas.findRegion("Burger");
+			burger = atlas.findRegion("Hamburger");
 			cookie = atlas.findRegion("Cookie");
 			hotdog = atlas.findRegion("Hotdog");
 			strawberry = atlas.findRegion("Strawberry");

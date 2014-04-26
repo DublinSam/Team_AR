@@ -3,7 +3,6 @@ package com.swordbit.game.controller;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapObject;
@@ -13,10 +12,10 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.swordbit.game.model.Eater;
+import com.swordbit.game.model.Eater.ActionState;
 import com.swordbit.game.model.SoundEffects;
 import com.swordbit.game.model.food.Food;
 import com.swordbit.game.model.World;
@@ -52,8 +51,11 @@ public class WorldController {
 	PreferencesHelper prefs = new PreferencesHelper();
 	public float timeSinceFoodSpawn = 0;
 	public float spawnInterval = 3;
-	float timeNotBlinked = 0;
 	private boolean gameStarted = false;
+	
+	public enum Input {
+		PRESS_JUMP, PRESS_FART
+	}
 
 	public WorldController(World world) {
 		this.cam = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT);
@@ -65,27 +67,21 @@ public class WorldController {
 	}
 
 	public void jumpPressed() {
-		if (eater.grounded) {
-			eater.setState("JUMPING");
-			eater.getVelocity().y = 12;
-			SoundEffects.instance.play(Assets.instance.sounds.jump);
-		}
+		eater.handleInput(Input.PRESS_JUMP);
+		System.out.println("Jump pressed");
 	}
 	
+	public void fartPressed(){
+		eater.handleInput(Input.PRESS_FART);
+	}
+
+	/*
 	public void jumpReleased() {
 		if (eater.getVelocity().y > 6) {
 			eater.getVelocity().y = 6;
 		}
 	}
-	
-	public void fartPressed(){
-		if(eater.grounded){
-			//eater.setState("FARTING");
-			//eater.getVelocity().x = 12;
-			eater.decrementGas();
-			SoundEffects.instance.play(Assets.instance.sounds.fart);
-		}
-	}
+	*/
 
 	public void update(float delta) {
 		if (gameStarted) {
@@ -342,11 +338,6 @@ public class WorldController {
 		if (!(eater.getVelocity().y == 0)) {
 			eater.setGrounded(false);
 		}
-		timeNotBlinked += Gdx.graphics.getDeltaTime();
-		if (timeNotBlinked > 5) {
-			setBlinkAnimation();
-			timeNotBlinked = 0;
-		}
 	}
 
 	/** Gets tiles that are to be considered for collision detection **/
@@ -374,12 +365,6 @@ public class WorldController {
 				}
 			}
 		}
-	}
-
-	private void setBlinkAnimation() {
-		Eater eater = world.getEater();
-		eater.setState("BLINK");
-		timeNotBlinked = 0;
 	}
 
 	public void beginGame() {

@@ -9,8 +9,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.swordbit.game.model.Eater;
+import com.swordbit.game.model.Eater.HealthState;
 import com.swordbit.game.model.SoundEffects;
 import com.swordbit.game.model.World;
+import com.swordbit.game.model.Eater.ActionState;
 import com.swordbit.game.utils.Assets;
 
 public class EaterRenderer implements PropertyChangeListener{
@@ -35,7 +37,6 @@ public class EaterRenderer implements PropertyChangeListener{
 	}
 	
 	private void loadAnimations() {
-		constructBlinkAnimation();
 		constructEatingAnimation();
 		constructTransformationAnimation();
 	}
@@ -75,59 +76,46 @@ public class EaterRenderer implements PropertyChangeListener{
 	
 	private void drawEaterWithAnimation(SpriteBatch spriteBatch) {
 		Rectangle eaterBounds = eater.getBounds();
-		TextureRegion currentFrame = currentAnimation.getKeyFrame(
-				eater.getTimeInState(),false);
+		TextureRegion currentFrame = currentAnimation.getKeyFrame(eater.getHealthTimer(),false);
 		spriteBatch.draw(currentFrame, 
 						eater.getPosition().x,
 						eater.getPosition().y - 0.1f,
 						eaterBounds.width,
 						eaterBounds.height);
-		
-		if (currentAnimation.isAnimationFinished(eater.getTimeInState())) {
-			if (eater.getState() == "EATING") {
-				eater.forceState("TRANSFORMING");
-			} else if (eater.getState() == "TRANSFORMING") {
-				String finalState = eater.getFinalState();
-				System.out.println(finalState);
-				eater.forceState(finalState);
-				currentAnimation = null;
-			} else {
-				eater.forceState("IDLE");
-				currentAnimation = null;
-			}
-		}
 	}
 	
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		// code listens for changes to eater, called in setState in eater class
-		if (event.getPropertyName().equals("state")) {
-			String state = (String) event.getNewValue();
-//			if (state == "BLINK")
-//				currentAnimation = blinkingAnimation;	
-//			else 
-			if(state == "JUMPING")
+		
+		// Listen to Eater ACTION state machine
+		if (event.getPropertyName().equals("actionState")) {
+			ActionState actionState = (ActionState) event.getNewValue();
+			if(actionState == ActionState.JUMPING)
 				currentStateTexture = Assets.instance.jellypigStates.jumping;
-			else if(state == "IDLE")
+			else if(actionState == ActionState.IDLE)
 				currentStateTexture = Assets.instance.jellypigStates.jellypig;
-			else if(state == "TRANSFORMING"){
-				SoundEffects.instance.play(Assets.instance.sounds.transformation);
-				currentAnimation = explosionAnimation;	
+			//else if(actionState == "TRANSFORMING"){
+			//	SoundEffects.instance.play(Assets.instance.sounds.transformation);
+			//	currentAnimation = explosionAnimation;	
 			}
-			else if(state == "FAT")
-				currentStateTexture = Assets.instance.jellypigStates.fat;
-			else if(state == "ACNE")
-				currentStateTexture = Assets.instance.jellypigStates.acne;
-			else if(state == "HOT")
-				currentStateTexture = Assets.instance.jellypigStates.enchilado;
-			else if(state == "SOUR")
-				currentStateTexture = Assets.instance.jellypigStates.sour;
-			else if(state == "HAPPY")
+		
+		// Listen to Eater HEALTH state machine
+		if (event.getPropertyName().equals("healthState")) {
+			HealthState healthState = (HealthState) event.getNewValue();
+			if(healthState == healthState.HAPPY)
 				currentStateTexture = Assets.instance.jellypigStates.happy;
-			else if(state == "EATING")
+			else if(healthState == healthState.ACNE)
+				currentStateTexture = Assets.instance.jellypigStates.acne;
+			else if(healthState == healthState.SOUR)
+				currentStateTexture = Assets.instance.jellypigStates.sour;
+			else if(healthState == healthState.NEUTRAL)
+				currentStateTexture = Assets.instance.jellypigStates.jellypig;
+			else if(healthState == healthState.FAT)
+				currentStateTexture = Assets.instance.jellypigStates.enchilado;
+			else
 				currentAnimation = eatingAnimation;
-//			else
-//				currentAnimation = eatingAnimation;
 			}
+			
 		}
+	
 }

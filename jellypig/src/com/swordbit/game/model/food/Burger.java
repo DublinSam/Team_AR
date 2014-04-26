@@ -16,6 +16,7 @@ public class Burger extends Food {
 		this.consequence = "FAT";
 		this.bounds.width = width;
 		this.bounds.height = height;
+		System.out.println(Assets.instance.foods.burger);
 		super.foodTexture = Assets.instance.foods.burger;
 	}
 }

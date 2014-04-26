@@ -8,7 +8,11 @@ import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.swordbit.game.model.food.Apple;
+import com.swordbit.game.model.food.Burger;
 import com.swordbit.game.model.food.Food;
+import com.swordbit.game.model.food.Lemon;
+import com.swordbit.game.model.food.Pizza;
 import com.swordbit.game.model.food.Strawberry;
 import com.swordbit.game.utils.Assets;
 import com.swordbit.game.view.screens.GameScreen.GameStatus;
@@ -36,9 +40,22 @@ public class World {
 	private Pool<Food> foodPool = new Pool<Food>() {
 		@Override
 		protected Food newObject() {
-			return new Strawberry(); // Testing the mechanism
+			return randomFoodItem();
 		}
 	};
+	
+	private Food randomFoodItem() {
+		double random = Math.random();
+		if (random < 0.25) {
+			return new Burger();
+		} else if (random < 0.5) {
+			return new Pizza();
+		} else if (random < 0.75) {
+			return new Apple();
+		} else {
+			return new Strawberry();
+		}
+	}
 	
 	public World() {
 		System.out.println(":)");

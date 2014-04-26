@@ -1,12 +1,15 @@
 package com.swordbit.game.model;
 
+import com.swordbit.game.utils.Constants;
 import java.util.List;
 import java.util.ArrayList;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Rectangle;
+import com.swordbit.game.controller.WorldController.Input;
 import com.swordbit.game.model.food.Food;
+import com.swordbit.game.utils.Assets;
 
 public class Eater {	
 	int score = 0;
@@ -19,21 +22,30 @@ public class Eater {
 	Vector2 acceleration = new Vector2(); 
 	
 	public boolean grounded;
-	public float timeInState;
+	public float jumpTimer;
+	public float healthTimer;
 	public static float SPEED = 6f;//8f
 	public static final float SIZE = 1f;
 	public static final float DAMPING = 0.8f;
-	private String state = "IDLE";
-	private String finalState;
+	private ActionState finalState;
 	private int gas;
 	private int maximumGas = 10;
 	private int minimumGas = 0;
 	private String typeFood = "";
 	private boolean farting = false;
+	private ActionState actionState = ActionState.IDLE;
+	private HealthState healthState = HealthState.NEUTRAL;
 	private List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
+	
+	public enum ActionState {
+		IDLE, JUMPING, FARTING 
+	}
+	
+	public enum HealthState {
+		NEUTRAL, HAPPY, FAT, SOUR, ACNE
+	}
 
 	public Eater(Vector2 position) {
-		this.timeInState = 0;
 		this.position = position;
 		this.bounds.width = SIZE;
 		this.bounds.height = SIZE;
@@ -42,22 +54,147 @@ public class Eater {
 		this.bounds.setPosition(position);
 	}
 	
+	/* BEGIN STATE MACHINE SECTION */
+	public void update(float delta) {
+		updateEaterPosition(delta);
+		updateActionState(delta);
+		updateHealthState(delta);
+	}
+	
+	private void updateActionState(float delta) {
+		switch(actionState) {
+			case IDLE:
+				// Do nothing
+				break;
+			case JUMPING:
+				if (grounded)
+					actionState = ActionState.IDLE;
+				break;
+			case FARTING:
+				actionState = ActionState.IDLE;
+		}
+	}
+	
+	private void updateHealthState(float delta) {
+		healthTimer += delta;
+		if (healthTimer > Constants.FOOD_EFFECTS_TIMER)
+			healthState = HealthState.NEUTRAL;
+	}
+	
+	private void updateEaterPosition(float delta) {
+		position.add(velocity.cpy().scl(delta));
+		this.bounds.setPosition(position);
+	}
+	
+	public void handleInput(Input input) {
+		switch(actionState) {
+		
+			case IDLE:
+				if (input == Input.PRESS_JUMP) {
+					SoundEffects.instance.play(Assets.instance.sounds.jump);
+					jumpTimer = 0;
+					velocity.y = 12;
+					actionState = ActionState.JUMPING;
+					grounded = false;
+					notifyListeners(this, "actionState", ActionState.IDLE, ActionState.JUMPING);
+				}
+				if (input == Input.PRESS_FART) {
+					SoundEffects.instance.play(Assets.instance.sounds.fart);	
+					decrementGas();	
+					actionState = ActionState.FARTING;
+					notifyListeners(this, "actiovfnState", ActionState.IDLE, ActionState.FARTING);
+				}
+				break;
+				
+			case JUMPING:	
+				// No inputs should work while jumping
+				break;
+				
+			case FARTING:
+				// No inputs should work while farting
+				break;
+		}
+	}
+	
 	public void consumeFood(Food food) {
 		updateScore(food);
-		setState("EATING");
-		setFinalState(food);
-		increaseFullness();
 		incrementGas();
+		switch(healthState) {
+			case NEUTRAL:
+				if (food.consequence == "HAPPY")
+					healthState = HealthState.HAPPY;
+				if (food.consequence == "FAT")
+					healthState = HealthState.FAT;
+				if (food.consequence == "SOUR")
+					healthState = HealthState.SOUR;
+				if (food.consequence == "ACNE")
+					healthState = HealthState.ACNE;
+				break;
+				
+			case HAPPY:
+				healthTimer = 0;
+				if (food.consequence == "HAPPY")
+					healthState = HealthState.HAPPY;
+				if (food.consequence == "FAT")
+					healthState = HealthState.FAT;
+				if (food.consequence == "SOUR")
+					healthState = HealthState.SOUR;
+				if (food.consequence == "ACNE")
+					healthState = HealthState.ACNE;
+				break;
+				
+			case FAT:
+				healthTimer = 0;
+				if (food.consequence == "HAPPY")
+					healthState = HealthState.HAPPY;
+				if (food.consequence == "FAT")
+					healthState = HealthState.FAT;
+				if (food.consequence == "SOUR")
+					healthState = HealthState.SOUR;
+				if (food.consequence == "ACNE")
+					healthState = HealthState.ACNE;
+				break;
+				
+			case SOUR:
+				healthTimer = 0;
+				if (food.consequence == "HAPPY")
+					healthState = HealthState.HAPPY;
+				if (food.consequence == "FAT")
+					healthState = HealthState.FAT;
+				if (food.consequence == "SOUR")
+					healthState = HealthState.SOUR;
+				if (food.consequence == "ACNE")
+					healthState = HealthState.ACNE;
+				break;
+				
+			case ACNE:
+				healthTimer = 0;
+				if (food.consequence == "HAPPY")
+					healthState = HealthState.HAPPY;
+				if (food.consequence == "FAT")
+					healthState = HealthState.FAT;
+				if (food.consequence == "SOUR")
+					healthState = HealthState.SOUR;
+				if (food.consequence == "ACNE")
+					healthState = HealthState.ACNE;
+				break;
+		}
+		System.out.println("Current health state:"+ healthState);
+	}
+	/* END OF STATE MACHINE SECTION */
+	
+	public void updateScore(Food food) {
+		score += food.scoreValue;
+		notifyScoreListeners(this, "Score", score + food.scoreValue, score);
 	}
 	
 	public void incrementGas(){
-		if(typeFood == "JUNK"){
+		if (typeFood == "JUNK") {
 			gas = gas + 2;
-		}
-		else{
+		} else{
 			gas = gas + 1;
 		}
-		if(gas >= maximumGas){
+		if (gas >= maximumGas) {
 			gas = maximumGas;
 		}
 		System.out.println("Increment Gas Eater: "+ gas);
@@ -70,42 +207,15 @@ public class Eater {
 		}
 		System.out.println("Decrement Gas Eater: "+ gas);
 	}
-	
-	public void updateScore(Food food) {
-		score += food.scoreValue;
-		notifyScoreListeners(this, "Score", score + food.scoreValue, score);
-	}
-	
-	public void setFinalState(Food food) {
-		finalState = food.consequence;
-	}
 
-	/** updates eaters position based on velocity **/
-	public void update(float delta) {
-		timeInState += delta;
-		// add velocity times times time to do the distance traveled
-		position.add(velocity.cpy().scl(delta));
-		this.bounds.setPosition(position);
-		if (!(state == "IDLE")) {
-			if (timeInState > 3) {
-				setState("IDLE");
-			}
-		}
-		if ((grounded) && state.equals("JUMPING")) {
-			setState("IDLE");
-		}
-	}
-
-	private void notifyListeners(Object object, String property,
-			String oldValue, String newValue) {
+	private void notifyListeners(Object object, String property, ActionState oldValue, ActionState newValue) {
 		for (PropertyChangeListener name : listener) {
 			name.propertyChange(new PropertyChangeEvent(this, "state",
 					oldValue, newValue));
 		}
 	}
 	
-	private void notifyScoreListeners(Object object, String property,
-			int oldScore, int newScore) {
+	private void notifyScoreListeners(Object object, String property, int oldScore, int newScore) {
 		for (PropertyChangeListener name : listener) {
 			name.propertyChange(new PropertyChangeEvent(this, "score",
 					oldScore, newScore));
@@ -115,47 +225,17 @@ public class Eater {
 	public void addChangeListener(PropertyChangeListener newListener) {
 		listener.add(newListener);
 	}
-
-//This method is going to cause eater to change size over time
-	public void setGrounded(boolean b) {
-		grounded = b;
-		if (b && (state == "JUMPING")) {
-			 state = "IDLE";
-		}
-	}
-
-	public void forceState(String newState) {
-		if (newState == "JUMPING") {
-			bounds.height += 0.25;
-		}
-		if (state == "JUMPING") {
-			bounds.height -= 0.25;
-		}
-		notifyListeners(this, "State", state, newState);
-		this.state = newState;
-		timeInState = 0;
-	}
 	
-
-	public void increaseScore() {
-		score += 100;
-		notifyScoreListeners(this, "Score", score + 100, score);
-	}
-	public void decreaseScore() {
-		score -= 100;
-		notifyScoreListeners(this, "Score", score - 100, score);
+	public void setGrounded(boolean grounded) {
+		this.grounded = grounded;
 	}
 	
 	public int getScore() {
 		return score;
 	}
-
-	public float getTimeInState() {
-		return this.timeInState;
-	}
 	
-	public float getFullness() {
-		return this.fullness;
+	public float getHealthTimer() {
+		return healthTimer;
 	}
 
 	public Vector2 getPosition() {
@@ -178,36 +258,11 @@ public class Eater {
 		return this.bounds.overlaps(food.getBounds());
 	}
 
-	private void increaseFullness() {
-		this.fullness += 1;
+	public ActionState getActionState() {
+		return this.actionState;
 	}
 	
-	public void setState(String newState) {
-		if (timeInState > 3) {
-//			if (state == "JUMPING") {
-//				bounds.height -= 0.25;
-//			}
-			notifyListeners(this, "State", state, newState);
-			timeInState = 0;
-			this.state = newState;
-		} else if (state == "IDLE" || state == "JUMPING"
-				|| state == "BLINK") {
-//			if (newState == "JUMPING") {
-//				bounds.height += 0.25;
-//			} else if (state == "JUMPING") {
-//				bounds.height -= 0.25;
-//			}
-			notifyListeners(this, "State", state, newState);
-			timeInState = 0;
-			this.state = newState;
-		}
-	}
-	
-	public String getState() {
-		return this.state;
-	}
-	
-	public String getFinalState() {
+	public ActionState getFinalState() {
 		return finalState;
 	}
 	
