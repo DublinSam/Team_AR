@@ -22,7 +22,6 @@ public class Eater {
 	Vector2 acceleration = new Vector2(); 
 	
 	public boolean grounded;
-	public float jumpTimer;
 	public float healthTimer;
 	public static float SPEED = 6f;//8f
 	public static final float SIZE = 1f;
@@ -54,7 +53,6 @@ public class Eater {
 		this.bounds.setPosition(position);
 	}
 	
-	/* BEGIN STATE MACHINE SECTION */
 	public void update(float delta) {
 		updateEaterPosition(delta);
 		updateActionState(delta);
@@ -92,7 +90,6 @@ public class Eater {
 			case IDLE:
 				if (input == Input.PRESS_JUMP) {
 					SoundEffects.instance.play(Assets.instance.sounds.jump);
-					jumpTimer = 0;
 					velocity.y = 12;
 					actionState = ActionState.JUMPING;
 					grounded = false;
@@ -129,59 +126,27 @@ public class Eater {
 					healthState = HealthState.SOUR;
 				if (food.consequence == "ACNE")
 					healthState = HealthState.ACNE;
+				// reset timer
+				healthTimer = 0;
 				break;
 				
 			case HAPPY:
-				healthTimer = 0;
-				if (food.consequence == "HAPPY")
-					healthState = HealthState.HAPPY;
-				if (food.consequence == "FAT")
-					healthState = HealthState.FAT;
-				if (food.consequence == "SOUR")
-					healthState = HealthState.SOUR;
-				if (food.consequence == "ACNE")
-					healthState = HealthState.ACNE;
+				// Inactive
 				break;
 				
 			case FAT:
-				healthTimer = 0;
-				if (food.consequence == "HAPPY")
-					healthState = HealthState.HAPPY;
-				if (food.consequence == "FAT")
-					healthState = HealthState.FAT;
-				if (food.consequence == "SOUR")
-					healthState = HealthState.SOUR;
-				if (food.consequence == "ACNE")
-					healthState = HealthState.ACNE;
+				// Inactive
 				break;
 				
 			case SOUR:
-				healthTimer = 0;
-				if (food.consequence == "HAPPY")
-					healthState = HealthState.HAPPY;
-				if (food.consequence == "FAT")
-					healthState = HealthState.FAT;
-				if (food.consequence == "SOUR")
-					healthState = HealthState.SOUR;
-				if (food.consequence == "ACNE")
-					healthState = HealthState.ACNE;
+				// Inactive
 				break;
 				
 			case ACNE:
-				healthTimer = 0;
-				if (food.consequence == "HAPPY")
-					healthState = HealthState.HAPPY;
-				if (food.consequence == "FAT")
-					healthState = HealthState.FAT;
-				if (food.consequence == "SOUR")
-					healthState = HealthState.SOUR;
-				if (food.consequence == "ACNE")
-					healthState = HealthState.ACNE;
+				// Inactive
 				break;
 		}
-		System.out.println("Current health state:"+ healthState);
 	}
-	/* END OF STATE MACHINE SECTION */
 	
 	public void updateScore(Food food) {
 		score += food.scoreValue;
