@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.swordbit.game.model.SoundEffects;
 import com.swordbit.game.model.eater.Eater;
+import com.swordbit.game.model.eater.Eater.HealthState;
 import com.swordbit.game.model.food.Food;
 import com.swordbit.game.model.World;
 import com.swordbit.game.utils.Assets;
@@ -67,20 +68,11 @@ public class WorldController {
 
 	public void jumpPressed() {
 		eater.handleInput(Input.PRESS_JUMP);
-		System.out.println("Jump pressed");
 	}
 	
 	public void fartPressed(){
 		eater.handleInput(Input.PRESS_FART);
 	}
-
-	/*
-	public void jumpReleased() {
-		if (eater.getVelocity().y > 6) {
-			eater.getVelocity().y = 6;
-		}
-	}
-	*/
 
 	public void update(float delta) {
 		if (gameStarted) {
@@ -101,26 +93,29 @@ public class WorldController {
 	private void checkObjectCollisions(float delta) {
 		getObjects();
 		boolean crystalCollision = false;
+		
 		for (int i = 0; i < mapObjects.size; i++) {
 
-			Rectangle objRectangle = ((RectangleMapObject) mapObjects.get(i))
-					.getRectangle();
+			Rectangle objRectangle = 
+					((RectangleMapObject) mapObjects.get(i)).getRectangle();
+			
 			float rectangleWidth = objRectangle.width / tileWidth;
 			float rectangleHeight = objRectangle.height / tileWidth;
 			float rectangleX = objRectangle.x / tileWidth;
 			float rectangleY = objRectangle.y / tileWidth;
-			Rectangle rect = new Rectangle(rectangleX, rectangleY,
-					rectangleWidth, rectangleHeight);
+			Rectangle rect = new Rectangle(rectangleX, rectangleY, rectangleWidth, rectangleHeight);
 
 			if (rect.overlaps(eater.getBounds())) {
-				String finish = (String) mapObjects.get(i).getProperties()
-						.get("finish");
+				String finish = (String) mapObjects.get(i).getProperties().get("finish");
+				
 				if (!(finish == null)) {
 					if (finish.equals("true")) {
 						world.levelCompleted();
 					}
 				} else {
-					world.levelFailed();
+					if (eater.getHealthState() != HealthState.INVINCIBLE) {
+							world.levelFailed();
+					}
 				}
 			}
 		}
@@ -130,8 +125,8 @@ public class WorldController {
 
 	/** returns any objects that are passed the center of the screen **/
 	private void getObjects() {
-		MapObjects objects = world.getMap().getLayers().get("Collision")
-				.getObjects();
+		MapObjects objects = 
+				world.getMap().getLayers().get("Collision").getObjects();
 
 		for (int i = 0; i < objects.getCount(); i++) {
 			if ((((RectangleMapObject) objects.get(i)).getRectangle().x / tileWidth) < eater
@@ -143,7 +138,6 @@ public class WorldController {
 
 	private void checkTileCollisions(float delta) {
 		checkYAxisCollision(delta);
-		// checkXAxisCollision(delta);
 	}
 
 	/** checks if eater rectangle is about to land on a tile **/
@@ -187,30 +181,6 @@ public class WorldController {
 
 				}
 
-				break;
-			}
-		}
-
-	}
-
-	private void checkXAxisCollision(float delta) {
-		Tile eaterRect = new Tile("0", eater.getBounds());
-		int startX, startY, endX, endY;
-		if (eater.getVelocity().x > 0) {
-			startX = endX = (int) (eater.getPosition().x
-					+ eater.getBounds().width + eater.getVelocity().x * delta);
-		} else {
-			startX = endX = (int) (eater.getPosition().x + eater.getPosition().x);
-		}
-		startY = (int) (eater.getPosition().y);
-		endY = (int) (eater.getPosition().y + eater.getBounds().height);
-		getTiles(startX, startY, endX, endY, tiles);
-		eaterRect.x += eater.getVelocity().x * delta;
-		for (Tile tile : tiles) {
-			if (eaterRect.overlapsBoundary(tile)) {
-
-				// eater.getVelocity().x = 0;
-				// eater.getPosition().x=tile.x-eaterRect.width;
 				break;
 			}
 		}

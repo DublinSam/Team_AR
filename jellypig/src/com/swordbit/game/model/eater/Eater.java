@@ -64,7 +64,7 @@ public class Eater {
 				healthState = HealthState.NEUTRAL;
 			}
 		}
-		if (healthTimer > Constants.FOOD_EFFECTS_TIMER) {
+		else if (healthTimer > Constants.FOOD_EFFECTS_TIMER) {
 			healthState = HealthState.NEUTRAL;
 		}		
 	}
@@ -83,8 +83,8 @@ public class Eater {
 		incrementGas();
 		switch(healthState) {
 			case NEUTRAL:
-				if (food.consequence == "HAPPY")
-					healthState = HealthState.HAPPY;
+				if (food.consequence == "INVINCIBLE")
+					healthState = HealthState.INVINCIBLE;
 				if (food.consequence == "FAT")
 					healthState = HealthState.FAT;
 				if (food.consequence == "SOUR")
@@ -213,5 +213,9 @@ public class Eater {
 
 	public void setFarting(boolean farting) {
 		this.farting = farting;
+	}
+
+	public HealthState getHealthState() {
+		return healthState;
 	}
 }

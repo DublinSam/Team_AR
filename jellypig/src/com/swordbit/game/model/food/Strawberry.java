@@ -13,7 +13,7 @@ public class Strawberry extends Food {
 		this.width = 0.5f;
 		this.height = 0.5f;
 		this.scoreValue = 100;
-		this.consequence = "HAPPY";
+		this.consequence = "INVINCIBLE";
 		this.bounds.width = width;
 		this.bounds.height = height;
 		this.type = "JUNK";
