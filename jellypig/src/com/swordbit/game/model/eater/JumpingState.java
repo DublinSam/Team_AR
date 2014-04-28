@@ -1,9 +1,8 @@
 package com.swordbit.game.model.eater;
 
 import com.swordbit.game.controller.WorldController.Input;
-import com.swordbit.game.model.eater.Eater.ActionState;
 
-public class JumpingState implements EaterActionState {
+public class JumpingState implements ActionState {
 
 	@Override
 	public void handleInput(Eater eater, Input input) {
@@ -13,7 +12,9 @@ public class JumpingState implements EaterActionState {
 	@Override
 	public void update(Eater eater) {
 		// Transition to idle state when the eater lands on the ground
-		if (eater.grounded)
-			eater.actionState = ActionState.IDLE;
+		if (eater.grounded) {
+			IdleState idleState = new IdleState();
+			eater.setActionState(idleState);
+		}
 	}
 }

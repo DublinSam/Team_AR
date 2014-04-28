@@ -8,11 +8,16 @@ import java.beans.PropertyChangeListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Rectangle;
 import com.swordbit.game.controller.WorldController.Input;
-import com.swordbit.game.model.SoundEffects;
 import com.swordbit.game.model.food.Food;
-import com.swordbit.game.utils.Assets;
 
 public class Eater {	
+	public boolean grounded;
+	public float healthTimer;
+	public static float SPEED = 6f;
+	public static final float SIZE = 1f;
+	public static final float DAMPING = 0.8f;
+	public enum HealthState { NEUTRAL, HAPPY, FAT, SOUR, ACNE, INVINCIBLE }
+	
 	int score = 0;
 	int foodMissed;
 	int foodCollected;
@@ -21,29 +26,16 @@ public class Eater {
 	Vector2 position = new Vector2();
 	Rectangle bounds = new Rectangle();
 	Vector2 acceleration = new Vector2(); 
-	ActionState actionState = ActionState.IDLE;
+	ActionState actionState = new IdleState();
 	HealthState healthState = HealthState.NEUTRAL;
 	
-	public boolean grounded;
-	public float healthTimer;
-	public static float SPEED = 6f;//8f
-	public static final float SIZE = 1f;
-	public static final float DAMPING = 0.8f;
 	private int gas;
 	private int maximumGas = 10;
 	private int minimumGas = 0;
 	private String typeFood = "";
 	private boolean farting = false;
-	
 	private List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
 	
-	public enum ActionState {
-		IDLE, JUMPING, FARTING 
-	}
-	
-	public enum HealthState {
-		NEUTRAL, HAPPY, FAT, SOUR, ACNE
-	}
 
 	public Eater(Vector2 position) {
 		this.position = position;
@@ -54,31 +46,10 @@ public class Eater {
 		this.bounds.setPosition(position);
 	}
 	
-	/* BEGIN STATE MACHINE SECTION */
 	public void update(float delta) {
 		updateEaterPosition(delta);
-		updateActionState(delta);
 		updateHealthState(delta);
-	}
-	
-	private void updateActionState(float delta) {
-		switch(actionState) {
-			case IDLE:
-				// Do nothing
-				break;
-			case JUMPING:
-				if (grounded)
-					actionState = ActionState.IDLE;
-				break;
-			case FARTING:
-				actionState = ActionState.IDLE;
-		}
-	}
-	
-	private void updateHealthState(float delta) {
-		healthTimer += delta;
-		if (healthTimer > Constants.FOOD_EFFECTS_TIMER)
-			healthState = HealthState.NEUTRAL;
+		updateActionState(delta);
 	}
 	
 	private void updateEaterPosition(float delta) {
@@ -86,45 +57,59 @@ public class Eater {
 		this.bounds.setPosition(position);
 	}
 	
-	public void handleInput(Input input) {
-		switch(actionState) {
-		
-			case IDLE:
-				if (input == Input.PRESS_JUMP) {
-					SoundEffects.instance.play(Assets.instance.sounds.jump);
-					velocity.y = 12;
-					actionState = ActionState.JUMPING;
-					grounded = false;
-					notifyListeners(this, "actionState", ActionState.IDLE, ActionState.JUMPING);
-				}
-				if (input == Input.PRESS_FART) {
-					SoundEffects.instance.play(Assets.instance.sounds.fart);	
-					decrementGas();	
-					actionState = ActionState.FARTING;
-					notifyListeners(this, "actiovfnState", ActionState.IDLE, ActionState.FARTING);
-				}
-				break;
-				
-			case JUMPING:	
-				// No inputs should work while jumping
-				break;
-				
-			case FARTING:
-				// No inputs should work while farting
-				break;
+	private void updateHealthState(float delta) {
+		healthTimer += delta;
+		if (healthState == HealthState.INVINCIBLE) {
+			if (healthTimer > Constants.INVICIBILITY_TIMER) {
+				healthState = HealthState.NEUTRAL;
+			}
 		}
+		if (healthTimer > Constants.FOOD_EFFECTS_TIMER) {
+			healthState = HealthState.NEUTRAL;
+		}		
+	}
+	
+	// Action State is managed by the ActionState interface
+	public void handleInput(Input input) {
+		actionState.handleInput(this, input);
+	}
+	
+	public void updateActionState(float delta) {
+		actionState.update(this);
 	}
 	
 	public void consumeFood(Food food) {
 		updateScore(food);
 		incrementGas();
-		// NEUTRAL is the only state that can change to non-NEUTRAL
-		if (healthState == HealthState.NEUTRAL) {
+		switch(healthState) {
+			case NEUTRAL:
+				if (food.consequence == "HAPPY")
+					healthState = HealthState.HAPPY;
 				if (food.consequence == "FAT")
 					healthState = HealthState.FAT;
-				if (food.consequence == "");
+				if (food.consequence == "SOUR")
+					healthState = HealthState.SOUR;
+				if (food.consequence == "ACNE")
+					healthState = HealthState.ACNE;
+				// reset timer
+				healthTimer = 0;
+				break;		
+			case INVINCIBLE:
+				// Unaffected by additional Food
+				break;
+			case HAPPY:
+				// Unaffected by additional Food
+				break;				
+			case FAT:
+				// Unaffected by additional Food
+				break;			
+			case SOUR:
+				// Unaffected by additional Food
+				break;			
+			case ACNE:
+				// Unaffected by additional Food
+				break;
 		}
-		System.out.println("Current health state:"+ healthState);
 	}
 	
 	public void updateScore(Food food) {
@@ -204,6 +189,10 @@ public class Eater {
 
 	public ActionState getActionState() {
 		return this.actionState;
+	}
+	
+	public void setActionState(ActionState actionState) {
+		this.actionState = actionState;
 	}
 	
 	public int getGas() {

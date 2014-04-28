@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.swordbit.game.model.SoundEffects;
 import com.swordbit.game.model.eater.Eater;
-import com.swordbit.game.model.eater.Eater.ActionState;
 import com.swordbit.game.model.food.Food;
 import com.swordbit.game.model.World;
 import com.swordbit.game.utils.Assets;

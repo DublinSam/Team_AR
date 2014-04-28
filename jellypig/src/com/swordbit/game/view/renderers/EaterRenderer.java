@@ -3,6 +3,7 @@ package com.swordbit.game.view.renderers;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import com.swordbit.game.model.eater.IdleState;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -10,9 +11,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.swordbit.game.model.SoundEffects;
 import com.swordbit.game.model.World;
+import com.swordbit.game.model.eater.ActionState;
 import com.swordbit.game.model.eater.Eater;
-import com.swordbit.game.model.eater.Eater.ActionState;
 import com.swordbit.game.model.eater.Eater.HealthState;
+import com.swordbit.game.model.eater.JumpingState;
 import com.swordbit.game.utils.Assets;
 
 public class EaterRenderer implements PropertyChangeListener{
@@ -90,9 +92,9 @@ public class EaterRenderer implements PropertyChangeListener{
 		// Listen to Eater ACTION state machine
 		if (event.getPropertyName().equals("actionState")) {
 			ActionState actionState = (ActionState) event.getNewValue();
-			if(actionState == ActionState.JUMPING)
+			if(actionState.getClass().equals(JumpingState.class))
 				currentStateTexture = Assets.instance.jellypigStates.jumping;
-			else if(actionState == ActionState.IDLE)
+			else if(actionState.getClass().equals(IdleState.class))
 				currentStateTexture = Assets.instance.jellypigStates.jellypig;
 			//else if(actionState == "TRANSFORMING"){
 			//	SoundEffects.instance.play(Assets.instance.sounds.transformation);
