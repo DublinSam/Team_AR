@@ -29,43 +29,43 @@ public class Main {
 			settings.debug = drawDebugOutline;
 			TexturePacker2.process(settings, 
 					"assets-raw/ui-images", 
-					"../jellypig-android/assets/images", 
+					"images", 
 					"jellypig-ui.pack");
 			TexturePacker2.process(settings, 
 					"assets-raw/loading-screen", 
-					"../jellypig-android/assets/images", 
+					"atlas", 
 					"loading-screen.pack");
 			TexturePacker2.process(settings, 
 					"assets-raw/food", 
-					"../jellypig-android/assets/atlas", 
+					"atlas", 
 					"food-textures.pack");
 			TexturePacker2.process(settings, 
 					"assets-raw/background-layers", 
-					"../jellypig-android/assets/atlas", 
+					"atlas", 
 					"background-layers.pack");
 			TexturePacker2.process(settings, 
 					"assets-raw/jellypig", 
-					"../jellypig-android/assets/atlas", 
+					"atlas", 
 					"jellypig-states.pack");
 			
 			//Animations
 			TexturePacker2.process(settings, 
 					"assets-raw/animation-explosion", 
-					"../jellypig-android/assets/atlas", 
+					"atlas", 
 					"animation-explosion.pack");
 			TexturePacker2.process(settings, 
 					"assets-raw/animation-blinking", 
-					"../jellypig-android/assets/atlas", 
+					"atlas", 
 					"animation-blinking.pack");
 			TexturePacker2.process(settings, 
 					"assets-raw/animation-eating", 
-					"../jellypig-android/assets/atlas", 
+					"atlas", 
 					"animation-eating.pack");
 			
 			//Gas-meter
 			TexturePacker2.process(settings, 
 					"assets-raw/gas-meter", 
-					"../jellypig-android/assets/atlas", 
+					"atlas", 
 					"gas-meter.pack");
 		}
 		

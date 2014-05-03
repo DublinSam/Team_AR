@@ -3,13 +3,14 @@ package com.swordbit.game.utils;
 public class Constants {
 	public static final float VIEWPORT_GUI_WIDTH = 800.0f;
 	public static final float VIEWPORT_GUI_HEIGHT = 480.0f;
-	
+	public static final float FOOD_SPAWN_INTERVAL_TIME = 1f;
 	public static final float FOOD_EFFECTS_TIMER = 3f;
 	public static final float INVICIBILITY_TIMER = 6f;
+	public static final int EATER_SPEED = 5;
+	public static final int TILE_WIDTH = 48;
 
 	public static final String SKIN_JELLYPIG_UI = "images/jellypig-ui-skin.json";
-	public static final String SKIN_LOADING_SCREEN = "images/loading-screen-skin.json";
-	
+	public static final String SKIN_LOADING_SCREEN = "images/loading-screen-skin.json";	
 	public static final String TEXTURE_ATLAS_FOOD = "atlas/food-textures.pack";
 	public static final String TEXTURE_ATLAS_JELLYPIG_UI = "images/jellypig-ui.pack";
 	public static final String TEXTURE_ATLAS_LOADING_SCREEN = "images/loading-screen.pack";

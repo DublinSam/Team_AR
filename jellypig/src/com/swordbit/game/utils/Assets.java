@@ -128,7 +128,7 @@ public class Assets implements Disposable, AssetErrorListener {
 			sour = atlas.findRegion("Lemon");
 			happy = atlas.findRegion("Happy");
 			jumping = atlas.findRegion("JellyPigJumping");
-			jellypig = atlas.findRegion("JellyPig48");
+			jellypig = atlas.findRegion("idle");
 			enchilado = atlas.findRegion("Enchilado");
 		}
 	}

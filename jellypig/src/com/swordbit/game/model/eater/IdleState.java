@@ -9,24 +9,32 @@ public class IdleState implements ActionState {
 	@Override
 	public void handleInput(Eater eater, Input input) {
 		if (input == Input.PRESS_JUMP) {
-			SoundEffects.instance.play(Assets.instance.sounds.jump);
-			eater.velocity.y = 12;
-			eater.grounded = false;
-			JumpingState jumpingState = new JumpingState();
-			eater.setActionState(jumpingState);
-			eater.notifyListeners(this, "actionState", this, jumpingState);
+			jump(eater);
 		}
 		if (input == Input.PRESS_FART) {
-			SoundEffects.instance.play(Assets.instance.sounds.fart);	
-			eater.decrementGas();	
-			FartingState fartingState = new FartingState();
-			eater.setActionState(fartingState);
-			eater.notifyListeners(this, "actiovfnState", this, fartingState);
+			fart(eater);	
 		}
 	}
 
 	@Override
 	public void update(Eater eater) {
 		// IDLE is a stable state
+	}
+	
+	private void jump(Eater eater) {
+		eater.velocity.y = 12;
+		eater.grounded = false;
+		SoundEffects.instance.play(Assets.instance.sounds.jump);
+		JumpingState jumpingState = new JumpingState();
+		eater.setActionState(jumpingState);
+		eater.notifyListeners(this, "actionState", this, jumpingState);
+	}
+	
+	private void fart(Eater eater) {
+		eater.decrementGas();	
+		SoundEffects.instance.play(Assets.instance.sounds.fart);
+		FartingState fartingState = new FartingState();
+		eater.setActionState(fartingState);
+		eater.notifyListeners(this, "actiovfnState", this, fartingState);
 	}
 }

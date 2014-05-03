@@ -33,7 +33,7 @@ Happy
   index: -1
 JellyPig48
   rotate: false
-  xy: 1532, 179
+  xy: 1532, 18
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
@@ -50,5 +50,12 @@ Lemon
   xy: 1087, 14
   size: 262, 213
   orig: 262, 213
+  offset: 0, 0
+  index: -1
+idle
+  rotate: false
+  xy: 1532, 68
+  size: 175, 159
+  orig: 175, 159
   offset: 0, 0
   index: -1

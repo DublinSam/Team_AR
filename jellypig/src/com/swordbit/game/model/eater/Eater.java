@@ -13,7 +13,7 @@ import com.swordbit.game.model.food.Food;
 public class Eater {	
 	public boolean grounded;
 	public float healthTimer;
-	public static float SPEED = 6f;
+	public static int SPEED = Constants.EATER_SPEED;
 	public static final float SIZE = 1f;
 	public static final float DAMPING = 0.8f;
 	public enum HealthState { NEUTRAL, HAPPY, FAT, SOUR, ACNE, INVINCIBLE }
@@ -47,12 +47,19 @@ public class Eater {
 	}
 	
 	public void update(float delta) {
-		updateEaterPosition(delta);
+		applyGravity(delta);
+		updatePosition(delta);
 		updateHealthState(delta);
 		updateActionState(delta);
 	}
 	
-	private void updateEaterPosition(float delta) {
+	private void applyGravity(float delta) {
+		if (!grounded) {
+			velocity.add(new Vector2(0, acceleration.y * delta));	
+		}
+	}
+
+	private void updatePosition(float delta) {
 		position.add(velocity.cpy().scl(delta));
 		this.bounds.setPosition(position);
 	}
@@ -157,6 +164,10 @@ public class Eater {
 	
 	public void setGrounded(boolean grounded) {
 		this.grounded = grounded;
+	}
+	
+	public boolean getGrounded() {
+		return grounded;
 	}
 	
 	public int getScore() {
