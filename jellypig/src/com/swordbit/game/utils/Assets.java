@@ -44,6 +44,12 @@ public class Assets implements Disposable, AssetErrorListener {
 		
 		assetManager.load("data/textbuttons.json", Skin.class);
 		assetManager.load("images/hunger.png", Texture.class);
+		assetManager.load("images/intro-01.png", Texture.class);
+		assetManager.load("images/intro-02.png", Texture.class);
+		assetManager.load("images/intro-03.png", Texture.class);
+		assetManager.load("images/intro-04.png", Texture.class);
+		assetManager.load("images/intro-05.png", Texture.class);
+		assetManager.load("images/intro-06.png", Texture.class);
 		
 		//Animation Textures
 		/*

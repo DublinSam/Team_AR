@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -31,6 +32,8 @@ public class MainMenuScreen extends AbstractGameScreen {
 	private float debugRebuildStageTimer;
 	private boolean debugEnabled = false;
 	private final float DEBUG_REBUILD_INTERVAL = 5.0f;
+	private Button introButton;
+	private Skin buttonSkin;
 	
 	public MainMenuScreen(Game game, World world) {
 		super(game, world);	
@@ -52,6 +55,7 @@ public class MainMenuScreen extends AbstractGameScreen {
 	private void rebuildStage() {
 		menuSkin = new Skin(Gdx.files.internal(Constants.SKIN_JELLYPIG_UI),
 				new TextureAtlas(Constants.TEXTURE_ATLAS_JELLYPIG_UI));
+		 buttonSkin = new Skin(Gdx.files.internal("data/buttons.json"));
 		
 		Table layerBackground = buildBackgroundLayer();
 		Table layerControls = buildControlsLayer();
@@ -86,13 +90,16 @@ public class MainMenuScreen extends AbstractGameScreen {
 	private Table buildControlsLayer() {
 		Table controlsLayer = new Table();
 		addPlayButtonToLayer(controlsLayer);
+		addintroButtonToLayer(controlsLayer);
 		if (debugEnabled) controlsLayer.debug();
 		return controlsLayer;
 	}
 	
+
+
 	private Table addPlayButtonToLayer(Table layer) {
-		playButton = new Button(menuSkin, "play");
-		layer.add(playButton).width(290.0f).height(150.3f);
+		playButton = new TextButton("Play", buttonSkin);
+		layer.add(playButton).width(290.0f).height(150.3f).row();
 		playButton.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
@@ -102,11 +109,30 @@ public class MainMenuScreen extends AbstractGameScreen {
 		return layer;
 	}
 	
+	private Table addintroButtonToLayer(Table layer) {
+		introButton=new TextButton("Intro",buttonSkin);
+		layer.add(introButton).width(290.0f).height(150.3f);
+		introButton.addListener(new ChangeListener() {
+			@Override
+			public void changed (ChangeEvent event, Actor actor) {
+				onIntroButtonClicked();
+			}
+		});
+		return layer;
+		
+	}
+	
 	private void onPlayButtonClicked () {
 		SoundEffects.instance.play(Assets.instance.sounds.play);
 		game.setScreen(new GameScreen(game, new World(0)));
 	}
 	
+	private void onIntroButtonClicked () {
+		SoundEffects.instance.play(Assets.instance.sounds.play);
+		game.setScreen(new CutsceneScreen(game));
+	}
+	
+
 	@Override
 	public void render(float delta) {
 		clearScreen();	
